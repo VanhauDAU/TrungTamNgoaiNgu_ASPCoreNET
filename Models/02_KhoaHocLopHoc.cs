@@ -42,8 +42,15 @@ public class DanhMucKhoaHoc
     [Column("updated_at")]
     public DateTime UpdatedAt { get; set; } = DateTime.Now;
 
+    // Soft delete
+    [Column("deleted_at")]
+    public DateTime? DeletedAt { get; set; }
+    
     // Một danh mục có nhiều khóa học
     public ICollection<KhoaHoc> KhoaHocs { get; set; } = [];
+
+    [NotMapped]
+    public bool IsDeleted => DeletedAt != null;
 }
 
 // ---------------------------------------------------------------------------

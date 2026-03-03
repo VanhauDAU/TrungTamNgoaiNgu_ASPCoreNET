@@ -1,0 +1,50 @@
+@model TrungTamNgoaiNgu.Models.DanhMucKhoaHoc
+@{
+    ViewData["Title"] = "Thêm danh mục";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+}
+
+<div class="page-header">
+    <div>
+        <div class="page-title">Thêm danh mục khóa học mới</div>
+        <div class="page-subtitle">Quay lại <a asp-action="Index">danh sách danh mục</a></div>
+    </div>
+</div>
+
+<div class="card" style="max-width:800px">
+    <form asp-action="Create" method="post">
+        @Html.AntiForgeryToken()
+
+        <div class="form-group mb-3">
+            <label asp-for="TenDanhMuc" class="form-label font-weight-bold">Tên danh mục <span class="text-danger">*</span></label>
+            <input asp-for="TenDanhMuc" class="form-control" placeholder="VD: Tiếng Anh Giao Tiếp..." />
+            <span asp-validation-for="TenDanhMuc" class="text-danger" style="font-size:.85rem"></span>
+        </div>
+
+        <div class="form-group mb-3">
+            <label asp-for="MoTa" class="form-label font-weight-bold">Mô tả ngắn</label>
+            <textarea asp-for="MoTa" class="form-control" rows="3" placeholder="Mô tả về danh mục khóa học này..."></textarea>
+            <span asp-validation-for="MoTa" class="text-danger" style="font-size:.85rem"></span>
+        </div>
+
+        <div class="form-group mb-4">
+            <label asp-for="TrangThai" class="form-label font-weight-bold">Trạng thái</label>
+            <select asp-for="TrangThai" class="form-control">
+                <option value="1">Sử dụng</option>
+                <option value="0">Tạm ngưng</option>
+            </select>
+        </div>
+
+        <hr style="opacity: .1" />
+        <div style="display:flex; justify-content:flex-end; gap:8px">
+            <a asp-action="Index" class="btn btn-outline">Hủy bỏ</a>
+            <button type="submit" class="btn btn-primary">
+                <i class="bi bi-save"></i> Lưu thông tin
+            </button>
+        </div>
+    </form>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

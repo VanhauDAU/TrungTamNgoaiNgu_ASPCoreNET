@@ -83,8 +83,59 @@ public class KhoaHocService(AppDbContext db) : IKhoaHocService
     public async Task<List<DanhMucKhoaHoc>> LayDanhMucAsync()
     {
         return await db.DanhMucKhoaHocs
-            .Where(dm => dm.TrangThai == 1)
+            .Where(dm => dm.TrangThai == 1 && dm.DeletedAt == null)
             .OrderBy(dm => dm.TenDanhMuc)
             .ToListAsync();
+    }
+
+    public async Task<List<DanhMucKhoaHoc>> LayDanhSachDanhMucAsync(string? tuKhoa = null)
+    {
+        var query = db.DanhMucKhoaHocs.Where(dm => dm.DeletedAt == null);
+
+        if (!string.IsNullOrWhiteSpace(tuKhoa))
+            query = query.Where(dm => dm.TenDanhMuc.Contains(tuKhoa));
+
+        return await query.OrderByDescending(dm => dm.CreatedAt).ToListAsync();
+    }
+
+    public async Task<DanhMucKhoaHoc?> LayDanhMucTheoIdAsync(int id)
+    {
+        return await db.DanhMucKhoaHocs
+            .FirstOrDefaultAsync(dm => dm.DanhMucId == id && dm.DeletedAt == null);
+    }
+
+    public async Task<int> ThemDanhMucAsync(DanhMucKhoaHoc danhMuc)
+    {
+        danhMuc.CreatedAt = DateTime.Now;
+        danhMuc.UpdatedAt = DateTime.Now;
+        db.DanhMucKhoaHocs.Add(danhMuc);
+        await db.SaveChangesAsync();
+        return danhMuc.DanhMucId;
+    }
+
+    public async Task<bool> CapNhatDanhMucAsync(DanhMucKhoaHoc danhMuc)
+    {
+        var existing = await db.DanhMucKhoaHocs.FindAsync(danhMuc.DanhMucId);
+        if (existing == null) return false;
+
+        existing.TenDanhMuc = danhMuc.TenDanhMuc;
+        existing.Slug       = danhMuc.Slug;
+        existing.MoTa       = danhMuc.MoTa;
+        existing.TrangThai  = danhMuc.TrangThai;
+        existing.UpdatedAt  = DateTime.Now;
+
+        await db.SaveChangesAsync();
+        return true;
+    }
+
+    public async Task<bool> XoaMemDanhMucAsync(int id)
+    {
+        var danhMuc = await db.DanhMucKhoaHocs.FindAsync(id);
+        if (danhMuc == null) return false;
+
+        danhMuc.DeletedAt = DateTime.Now;
+        danhMuc.UpdatedAt = DateTime.Now;
+        await db.SaveChangesAsync();
+        return true;
     }
 }
