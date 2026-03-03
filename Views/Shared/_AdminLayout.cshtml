@@ -17,7 +17,7 @@
     bool inDaoTao   = ctrl is "KhoaHoc" or "DanhMuc" or "LopHoc";
     bool inNhanSu   = ctrl is "HocVien" or "GiaoVien";
     bool inTaiChinh = ctrl is "HoaDon" or "Luong";
-    bool inHeThong  = ctrl is "CoSo" or "ThongBao";
+    bool inHeThong  = ctrl is "CoSo" or "ThongBao" or "NhatKyHeThong";
 }
 
 <!-- ═══════════ SIDEBAR ═══════════ -->
@@ -107,6 +107,8 @@
                    asp-controller="CoSo" asp-action="Index" asp-route-area="">Cơ sở đào tạo</a>
                 <a class="sb-item @(ctrl == "ThongBao" ? "active" : "")"
                    asp-controller="ThongBao" asp-action="Index" asp-route-area="">Thông báo</a>
+                <a class="sb-item @(ctrl == "NhatKyHeThong" ? "active" : "")"
+                   asp-controller="NhatKyHeThong" asp-action="Index" asp-route-area="">Nhật ký hệ thống</a>
                 <a class="sb-item" href="/" target="_blank">Xem trang web ↗</a>
             </div>
         </div>

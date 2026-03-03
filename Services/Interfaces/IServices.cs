@@ -182,3 +182,18 @@ public interface ITaiKhoanService
     Task<bool> DoiMatKhauAsync(int taiKhoanId, string matKhauMoi);
     Task<bool> DoiTrangThaiAsync(int taiKhoanId, byte trangThai);
 }
+
+// ---------------------------------------------------------------------------
+// NHAT KY HE THONG SERVICE — Xem nhật ký thao tác
+// ---------------------------------------------------------------------------
+public interface INhatKyHeThongService
+{
+    Task<PagedResult<NhatKyHeThong>> LayDanhSachPhanTrangAsync(
+        string? module = null,
+        string? tuKhoa = null,
+        int page = 1,
+        int pageSize = 20);
+
+    Task<List<string>> LayDanhSachModuleAsync();
+    Task<NhatKyHeThong?> LayTheoIdAsync(long id);
+}

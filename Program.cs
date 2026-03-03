@@ -27,9 +27,17 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 builder.Services.AddScoped<IDashboardService, DashboardService>();
 builder.Services.AddScoped<IKhoaHocService,   KhoaHocService>();
 builder.Services.AddScoped<ITaiChinhService,  TaiChinhService>();
+builder.Services.AddScoped<INhatKyHeThongService, NhatKyHeThongService>();
 
 // ===== BƯỚC 2: XÂY DỰNG APP =====
 var app = builder.Build();
+
+// Tự apply migration khi khởi động để tránh lệch schema giữa code và DB
+using (var scope = app.Services.CreateScope())
+{
+    var dbContext = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+    dbContext.Database.Migrate();
+}
 
 // ===== BƯỚC 3: CẤU HÌNH PIPELINE HTTP =====
 if (!app.Environment.IsDevelopment())

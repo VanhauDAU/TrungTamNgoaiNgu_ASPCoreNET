@@ -1,0 +1,49 @@
+@model TrungTamNgoaiNgu.Models.NhatKyHeThong
+@{
+    ViewData["Title"] = "Chi tiết nhật ký";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+    string returnUrl = ViewBag.ReturnUrl?.ToString() ?? Url.Action("Index", "NhatKyHeThong")!;
+}
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/admin-nhatky.css" asp-append-version="true" />
+}
+
+<div class="page-header">
+    <div>
+        <div class="page-title">Chi tiết nhật ký #@Model.NhatKyId</div>
+        <div class="page-sub">Xem đầy đủ thông tin thao tác hệ thống</div>
+    </div>
+    <a href="@returnUrl" class="btn btn-outline">
+        <i class="bi bi-arrow-left"></i> Quay lại danh sách
+    </a>
+</div>
+
+<div class="card nk-detail-card">
+    <div class="card-body nk-detail-grid">
+        <div class="nk-detail-item">
+            <div class="nk-detail-label">Thời gian</div>
+            <div class="nk-detail-value">@Model.CreatedAt.ToString("dd/MM/yyyy HH:mm:ss")</div>
+        </div>
+
+        <div class="nk-detail-item">
+            <div class="nk-detail-label">Module</div>
+            <div class="nk-detail-value"><span class="badge badge-gray">@Model.Module</span></div>
+        </div>
+
+        <div class="nk-detail-item">
+            <div class="nk-detail-label">Hành động</div>
+            <div class="nk-detail-value nk-strong">@Model.HanhDong</div>
+        </div>
+
+        <div class="nk-detail-item">
+            <div class="nk-detail-label">Người thực hiện</div>
+            <div class="nk-detail-value">@Model.NguoiThucHien</div>
+        </div>
+
+        <div class="nk-detail-item full">
+            <div class="nk-detail-label">Nội dung chi tiết</div>
+            <pre class="nk-detail-content">@Model.NoiDung</pre>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,151 @@
+@model List<TrungTamNgoaiNgu.Models.NhatKyHeThong>
+@{
+    ViewData["Title"] = "Nhật ký hệ thống";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+
+    int pg = ViewBag.Page ?? 1;
+    int pgSize = ViewBag.PageSize ?? 20;
+    int total = ViewBag.Total ?? Model.Count;
+    int totalPages = (int)Math.Ceiling(total / (double)pgSize);
+    string moduleQ = ViewBag.Module?.ToString() ?? "";
+    string tuKhoaQ = ViewBag.TuKhoa?.ToString() ?? "";
+    var modules = ViewBag.Modules as List<string> ?? [];
+    string returnUrl = $"{Context.Request.Path}{Context.Request.QueryString}";
+}
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/admin-nhatky.css" asp-append-version="true" />
+}
+
+<div class="page-header">
+    <div>
+        <div class="page-title">Nhật ký hệ thống</div>
+        <div class="page-sub">Theo dõi thao tác quản trị: ai làm gì, khi nào</div>
+    </div>
+</div>
+
+<div class="card nk-filter-card">
+    <div class="card-body nk-filter-body">
+        <form method="get" class="nk-filter-form">
+            <div class="search-wrap nk-search-wrap">
+                <i class="bi bi-search"></i>
+                <input type="text" name="tuKhoa" value="@tuKhoaQ" class="form-control"
+                       placeholder="Tìm theo hành động, người thực hiện, nội dung..." />
+            </div>
+
+            <select name="module" class="form-control nk-select-module">
+                <option value="">Tất cả module</option>
+                @foreach (var m in modules)
+                {
+                    if (moduleQ == m)
+                    {
+                        <option value="@m" selected>@m</option>
+                    }
+                    else
+                    {
+                        <option value="@m">@m</option>
+                    }
+                }
+            </select>
+
+            <select name="pageSize" class="form-control nk-select-pagesize">
+                @if (pgSize == 20) { <option value="20" selected>20 dòng/trang</option> }
+                else { <option value="20">20 dòng/trang</option> }
+                @if (pgSize == 50) { <option value="50" selected>50 dòng/trang</option> }
+                else { <option value="50">50 dòng/trang</option> }
+                @if (pgSize == 100) { <option value="100" selected>100 dòng/trang</option> }
+                else { <option value="100">100 dòng/trang</option> }
+            </select>
+
+            <button type="submit" class="btn btn-primary"><i class="bi bi-funnel-fill"></i> Lọc</button>
+            @if (!string.IsNullOrWhiteSpace(moduleQ) || !string.IsNullOrWhiteSpace(tuKhoaQ))
+            {
+                <a asp-action="Index" class="btn btn-outline"><i class="bi bi-x-circle"></i> Xóa lọc</a>
+            }
+        </form>
+    </div>
+</div>
+
+<div class="card">
+    <div class="table-wrap">
+        @if (!Model.Any())
+        {
+            <div class="empty-state">
+                <i class="bi bi-clock-history"></i>
+                <p>Chưa có dữ liệu nhật ký.</p>
+            </div>
+        }
+        else
+        {
+            <table>
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Thời gian</th>
+                        <th>Module</th>
+                        <th>Hành động</th>
+                        <th>Người thực hiện</th>
+                        <th>Nội dung</th>
+                        <th>Chi tiết</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @for (int i = 0; i < Model.Count; i++)
+                    {
+                        var log = Model[i];
+                        <tr>
+                            <td class="nk-col-index">@((pg - 1) * pgSize + i + 1)</td>
+                            <td class="nk-time">@log.CreatedAt.ToString("dd/MM/yyyy HH:mm:ss")</td>
+                            <td><span class="badge badge-gray">@log.Module</span></td>
+                            <td class="nk-action">@log.HanhDong</td>
+                            <td>@log.NguoiThucHien</td>
+                            <td>
+                                <div class="nk-content" title="@log.NoiDung">@log.NoiDung</div>
+                            </td>
+                            <td>
+                                <a asp-action="Details" asp-route-id="@log.NhatKyId" asp-route-returnUrl="@returnUrl"
+                                   class="btn btn-outline btn-sm">
+                                    <i class="bi bi-eye"></i> Xem
+                                </a>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+
+            @if (totalPages > 1)
+            {
+                <div class="nk-pagination-wrap">
+                    <div class="nk-pagination-info">
+                        Trang <strong>@pg</strong> / @totalPages &nbsp;·&nbsp; @total bản ghi
+                    </div>
+                    <div class="nk-pagination-actions">
+                        @if (pg > 1)
+                        {
+                            <a href="?page=@(pg-1)&module=@moduleQ&tuKhoa=@tuKhoaQ&pageSize=@pgSize"
+                               class="btn btn-outline btn-sm"><i class="bi bi-chevron-left"></i></a>
+                        }
+                        @for (int p = Math.Max(1, pg - 2); p <= Math.Min(totalPages, pg + 2); p++)
+                        {
+                            if (p == pg)
+                            {
+                                <a href="?page=@p&module=@moduleQ&tuKhoa=@tuKhoaQ&pageSize=@pgSize"
+                                   class="btn btn-sm btn-primary">@p</a>
+                            }
+                            else
+                            {
+                                <a href="?page=@p&module=@moduleQ&tuKhoa=@tuKhoaQ&pageSize=@pgSize"
+                                   class="btn btn-sm btn-outline">@p</a>
+                            }
+                        }
+                        @if (pg < totalPages)
+                        {
+                            <a href="?page=@(pg+1)&module=@moduleQ&tuKhoa=@tuKhoaQ&pageSize=@pgSize"
+                               class="btn btn-outline btn-sm"><i class="bi bi-chevron-right"></i></a>
+                        }
+                    </div>
+                </div>
+            }
+        }
+    </div>
+</div>
