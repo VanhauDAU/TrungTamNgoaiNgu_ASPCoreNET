@@ -1,0 +1,8 @@
+# .gitignore cho ASP.NET Core
+obj/
+bin/
+*.user
+.vs/
+appsettings.Development.json
+*.suo
+.DS_Store
