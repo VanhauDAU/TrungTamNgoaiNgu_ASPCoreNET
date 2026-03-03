@@ -5,128 +5,204 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>@ViewData["Title"] — Five Genius Admin</title>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" />
-    <link rel="stylesheet" href="~/css/admin.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/admin.css?v=3" asp-append-version="true" />
 </head>
 <body>
 
-<!-- ===== SIDEBAR ===== -->
+@{
+    var ctrl   = ViewContext.RouteData.Values["controller"]?.ToString() ?? "";
+    bool inDaoTao   = ctrl is "KhoaHoc" or "DanhMuc" or "LopHoc";
+    bool inNhanSu   = ctrl is "HocVien" or "GiaoVien";
+    bool inTaiChinh = ctrl is "HoaDon" or "Luong";
+    bool inHeThong  = ctrl is "CoSo" or "ThongBao";
+}
+
+<!-- ═══════════ SIDEBAR ═══════════ -->
 <aside id="sidebar">
-    <div class="sidebar-brand">
-        <span class="brand-icon">🎓</span>
-        <span class="brand-text">Five Genius</span>
-    </div>
 
-    <nav class="sidebar-nav">
-        <div class="nav-section-label">TỔNG QUAN</div>
-        <a class="nav-link @(ViewContext.RouteData.Values["controller"]?.ToString() == "Dashboard" ? "active" : "")"
+    <!-- Brand -->
+    <a class="sb-brand" href="/Admin/Dashboard">
+        <div class="sb-logo">🎓</div>
+        <div class="sb-brand-text">
+            <div class="t1">Five Genius</div>
+            <div class="t2">Academy Management</div>
+        </div>
+    </a>
+
+    <!-- Nav -->
+    <nav class="sb-nav">
+
+        <!-- Dashboard -->
+        <a class="sb-direct @(ctrl == "Dashboard" ? "active" : "")"
            asp-controller="Dashboard" asp-action="Index" asp-route-area="">
-            <i class="bi bi-grid-1x2-fill"></i> Dashboard
+            <span class="ico"><i class="bi bi-grid-1x2-fill"></i></span>
+            <span class="lbl">Tổng quan</span>
         </a>
 
-        <div class="nav-section-label">QUẢN LÝ</div>
-        <a class="nav-link @(ViewContext.RouteData.Values["controller"]?.ToString() == "DanhMuc" ? "active" : "")"
-           asp-controller="DanhMuc" asp-action="Index" asp-route-area="">
-            <i class="bi bi-tags-fill"></i> Danh mục
-        </a>
-        <a class="nav-link @(ViewContext.RouteData.Values["controller"]?.ToString() == "KhoaHoc" ? "active" : "")"
-           asp-controller="KhoaHoc" asp-action="Index" asp-route-area="">
-            <i class="bi bi-journal-richtext"></i> Khóa học
-        </a>
-        <a class="nav-link @(ViewContext.RouteData.Values["controller"]?.ToString() == "LopHoc" ? "active" : "")"
-           asp-controller="LopHoc" asp-action="Index" asp-route-area="">
-            <i class="bi bi-people-fill"></i> Lớp học
-        </a>
-        <a class="nav-link @(ViewContext.RouteData.Values["controller"]?.ToString() == "HocVien" ? "active" : "")"
-           asp-controller="HocVien" asp-action="Index" asp-route-area="">
-            <i class="bi bi-person-badge-fill"></i> Học viên
-        </a>
-        <a class="nav-link @(ViewContext.RouteData.Values["controller"]?.ToString() == "GiaoVien" ? "active" : "")"
-           asp-controller="GiaoVien" asp-action="Index" asp-route-area="">
-            <i class="bi bi-mortarboard-fill"></i> Giáo viên
-        </a>
+        <div class="sb-div"></div>
 
-        <div class="nav-section-label">TÀI CHÍNH</div>
-        <a class="nav-link @(ViewContext.RouteData.Values["controller"]?.ToString() == "HoaDon" ? "active" : "")"
-           asp-controller="HoaDon" asp-action="Index" asp-route-area="">
-            <i class="bi bi-receipt-cutoff"></i> Hóa đơn
-        </a>
-        <a class="nav-link @(ViewContext.RouteData.Values["controller"]?.ToString() == "Luong" ? "active" : "")"
-           asp-controller="Luong" asp-action="Index" asp-route-area="">
-            <i class="bi bi-cash-coin"></i> Bảng lương
-        </a>
+        <!-- ── Nhóm: Đào tạo ── -->
+        <div class="sb-group">
+            <button class="sb-group-btn @(inDaoTao ? "has-active" : "")" data-target="g-daotao">
+                <span class="ico" style="background:rgba(99,102,241,.12);color:#a5b4fc"><i class="bi bi-journal-richtext"></i></span>
+                <span class="lbl">Đào tạo</span>
+                <i class="bi bi-chevron-right arrow"></i>
+            </button>
+            <div class="sb-items @(inDaoTao ? "open" : "")" id="g-daotao">
+                <a class="sb-item @(ctrl == "DanhMuc" ? "active" : "")"
+                   asp-controller="DanhMuc" asp-action="Index" asp-route-area="">Danh mục khóa học</a>
+                <a class="sb-item @(ctrl == "KhoaHoc" ? "active" : "")"
+                   asp-controller="KhoaHoc" asp-action="Index" asp-route-area="">Khóa học</a>
+                <a class="sb-item @(ctrl == "LopHoc" ? "active" : "")"
+                   asp-controller="LopHoc" asp-action="Index" asp-route-area="">Lớp học</a>
+            </div>
+        </div>
 
-        <div class="nav-section-label">HỆ THỐNG</div>
-        <a class="nav-link @(ViewContext.RouteData.Values["controller"]?.ToString() == "ThongBao" ? "active" : "")"
-           asp-controller="ThongBao" asp-action="Index" asp-route-area="">
-            <i class="bi bi-bell-fill"></i> Thông báo
-        </a>
-        <a class="nav-link @(ViewContext.RouteData.Values["controller"]?.ToString() == "CoSo" ? "active" : "")"
-           asp-controller="CoSo" asp-action="Index" asp-route-area="">
-            <i class="bi bi-building-fill"></i> Cơ sở
-        </a>
-        <a class="nav-link" href="/">
-            <i class="bi bi-globe2"></i> Xem trang web
-        </a>
+        <!-- ── Nhóm: Nhân sự ── -->
+        <div class="sb-group">
+            <button class="sb-group-btn @(inNhanSu ? "has-active" : "")" data-target="g-nhansu">
+                <span class="ico" style="background:rgba(16,185,129,.12);color:#6ee7b7"><i class="bi bi-people-fill"></i></span>
+                <span class="lbl">Nhân sự</span>
+                <i class="bi bi-chevron-right arrow"></i>
+            </button>
+            <div class="sb-items @(inNhanSu ? "open" : "")" id="g-nhansu">
+                <a class="sb-item @(ctrl == "HocVien" ? "active" : "")"
+                   asp-controller="HocVien" asp-action="Index" asp-route-area="">Học viên</a>
+                <a class="sb-item @(ctrl == "GiaoVien" ? "active" : "")"
+                   asp-controller="GiaoVien" asp-action="Index" asp-route-area="">Giáo viên</a>
+                <a class="sb-item @(ctrl == "NhanVien" ? "active" : "")"
+                   asp-controller="NhanVien" asp-action="Index" asp-route-area="">Nhân viên</a>
+            </div>
+        </div>
+
+        <!-- ── Nhóm: Tài chính ── -->
+        <div class="sb-group">
+            <button class="sb-group-btn @(inTaiChinh ? "has-active" : "")" data-target="g-taichinh">
+                <span class="ico" style="background:rgba(245,158,11,.12);color:#fcd34d"><i class="bi bi-cash-stack"></i></span>
+                <span class="lbl">Tài chính</span>
+                <i class="bi bi-chevron-right arrow"></i>
+            </button>
+            <div class="sb-items @(inTaiChinh ? "open" : "")" id="g-taichinh">
+                <a class="sb-item @(ctrl == "HoaDon" ? "active" : "")"
+                   asp-controller="HoaDon" asp-action="Index" asp-route-area="">Hóa đơn</a>
+                <a class="sb-item @(ctrl == "Luong" ? "active" : "")"
+                   asp-controller="Luong" asp-action="Index" asp-route-area="">Bảng lương</a>
+                <a class="sb-item @(ctrl == "PhieuThu" ? "active" : "")"
+                   asp-controller="PhieuThu" asp-action="Index" asp-route-area="">Phiếu thu</a>
+            </div>
+        </div>
+
+        <!-- ── Nhóm: Hệ thống ── -->
+        <div class="sb-group">
+            <button class="sb-group-btn @(inHeThong ? "has-active" : "")" data-target="g-hethong">
+                <span class="ico" style="background:rgba(107,114,128,.15);color:#9ca3af"><i class="bi bi-gear-fill"></i></span>
+                <span class="lbl">Hệ thống</span>
+                <i class="bi bi-chevron-right arrow"></i>
+            </button>
+            <div class="sb-items @(inHeThong ? "open" : "")" id="g-hethong">
+                <a class="sb-item @(ctrl == "CoSo" ? "active" : "")"
+                   asp-controller="CoSo" asp-action="Index" asp-route-area="">Cơ sở đào tạo</a>
+                <a class="sb-item @(ctrl == "ThongBao" ? "active" : "")"
+                   asp-controller="ThongBao" asp-action="Index" asp-route-area="">Thông báo</a>
+                <a class="sb-item" href="/" target="_blank">Xem trang web ↗</a>
+            </div>
+        </div>
+
     </nav>
 
-    <div class="sidebar-footer">
-        <div class="avatar-circle">LH</div>
-        <div>
-            <div class="sidebar-user-name">Admin</div>
-            <div class="sidebar-user-role">Quản trị viên</div>
+    <!-- User footer -->
+    <div class="sb-footer">
+        <div class="av sm">LH</div>
+        <div class="sb-foot-info">
+            <div class="n">Lê Văn Hậu</div>
+            <div class="r">Quản trị viên</div>
         </div>
     </div>
+
 </aside>
 
-<!-- ===== MAIN CONTENT ===== -->
-<div class="main-wrapper">
+<!-- ═══════════ MAIN ═══════════ -->
+<div class="main-wrap" id="mainWrap">
 
     <!-- Topbar -->
     <header class="topbar">
-        <button id="sidebarToggle" class="btn-icon" title="Menu">
-            <i class="bi bi-list"></i>
+        <button class="icon-btn top-toggle" id="sbToggle" title="Thu/mở sidebar">
+            <i class="bi bi-list" style="font-size:1.2rem"></i>
         </button>
 
-        <div class="topbar-breadcrumb">
-            <span class="text-muted">Admin</span>
-            <i class="bi bi-chevron-right text-muted mx-1" style="font-size:.75rem"></i>
-            <span>@(ViewData["Title"] ?? "Dashboard")</span>
-        </div>
+        <nav class="top-bc">
+            <i class="bi bi-house" style="font-size:.8rem"></i>
+            <span class="sep">›</span>
+            <span>Admin</span>
+            <span class="sep">›</span>
+            <span class="cur">@(ViewData["Title"] ?? "Dashboard")</span>
+        </nav>
 
-        <div class="topbar-actions ms-auto">
+        <div class="top-right">
             @if (TempData["ThanhCong"] != null)
             {
-                <span class="badge bg-success">✓ @TempData["ThanhCong"]</span>
+                <div class="toast ok"><i class="bi bi-check-circle-fill"></i> @TempData["ThanhCong"]</div>
             }
             @if (TempData["LoiXay"] != null)
             {
-                <span class="badge bg-danger">✗ @TempData["LoiXay"]</span>
+                <div class="toast err"><i class="bi bi-exclamation-circle-fill"></i> @TempData["LoiXay"]</div>
             }
-            <button class="btn-icon" title="Thông báo">
+            <button class="icon-btn" title="Thông báo" style="position:relative">
                 <i class="bi bi-bell"></i>
+                <span class="badge-dot"></span>
             </button>
-            <div class="avatar-circle sm">LH</div>
+            <button class="icon-btn" title="Cài đặt">
+                <i class="bi bi-gear"></i>
+            </button>
+            <div class="av" title="Tài khoản của tôi">LH</div>
         </div>
     </header>
 
-    <!-- Page Content -->
-    <main class="page-content">
+    <!-- Content -->
+    <main class="page-main">
         @RenderBody()
     </main>
 
-    <footer class="page-footer">
-        Five Genius Academy &copy; 2026 — ASP.NET Core 10 &amp; EF Core
+    <footer class="page-foot">
+        Five Genius Academy &copy; 2026 &mdash; Xây dựng với ASP.NET Core 10 &amp; EF Core
     </footer>
 </div>
 
 <script>
-    document.getElementById('sidebarToggle').addEventListener('click', () => {
-        document.getElementById('sidebar').classList.toggle('collapsed');
-        document.querySelector('.main-wrapper').classList.toggle('expanded');
+/* ── Sidebar toggle ─────────────────────────── */
+const sb  = document.getElementById('sidebar');
+const mw  = document.getElementById('mainWrap');
+document.getElementById('sbToggle').addEventListener('click', () => {
+    sb.classList.toggle('mini');
+    mw.classList.toggle('mini');
+});
+
+/* ── Accordion groups ───────────────────────── */
+document.querySelectorAll('.sb-group-btn').forEach(btn => {
+    // Sync arrow state on page load for open groups
+    const panel = document.getElementById(btn.dataset.target);
+    if (panel && panel.classList.contains('open')) {
+        btn.classList.add('open');
+    }
+
+    btn.addEventListener('click', () => {
+        const isOpen = panel.classList.contains('open');
+
+        // Close all panels
+        document.querySelectorAll('.sb-items').forEach(p => p.classList.remove('open'));
+        document.querySelectorAll('.sb-group-btn').forEach(b => b.classList.remove('open'));
+
+        // Toggle clicked panel
+        if (!isOpen) {
+            panel.classList.add('open');
+            btn.classList.add('open');
+        }
     });
+});
 </script>
+
 @await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>

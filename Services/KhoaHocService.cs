@@ -138,4 +138,45 @@ public class KhoaHocService(AppDbContext db) : IKhoaHocService
         await db.SaveChangesAsync();
         return true;
     }
+
+    // ── Thùng rác KhoaHoc ──────────────────────────────────────────────
+    public async Task<List<KhoaHoc>> LayThuRacAsync()
+    {
+        return await db.KhoaHocs
+            .Include(k => k.DanhMuc)
+            .Where(k => k.DeletedAt != null)
+            .OrderByDescending(k => k.DeletedAt)
+            .ToListAsync();
+    }
+
+    public async Task<bool> KhoiPhucAsync(int id)
+    {
+        var khoaHoc = await db.KhoaHocs.FindAsync(id);
+        if (khoaHoc == null || khoaHoc.DeletedAt == null) return false;
+
+        khoaHoc.DeletedAt = null;
+        khoaHoc.UpdatedAt = DateTime.Now;
+        await db.SaveChangesAsync();
+        return true;
+    }
+
+    // ── Thùng rác DanhMuc ──────────────────────────────────────────────
+    public async Task<List<DanhMucKhoaHoc>> LayThuRacDanhMucAsync()
+    {
+        return await db.DanhMucKhoaHocs
+            .Where(d => d.DeletedAt != null)
+            .OrderByDescending(d => d.DeletedAt)
+            .ToListAsync();
+    }
+
+    public async Task<bool> KhoiPhucDanhMucAsync(int id)
+    {
+        var danhMuc = await db.DanhMucKhoaHocs.FindAsync(id);
+        if (danhMuc == null || danhMuc.DeletedAt == null) return false;
+
+        danhMuc.DeletedAt = null;
+        danhMuc.UpdatedAt = DateTime.Now;
+        await db.SaveChangesAsync();
+        return true;
+    }
 }
