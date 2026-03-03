@@ -37,23 +37,23 @@ public class KhoaHocController(IKhoaHocService khoaHocService) : Controller
 
     // GET /Admin/KhoaHoc/Them
     // Hiển thị form thêm khóa học mới
-    public async Task<IActionResult> Them()
+    public async Task<IActionResult> Create()
     {
         ViewBag.DanhMucs = await khoaHocService.LayDanhMucAsync();
-        return View("~/Views/Admin/KhoaHoc/Them.cshtml", new KhoaHoc());
+        return View("~/Views/Admin/KhoaHoc/Create.cshtml", new KhoaHoc());
     }
 
     // POST /Admin/KhoaHoc/Them
     // Xử lý form submit thêm khóa học
     [HttpPost]
     [ValidateAntiForgeryToken] // Bảo vệ khỏi tấn công CSRF
-    public async Task<IActionResult> Them(KhoaHoc khoaHoc)
+    public async Task<IActionResult> Create(KhoaHoc khoaHoc)
     {
         if (!ModelState.IsValid) // Kiểm tra validation từ Data Annotations
         {
             ViewBag.DanhMucs = await khoaHocService.LayDanhMucAsync();
-            return View("~/Views/Admin/KhoaHoc/Them.cshtml", khoaHoc);
-        }
+            return View("~/Views/Admin/KhoaHoc/Create.cshtml", khoaHoc);
+        }   
 
         // Tự tạo slug từ tên khóa học (sẽ bổ sung helper sau)
         khoaHoc.Slug = khoaHoc.TenKhoaHoc
@@ -69,23 +69,23 @@ public class KhoaHocController(IKhoaHocService khoaHocService) : Controller
 
     // GET /Admin/KhoaHoc/Sua/5
     // Hiển thị form sửa khóa học
-    public async Task<IActionResult> Sua(int id)
+    public async Task<IActionResult> Edit(int id)
     {
         var khoaHoc = await khoaHocService.LayTheoIdAsync(id);
         if (khoaHoc == null) return NotFound();
         ViewBag.DanhMucs = await khoaHocService.LayDanhMucAsync();
-        return View("~/Views/Admin/KhoaHoc/Sua.cshtml", khoaHoc);
+        return View("~/Views/Admin/KhoaHoc/Edit.cshtml", khoaHoc);
     }
 
     // POST /Admin/KhoaHoc/Sua
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Sua(KhoaHoc khoaHoc)
+    public async Task<IActionResult> Edit(KhoaHoc khoaHoc)
     {
         if (!ModelState.IsValid)
         {
             ViewBag.DanhMucs = await khoaHocService.LayDanhMucAsync();
-            return View("~/Views/Admin/KhoaHoc/Sua.cshtml", khoaHoc);
+            return View("~/Views/Admin/KhoaHoc/Edit.cshtml", khoaHoc);
         }
 
         var ketQua = await khoaHocService.CapNhatAsync(khoaHoc);
@@ -99,7 +99,7 @@ public class KhoaHocController(IKhoaHocService khoaHocService) : Controller
     // Xóa mềm khóa học (soft delete)
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Xoa(int id)
+    public async Task<IActionResult> Delete(int id)
     {
         var ketQua = await khoaHocService.XoaMemAsync(id);
         TempData[ketQua ? "ThanhCong" : "LoiXay"] =

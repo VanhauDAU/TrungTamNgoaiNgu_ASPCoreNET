@@ -58,6 +58,16 @@ public interface IKhoaHocService
 
     // Lấy tất cả danh mục để hiển thị dropdown
     Task<List<DanhMucKhoaHoc>> LayDanhMucAsync();
+
+    Task<List<DanhMucKhoaHoc>> LayDanhSachDanhMucAsync(string? tuKhoa = null);
+
+    Task<DanhMucKhoaHoc?> LayDanhMucTheoIdAsync(int id);
+
+    Task<int> ThemDanhMucAsync(DanhMucKhoaHoc danhMuc);
+
+    Task<bool> CapNhatDanhMucAsync(DanhMucKhoaHoc danhMuc);
+
+    Task<bool> XoaMemDanhMucAsync(int id);
 }
 
 // ---------------------------------------------------------------------------

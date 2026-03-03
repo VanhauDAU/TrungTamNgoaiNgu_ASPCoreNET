@@ -1,0 +1,100 @@
+@model List<TrungTamNgoaiNgu.Models.DanhMucKhoaHoc>
+@{
+    ViewData["Title"] = "Danh mục khóa học";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+}
+
+<div class="page-header">
+    <div>
+        <div class="page-title">Quản lý danh mục khóa học</div>
+        <div class="page-subtitle">Tổng: <strong>@Model.Count</strong> danh mục đang hiển thị</div>
+    </div>
+    <a asp-action="Create" class="btn btn-primary">
+        <i class="bi bi-plus-lg"></i> Thêm danh mục
+    </a>
+</div>
+
+<!-- THANH TÌM KIẾM -->
+<form method="get" class="search-bar">
+    <div class="search-input-wrapper">
+        <i class="bi bi-search"></i>
+        <input type="text" name="tuKhoa" value="@ViewBag.TuKhoa"
+               class="form-control" placeholder="Tìm tên danh mục..." />
+    </div>
+    <button type="submit" class="btn btn-outline"><i class="bi bi-funnel"></i> Lọc</button>
+    @if (ViewBag.TuKhoa != null)
+    {
+        <a asp-action="Index" class="btn btn-outline"><i class="bi bi-x"></i> Xóa lọc</a>
+    }
+</form>
+
+<!-- BẢNG DANH SÁCH -->
+<div class="card">
+    <div class="table-wrapper">
+        @if (Model.Count == 0)
+        {
+            <div class="empty-state">
+                <i class="bi bi-journal-x"></i>
+                <p>Không tìm thấy danh mục nào</p>
+            </div>
+        }
+        else
+        {
+            <table>
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Tên danh mục</th>
+                        <th>Mô tả</th>
+                        <th>Trạng thái</th>
+                        <th>Ngày tạo</th>
+                        <th>Thao tác</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @for (int i = 0; i < Model.Count; i++)
+                    {
+                        var dm = Model[i];
+                        <tr>
+                            <td style="color:var(--text-muted); font-size:.8rem">@(i + 1)</td>
+                            <td>
+                                <div style="font-weight:600">@dm.TenDanhMuc</div>
+                                <div style="font-size:.78rem; color:var(--text-muted)">@dm.Slug</div>
+                            </td>
+                            <td>@(dm.MoTa ?? "—")</td>
+                            <td>
+                                @if (dm.TrangThai == 1)
+                                {
+                                    <span class="badge badge-success">Sử dụng</span>
+                                }
+                                else
+                                {
+                                    <span class="badge badge-gray">Tạm ngưng</span>
+                                }
+                            </td>
+                            <td style="color:var(--text-muted); font-size:.8rem">
+                                @dm.CreatedAt.ToString("dd/MM/yyyy")
+                            </td>
+                            <td>
+                                <div style="display:flex; gap:4px; flex-wrap:wrap">
+                                    <a asp-action="Edit" asp-route-id="@dm.DanhMucId"
+                                       class="btn btn-outline btn-sm" title="Sửa">
+                                        <i class="bi bi-pencil"></i>
+                                    </a>
+                                    <form method="post" asp-action="Delete" asp-route-id="@dm.DanhMucId"
+                                          onsubmit="return confirm('Xóa danh mục «@dm.TenDanhMuc»? Các khóa học sẽ không bị mất theo.')"
+                                          style="display:inline">
+                                        @Html.AntiForgeryToken()
+                                        <button type="submit" class="btn btn-danger btn-sm" title="Xóa">
+                                            <i class="bi bi-trash"></i>
+                                        </button>
+                                    </form>
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        }
+    </div>
+</div>

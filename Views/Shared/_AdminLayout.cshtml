@@ -26,6 +26,10 @@
         </a>
 
         <div class="nav-section-label">QUẢN LÝ</div>
+        <a class="nav-link @(ViewContext.RouteData.Values["controller"]?.ToString() == "DanhMuc" ? "active" : "")"
+           asp-controller="DanhMuc" asp-action="Index" asp-route-area="">
+            <i class="bi bi-tags-fill"></i> Danh mục
+        </a>
         <a class="nav-link @(ViewContext.RouteData.Values["controller"]?.ToString() == "KhoaHoc" ? "active" : "")"
            asp-controller="KhoaHoc" asp-action="Index" asp-route-area="">
             <i class="bi bi-journal-richtext"></i> Khóa học
