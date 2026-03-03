@@ -13,6 +13,13 @@ namespace TrungTamNgoaiNgu.Controllers.Admin;
 
 public class KhoaHocController(IKhoaHocService khoaHocService, IWebHostEnvironment env) : Controller
 {
+    private static readonly string[] AllowedImageExtensions = [".jpg", ".jpeg", ".png", ".webp"];
+    private static readonly HashSet<string> AllowedImageMimeTypes = new(StringComparer.OrdinalIgnoreCase)
+    {
+        "image/jpeg", "image/png", "image/webp"
+    };
+    private const long MaxImageSizeBytes = 5 * 1024 * 1024;
+
     // GET /Admin/KhoaHoc
     public async Task<IActionResult> Index(string? tuKhoa, int? danhMucId, int? trangThai, int page = 1, int pageSize = 10)
     {
@@ -20,19 +27,15 @@ public class KhoaHocController(IKhoaHocService khoaHocService, IWebHostEnvironme
         ViewBag.DanhMucId = danhMucId;
         ViewBag.TrangThai = trangThai;
         ViewBag.DanhMucs  = await khoaHocService.LayDanhMucAsync();
+        ViewBag.Stats     = await khoaHocService.LayThongKeQuanLyAsync();
 
-        var tatCa = await khoaHocService.LayDanhSachAsync(tuKhoa, danhMucId);
+        var ketQua = await khoaHocService.LayDanhSachPhanTrangAsync(tuKhoa, danhMucId, trangThai, page, pageSize);
 
-        // Lọc trạng thái phía server
-        if (trangThai.HasValue)
-            tatCa = tatCa.Where(k => (int)k.TrangThai == trangThai.Value).ToList();
+        ViewBag.Total    = ketQua.Total;
+        ViewBag.Page     = ketQua.Page;
+        ViewBag.PageSize = ketQua.PageSize;
 
-        ViewBag.Total    = tatCa.Count;
-        ViewBag.Page     = page;
-        ViewBag.PageSize = pageSize;
-
-        var trang = tatCa.Skip((page - 1) * pageSize).Take(pageSize).ToList();
-        return View("~/Views/Admin/KhoaHoc/Index.cshtml", trang);
+        return View("~/Views/Admin/KhoaHoc/Index.cshtml", ketQua.Items);
     }
 
     // GET /Admin/KhoaHoc/ChiTiet/5
@@ -61,6 +64,7 @@ public class KhoaHocController(IKhoaHocService khoaHocService, IWebHostEnvironme
         // Slug được tạo server-side, không cần validate từ client
         ModelState.Remove("Slug");
         ModelState.Remove("AnhKhoaHoc");
+        KiemTraAnhUpload(anhFile);
 
         if (!ModelState.IsValid)
         {
@@ -69,23 +73,12 @@ public class KhoaHocController(IKhoaHocService khoaHocService, IWebHostEnvironme
         }
 
         // Xử lý upload ảnh nếu có
-        if (anhFile != null && anhFile.Length > 0)
-        {
-            var uploadDir = Path.Combine(env.WebRootPath, "uploads", "khoahoc");
-            Directory.CreateDirectory(uploadDir);
-            var fileName = $"{Guid.NewGuid()}{Path.GetExtension(anhFile.FileName)}";
-            using var stream = new FileStream(Path.Combine(uploadDir, fileName), FileMode.Create);
-            await anhFile.CopyToAsync(stream);
-            khoaHoc.AnhKhoaHoc = $"/uploads/khoahoc/{fileName}";
-        }
+        khoaHoc.AnhKhoaHoc = await LuuAnhKhoaHocAsync(anhFile);
 
-        // Tự tạo slug từ tên khóa học
-        khoaHoc.Slug = khoaHoc.TenKhoaHoc
-            .ToLower()
-            .Replace(" ", "-")
-            .Replace("đ", "d");
+        // Tạo slug chuẩn + chống trùng
+        khoaHoc.Slug = await khoaHocService.TaoSlugKhoaHocAsync(khoaHoc.TenKhoaHoc);
 
-        await khoaHocService.ThemAsync(khoaHoc);
+        await khoaHocService.ThemAsync(khoaHoc, LayNguoiThucHien());
 
         TempData["ThanhCong"] = "Đã thêm khóa học thành công!";
         return RedirectToAction(nameof(Index));
@@ -108,6 +101,7 @@ public class KhoaHocController(IKhoaHocService khoaHocService, IWebHostEnvironme
     {
         ModelState.Remove("Slug");
         ModelState.Remove("AnhKhoaHoc");
+        KiemTraAnhUpload(anhFile);
 
         if (!ModelState.IsValid)
         {
@@ -116,26 +110,24 @@ public class KhoaHocController(IKhoaHocService khoaHocService, IWebHostEnvironme
         }
 
         // Xử lý upload ảnh mới nếu có
-        if (anhFile != null && anhFile.Length > 0)
+        var anhMoi = await LuuAnhKhoaHocAsync(anhFile);
+        if (!string.IsNullOrEmpty(anhMoi))
         {
-            var uploadDir = Path.Combine(env.WebRootPath, "uploads", "khoahoc");
-            Directory.CreateDirectory(uploadDir);
-            var fileName = $"{Guid.NewGuid()}{Path.GetExtension(anhFile.FileName)}";
-            using var stream = new FileStream(Path.Combine(uploadDir, fileName), FileMode.Create);
-            await anhFile.CopyToAsync(stream);
-            khoaHoc.AnhKhoaHoc = $"/uploads/khoahoc/{fileName}";
+            khoaHoc.AnhKhoaHoc = anhMoi;
         }
 
-        // Cập nhật slug theo tên mới
-        khoaHoc.Slug = khoaHoc.TenKhoaHoc
-            .ToLower()
-            .Replace(" ", "-")
-            .Replace("đ", "d");
+        // Cập nhật slug theo tên mới (tránh trùng slug khóa học khác)
+        khoaHoc.Slug = await khoaHocService.TaoSlugKhoaHocAsync(khoaHoc.TenKhoaHoc, khoaHoc.KhoaHocId);
 
-        var ketQua = await khoaHocService.CapNhatAsync(khoaHoc);
-        if (!ketQua) return NotFound();
+        var ketQua = await khoaHocService.CapNhatCoKiemTraAsync(khoaHoc, LayNguoiThucHien());
+        if (!ketQua.ThanhCong)
+        {
+            ModelState.AddModelError("TrangThai", ketQua.ThongBao);
+            ViewBag.DanhMucs = await khoaHocService.LayDanhMucAsync();
+            return View("~/Views/Admin/KhoaHoc/Edit.cshtml", khoaHoc);
+        }
 
-        TempData["ThanhCong"] = "Đã cập nhật khóa học!";
+        TempData["ThanhCong"] = ketQua.ThongBao;
         return RedirectToAction(nameof(Index));
     }
 
@@ -144,9 +136,8 @@ public class KhoaHocController(IKhoaHocService khoaHocService, IWebHostEnvironme
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> softdelete(int id)
     {
-        var ketQua = await khoaHocService.XoaMemAsync(id);
-        TempData[ketQua ? "ThanhCong" : "LoiXay"] =
-            ketQua ? "Đã chuyển khóa học vào thùng rác!" : "Không tìm thấy khóa học!";
+        var ketQua = await khoaHocService.XoaMemAsync(id, LayNguoiThucHien());
+        TempData[ketQua.ThanhCong ? "ThanhCong" : "LoiXay"] = ketQua.ThongBao;
         return RedirectToAction(nameof(Index));
     }
 
@@ -162,9 +153,91 @@ public class KhoaHocController(IKhoaHocService khoaHocService, IWebHostEnvironme
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> restore(int id)
     {
-        var ketQua = await khoaHocService.KhoiPhucAsync(id);
-        TempData[ketQua ? "ThanhCong" : "LoiXay"] =
-            ketQua ? "Đã khôi phục khóa học thành công!" : "Không tìm thấy khóa học trong thùng rác!";
+        var ketQua = await khoaHocService.KhoiPhucAsync(id, LayNguoiThucHien());
+        TempData[ketQua.ThanhCong ? "ThanhCong" : "LoiXay"] = ketQua.ThongBao;
         return RedirectToAction(nameof(Trash));
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> bulk(List<int> selectedIds, string? bulkAction, byte? bulkTrangThai)
+    {
+        ServiceResult ketQua;
+        switch (bulkAction)
+        {
+            case "change-status":
+                if (!bulkTrangThai.HasValue)
+                {
+                    TempData["LoiXay"] = "Vui lòng chọn trạng thái cần cập nhật.";
+                    return RedirectToAction(nameof(Index));
+                }
+                ketQua = await khoaHocService.DoiTrangThaiHangLoatAsync(selectedIds, bulkTrangThai.Value, LayNguoiThucHien());
+                break;
+            case "soft-delete":
+                ketQua = await khoaHocService.XoaMemHangLoatAsync(selectedIds, LayNguoiThucHien());
+                break;
+            default:
+                TempData["LoiXay"] = "Hành động không hợp lệ.";
+                return RedirectToAction(nameof(Index));
+        }
+
+        TempData[ketQua.ThanhCong ? "ThanhCong" : "LoiXay"] = ketQua.ThongBao;
+        return RedirectToAction(nameof(Index));
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> bulkrestore(List<int> selectedIds)
+    {
+        var ketQua = await khoaHocService.KhoiPhucHangLoatAsync(selectedIds, LayNguoiThucHien());
+        TempData[ketQua.ThanhCong ? "ThanhCong" : "LoiXay"] = ketQua.ThongBao;
+        return RedirectToAction(nameof(Trash));
+    }
+
+    private void KiemTraAnhUpload(IFormFile? anhFile)
+    {
+        if (anhFile == null || anhFile.Length == 0) return;
+
+        if (anhFile.Length > MaxImageSizeBytes)
+        {
+            ModelState.AddModelError("AnhKhoaHoc", "Ảnh vượt quá 5MB.");
+            return;
+        }
+
+        var extension = Path.GetExtension(anhFile.FileName).ToLowerInvariant();
+        if (!AllowedImageExtensions.Contains(extension))
+        {
+            ModelState.AddModelError("AnhKhoaHoc", "Chỉ cho phép ảnh JPG, JPEG, PNG hoặc WEBP.");
+            return;
+        }
+
+        if (!AllowedImageMimeTypes.Contains(anhFile.ContentType))
+        {
+            ModelState.AddModelError("AnhKhoaHoc", "Định dạng MIME của ảnh không hợp lệ.");
+        }
+    }
+
+    private async Task<string?> LuuAnhKhoaHocAsync(IFormFile? anhFile)
+    {
+        if (anhFile == null || anhFile.Length == 0) return null;
+
+        var uploadDir = Path.Combine(env.WebRootPath, "uploads", "khoahoc");
+        Directory.CreateDirectory(uploadDir);
+
+        var extension = Path.GetExtension(anhFile.FileName).ToLowerInvariant();
+        var fileName = $"{Guid.NewGuid()}{extension}";
+        var outputPath = Path.Combine(uploadDir, fileName);
+
+        await using var stream = new FileStream(outputPath, FileMode.Create);
+        await anhFile.CopyToAsync(stream);
+
+        return $"/uploads/khoahoc/{fileName}";
+    }
+
+    private string LayNguoiThucHien()
+    {
+        if (User?.Identity?.IsAuthenticated == true && !string.IsNullOrWhiteSpace(User.Identity.Name))
+            return User.Identity.Name!;
+        return "Quản trị viên";
     }
 }

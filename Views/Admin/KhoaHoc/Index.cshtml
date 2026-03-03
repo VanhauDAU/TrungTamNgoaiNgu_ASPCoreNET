@@ -9,6 +9,12 @@
     string tuKhoa     = ViewBag.TuKhoa ?? "";
     string trangThaiQ = ViewBag.TrangThai?.ToString() ?? "";
     string danhMucIdQ = ViewBag.DanhMucId?.ToString() ?? "";
+    var stats = ViewBag.Stats as TrungTamNgoaiNgu.Services.Interfaces.KhoaHocQuanLyThongKe
+        ?? new TrungTamNgoaiNgu.Services.Interfaces.KhoaHocQuanLyThongKe();
+}
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/admin-khoahoc.css" asp-append-version="true" />
 }
 
 <div class="page-header">
@@ -16,7 +22,7 @@
         <div class="page-title">Quản lý khóa học</div>
         <div class="page-sub">Tổng: <strong>@total</strong> khóa học</div>
     </div>
-    <div style="display:flex; gap:8px">
+    <div class="kh-header-actions">
         <a asp-action="Trash" class="btn btn-outline">
             <i class="bi bi-trash3"></i> Thùng rác
         </a>
@@ -26,17 +32,40 @@
     </div>
 </div>
 
+<div class="kh-mini-stats">
+    <div class="kh-mini-card all">
+        <div class="kh-mini-label">Tổng khóa học</div>
+        <div class="kh-mini-value">@stats.TongKhoaHoc</div>
+    </div>
+    <div class="kh-mini-card open">
+        <div class="kh-mini-label">Đang mở</div>
+        <div class="kh-mini-value">@stats.DangMo</div>
+    </div>
+    <div class="kh-mini-card soon">
+        <div class="kh-mini-label">Sắp khai giảng</div>
+        <div class="kh-mini-value">@stats.SapKhaiGiang</div>
+    </div>
+    <div class="kh-mini-card closed">
+        <div class="kh-mini-label">Đã đóng</div>
+        <div class="kh-mini-value">@stats.DaDong</div>
+    </div>
+    <div class="kh-mini-card deleted">
+        <div class="kh-mini-label">Đã xóa mềm</div>
+        <div class="kh-mini-value">@stats.DaXoaMem</div>
+    </div>
+</div>
+
 <!-- BỘ LỌC -->
-<div class="card" style="margin-bottom:16px">
-    <div class="card-body" style="padding:14px 20px">
-        <form method="get" style="display:flex; gap:10px; flex-wrap:wrap; align-items:center">
-            <div class="search-wrap" style="min-width:240px; flex:2">
+<div class="card kh-filter-card">
+    <div class="card-body kh-filter-body">
+        <form method="get" class="kh-filter-form">
+            <div class="search-wrap kh-search-wrap">
                 <i class="bi bi-search"></i>
                 <input type="text" name="tuKhoa" value="@tuKhoa" class="form-control"
                        placeholder="Tìm tên khóa học..." />
             </div>
 
-            <select name="danhMucId" class="form-control" style="width:180px">
+            <select name="danhMucId" class="form-control kh-select-danhmuc">
                 <option value="">Tất cả danh mục</option>
                 @foreach (var dm in (List<TrungTamNgoaiNgu.Models.DanhMucKhoaHoc>)ViewBag.DanhMucs)
                 {
@@ -51,7 +80,7 @@
                 }
             </select>
 
-            <select name="trangThai" class="form-control" style="width:170px">
+            <select name="trangThai" class="form-control kh-select-trangthai">
                 <option value="">Tất cả trạng thái</option>
                 @if (trangThaiQ == "1") { <option value="1" selected>✅ Đang mở</option> }
                 else { <option value="1">✅ Đang mở</option> }
@@ -61,7 +90,7 @@
                 else { <option value="0">❌ Đã đóng</option> }
             </select>
 
-            <select name="pageSize" class="form-control" style="width:130px">
+            <select name="pageSize" class="form-control kh-select-pagesize">
                 @if (pgSize == 10) { <option value="10" selected>10 dòng/trang</option> }
                 else { <option value="10">10 dòng/trang</option> }
                 @if (pgSize == 20) { <option value="20" selected>20 dòng/trang</option> }
@@ -91,9 +120,32 @@
         }
         else
         {
+            <div class="kh-bulk-row">
+                <form id="bulkForm" method="post" asp-action="bulk" class="kh-bulk-controls"
+                      onsubmit="return confirmBulkAction()">
+                    @Html.AntiForgeryToken()
+                    <select id="bulkAction" name="bulkAction" class="form-control kh-bulk-action">
+                        <option value="">-- Chọn hành động --</option>
+                        <option value="change-status">Đổi trạng thái</option>
+                        <option value="soft-delete">Chuyển vào thùng rác</option>
+                    </select>
+                    <select id="bulkTrangThai" name="bulkTrangThai" class="form-control kh-bulk-status kh-hidden">
+                        <option value="">-- Chọn trạng thái --</option>
+                        <option value="1">Đang mở</option>
+                        <option value="2">Sắp khai giảng</option>
+                        <option value="0">Đã đóng</option>
+                    </select>
+                    <button type="submit" class="btn btn-primary btn-sm">Áp dụng</button>
+                </form>
+                <div id="selectedCount" class="kh-selected-count">Đã chọn: 0</div>
+            </div>
+
             <table>
                 <thead>
                     <tr>
+                        <th class="kh-check-col">
+                            <input id="checkAll" type="checkbox" class="kh-check" />
+                        </th>
                         <th>#</th>
                         <th>Ảnh</th>
                         <th>Tên khóa học</th>
@@ -109,30 +161,31 @@
                     {
                         var kh = Model[i];
                         <tr>
-                            <td style="color:var(--muted); font-size:.8rem">@((pg-1)*pgSize + i + 1)</td>
+                            <td class="kh-check-col">
+                                <input type="checkbox" name="selectedIds" value="@kh.KhoaHocId"
+                                       class="kh-check kh-select-item" form="bulkForm" />
+                            </td>
+                            <td class="kh-col-index">@((pg-1)*pgSize + i + 1)</td>
                             <td>
                                 @if (!string.IsNullOrEmpty(kh.AnhKhoaHoc))
                                 {
-                                    <img src="@kh.AnhKhoaHoc" alt="@kh.TenKhoaHoc"
-                                         style="width:60px; height:40px; object-fit:cover; border-radius:6px; border:1px solid var(--border)" />
+                                    <img src="@kh.AnhKhoaHoc" alt="@kh.TenKhoaHoc" class="kh-thumb" />
                                 }
                                 else
                                 {
-                                    <div style="width:60px; height:40px; background:#f3f4f6; border-radius:6px;
-                                                display:flex; align-items:center; justify-content:center;
-                                                border:1px solid var(--border); color:#9ca3af; font-size:.8rem">
+                                    <div class="kh-thumb-empty">
                                         <i class="bi bi-image"></i>
                                     </div>
                                 }
                             </td>
                             <td>
-                                <div style="font-weight:600; max-width:220px">@kh.TenKhoaHoc</div>
-                                <div style="font-size:.74rem; color:var(--muted)">@kh.Slug</div>
+                                <div class="kh-name">@kh.TenKhoaHoc</div>
+                                <div class="kh-slug">@kh.Slug</div>
                             </td>
                             <td>
                                 @if (kh.DanhMuc != null)
                                 { <span class="badge badge-indigo">@kh.DanhMuc.TenDanhMuc</span> }
-                                else { <span style="color:var(--muted)">—</span> }
+                                else { <span class="kh-muted">—</span> }
                             </td>
                             <td>
                                 <span class="badge badge-gray">@(kh.LopHocs?.Count ?? 0) lớp</span>
@@ -145,18 +198,18 @@
                                 else
                                 { <span class="badge badge-danger">Đã đóng</span> }
                             </td>
-                            <td style="font-size:.8rem; color:var(--muted)">
+                            <td class="kh-created">
                                 @kh.CreatedAt.ToString("dd/MM/yyyy")
                             </td>
                             <td>
-                                <div style="display:flex; gap:4px">
+                                <div class="kh-actions">
                                     <a asp-action="Edit" asp-route-id="@kh.KhoaHocId"
                                        class="btn btn-outline btn-sm" title="Chỉnh sửa">
                                         <i class="bi bi-pencil"></i>
                                     </a>
                                     <form method="post" asp-action="softdelete" asp-route-id="@kh.KhoaHocId"
                                           onsubmit="return confirm('Chuyển &laquo;@kh.TenKhoaHoc&raquo; vào thùng rác?')"
-                                          style="display:inline">
+                                          class="kh-inline-form">
                                         @Html.AntiForgeryToken()
                                         <button type="submit" class="btn btn-danger btn-sm" title="Xóa mềm">
                                             <i class="bi bi-trash"></i>
@@ -171,12 +224,11 @@
 
             @if (totalPages > 1)
             {
-                <div style="display:flex; align-items:center; justify-content:space-between;
-                            padding:14px 20px; border-top:1px solid var(--border)">
-                    <div style="font-size:.82rem; color:var(--muted)">
+                <div class="kh-pagination-wrap">
+                    <div class="kh-pagination-info">
                         Trang <strong>@pg</strong> / @totalPages &nbsp;·&nbsp; @total mục
                     </div>
-                    <div style="display:flex; gap:4px">
+                    <div class="kh-pagination-actions">
                         @if (pg > 1)
                         {
                             <a href="?page=@(pg-1)&tuKhoa=@tuKhoa&danhMucId=@danhMucIdQ&trangThai=@trangThaiQ&pageSize=@pgSize"
@@ -206,3 +258,64 @@
         }
     </div>
 </div>
+
+@section Scripts {
+    <script>
+        const checkAll = document.getElementById('checkAll');
+        const items = Array.from(document.querySelectorAll('.kh-select-item'));
+        const selectedCount = document.getElementById('selectedCount');
+        const bulkAction = document.getElementById('bulkAction');
+        const bulkTrangThai = document.getElementById('bulkTrangThai');
+
+        function updateSelectedCount() {
+            if (!selectedCount) return;
+            const count = items.filter(x => x.checked).length;
+            selectedCount.textContent = `Đã chọn: ${count}`;
+            if (checkAll) {
+                checkAll.checked = count > 0 && count === items.length;
+                checkAll.indeterminate = count > 0 && count < items.length;
+            }
+        }
+
+        if (checkAll) {
+            checkAll.addEventListener('change', () => {
+                items.forEach(x => x.checked = checkAll.checked);
+                updateSelectedCount();
+            });
+        }
+        items.forEach(x => x.addEventListener('change', updateSelectedCount));
+        updateSelectedCount();
+
+        if (bulkAction) {
+            bulkAction.addEventListener('change', () => {
+                if (bulkAction.value === 'change-status') {
+                    bulkTrangThai.classList.remove('kh-hidden');
+                } else {
+                    bulkTrangThai.classList.add('kh-hidden');
+                    bulkTrangThai.value = '';
+                }
+            });
+        }
+
+        function confirmBulkAction() {
+            if (!selectedCount) return false;
+            const count = items.filter(x => x.checked).length;
+            if (count === 0) {
+                alert('Vui lòng chọn ít nhất một khóa học.');
+                return false;
+            }
+
+            const action = bulkAction.value;
+            if (!action) {
+                alert('Vui lòng chọn hành động.');
+                return false;
+            }
+            if (action === 'change-status' && !bulkTrangThai.value) {
+                alert('Vui lòng chọn trạng thái cần cập nhật.');
+                return false;
+            }
+
+            return confirm(`Xác nhận áp dụng hành động cho ${count} khóa học đã chọn?`);
+        }
+    </script>
+}

@@ -96,9 +96,8 @@ public class DanhMucController(IKhoaHocService khoaHocService) : Controller
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> softdelete(int id)
     {
-        var ketQua = await khoaHocService.XoaMemDanhMucAsync(id);
-        TempData[ketQua ? "ThanhCong" : "LoiXay"] =
-            ketQua ? "Đã chuyển danh mục vào thùng rác!" : "Không tìm thấy danh mục!";
+        var ketQua = await khoaHocService.XoaMemDanhMucAsync(id, LayNguoiThucHien());
+        TempData[ketQua.ThanhCong ? "ThanhCong" : "LoiXay"] = ketQua.ThongBao;
         return RedirectToAction(nameof(Index));
     }
 
@@ -114,9 +113,15 @@ public class DanhMucController(IKhoaHocService khoaHocService) : Controller
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> restore(int id)
     {
-        var ketQua = await khoaHocService.KhoiPhucDanhMucAsync(id);
-        TempData[ketQua ? "ThanhCong" : "LoiXay"] =
-            ketQua ? "Đã khôi phục danh mục thành công!" : "Không tìm thấy danh mục trong thùng rác!";
+        var ketQua = await khoaHocService.KhoiPhucDanhMucAsync(id, LayNguoiThucHien());
+        TempData[ketQua.ThanhCong ? "ThanhCong" : "LoiXay"] = ketQua.ThongBao;
         return RedirectToAction(nameof(Trash));
+    }
+
+    private string LayNguoiThucHien()
+    {
+        if (User?.Identity?.IsAuthenticated == true && !string.IsNullOrWhiteSpace(User.Identity.Name))
+            return User.Identity.Name!;
+        return "Quản trị viên";
     }
 }

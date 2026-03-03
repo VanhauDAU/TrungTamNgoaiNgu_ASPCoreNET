@@ -4,9 +4,13 @@
     Layout = "~/Views/Shared/_AdminLayout.cshtml";
 }
 
+@section Styles {
+    <link rel="stylesheet" href="~/css/admin-khoahoc.css" asp-append-version="true" />
+}
+
 <div class="page-header">
     <div>
-        <div class="page-title"><i class="bi bi-trash3" style="color:var(--red)"></i> Thùng rác khóa học</div>
+        <div class="page-title"><i class="bi bi-trash3 kh-trash-icon"></i> Thùng rác khóa học</div>
         <div class="page-sub">@Model.Count khóa học đã bị xóa — có thể khôi phục lại</div>
     </div>
     <a asp-action="Index" class="btn btn-outline">
@@ -19,15 +23,29 @@
         @if (!Model.Any())
         {
             <div class="empty-state">
-                <i class="bi bi-trash3" style="color:var(--green)"></i>
+                <i class="bi bi-trash3 kh-empty-ok"></i>
                 <p>Thùng rác trống! Không có khóa học nào bị xóa.</p>
             </div>
         }
         else
         {
+            <div class="kh-bulk-row in-card">
+                <form id="bulkRestoreForm" method="post" asp-action="bulkrestore" class="kh-bulk-controls"
+                      onsubmit="return confirmBulkRestore()">
+                    @Html.AntiForgeryToken()
+                    <button type="submit" class="btn btn-success btn-sm">
+                        <i class="bi bi-arrow-counterclockwise"></i> Khôi phục đã chọn
+                    </button>
+                </form>
+                <div id="selectedRestoreCount" class="kh-selected-count">Đã chọn: 0</div>
+            </div>
+
             <table>
                 <thead>
                     <tr>
+                        <th class="kh-check-col">
+                            <input id="checkAllTrash" type="checkbox" class="kh-check" />
+                        </th>
                         <th>#</th>
                         <th>Ảnh</th>
                         <th>Tên khóa học</th>
@@ -41,43 +59,45 @@
                     @for (int i = 0; i < Model.Count; i++)
                     {
                         var kh = Model[i];
-                        <tr style="opacity:.85">
-                            <td style="color:var(--muted); font-size:.8rem">@(i + 1)</td>
+                        <tr class="kh-trash-row">
+                            <td class="kh-check-col">
+                                <input type="checkbox" name="selectedIds" value="@kh.KhoaHocId"
+                                       class="kh-check kh-select-trash-item" form="bulkRestoreForm" />
+                            </td>
+                            <td class="kh-col-index">@(i + 1)</td>
                             <td>
                                 @if (!string.IsNullOrEmpty(kh.AnhKhoaHoc))
                                 {
-                                    <img src="@kh.AnhKhoaHoc"
-                                         style="width:56px; height:38px; object-fit:cover; border-radius:6px; filter:grayscale(30%); border:1px solid var(--border)" />
+                                    <img src="@kh.AnhKhoaHoc" class="kh-trash-thumb" />
                                 }
                                 else
                                 {
-                                    <div style="width:56px; height:38px; background:#f3f4f6; border-radius:6px;
-                                                display:flex; align-items:center; justify-content:center; color:#9ca3af">
+                                    <div class="kh-trash-thumb-empty">
                                         <i class="bi bi-image"></i>
                                     </div>
                                 }
                             </td>
                             <td>
-                                <div style="font-weight:500; text-decoration:line-through; color:var(--muted)">@kh.TenKhoaHoc</div>
-                                <div style="font-size:.74rem; color:var(--muted)">@kh.Slug</div>
+                                <div class="kh-trash-name">@kh.TenKhoaHoc</div>
+                                <div class="kh-slug">@kh.Slug</div>
                             </td>
                             <td>
                                 @if (kh.DanhMuc != null)
                                 { <span class="badge badge-gray">@kh.DanhMuc.TenDanhMuc</span> }
-                                else { <span style="color:var(--muted)">—</span> }
+                                else { <span class="kh-muted">—</span> }
                             </td>
                             <td>
                                 @if (kh.TrangThai == 1) { <span class="badge badge-success">Đang mở</span> }
                                 else if (kh.TrangThai == 2) { <span class="badge badge-warning">Sắp khai giảng</span> }
                                 else { <span class="badge badge-danger">Đã đóng</span> }
                             </td>
-                            <td style="font-size:.8rem; color:var(--red)">
+                            <td class="kh-trash-time">
                                 <i class="bi bi-clock-history"></i>
                                 @(kh.DeletedAt?.ToString("dd/MM/yyyy HH:mm") ?? "—")
                             </td>
                             <td>
                                 <form method="post" asp-action="restore" asp-route-id="@kh.KhoaHocId"
-                                      style="display:inline">
+                                      class="kh-inline-form">
                                     @Html.AntiForgeryToken()
                                     <button type="submit" class="btn btn-success btn-sm" title="Khôi phục">
                                         <i class="bi bi-arrow-counterclockwise"></i> Khôi phục
@@ -91,3 +111,40 @@
         }
     </div>
 </div>
+
+@section Scripts {
+    <script>
+        const checkAllTrash = document.getElementById('checkAllTrash');
+        const trashItems = Array.from(document.querySelectorAll('.kh-select-trash-item'));
+        const selectedRestoreCount = document.getElementById('selectedRestoreCount');
+
+        function updateTrashCount() {
+            if (!selectedRestoreCount) return;
+            const count = trashItems.filter(x => x.checked).length;
+            selectedRestoreCount.textContent = `Đã chọn: ${count}`;
+
+            if (checkAllTrash) {
+                checkAllTrash.checked = count > 0 && count === trashItems.length;
+                checkAllTrash.indeterminate = count > 0 && count < trashItems.length;
+            }
+        }
+
+        if (checkAllTrash) {
+            checkAllTrash.addEventListener('change', () => {
+                trashItems.forEach(x => x.checked = checkAllTrash.checked);
+                updateTrashCount();
+            });
+        }
+        trashItems.forEach(x => x.addEventListener('change', updateTrashCount));
+        updateTrashCount();
+
+        function confirmBulkRestore() {
+            const count = trashItems.filter(x => x.checked).length;
+            if (count === 0) {
+                alert('Vui lòng chọn ít nhất một khóa học để khôi phục.');
+                return false;
+            }
+            return confirm(`Xác nhận khôi phục ${count} khóa học đã chọn?`);
+        }
+    </script>
+}

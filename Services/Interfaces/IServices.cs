@@ -14,6 +14,29 @@ using TrungTamNgoaiNgu.Models;
 
 namespace TrungTamNgoaiNgu.Services.Interfaces;
 
+public class PagedResult<T>
+{
+    public List<T> Items { get; set; } = [];
+    public int Total { get; set; }
+    public int Page { get; set; }
+    public int PageSize { get; set; }
+}
+
+public class ServiceResult
+{
+    public bool ThanhCong { get; set; }
+    public string ThongBao { get; set; } = string.Empty;
+}
+
+public class KhoaHocQuanLyThongKe
+{
+    public int TongKhoaHoc { get; set; }
+    public int DangMo { get; set; }
+    public int SapKhaiGiang { get; set; }
+    public int DaDong { get; set; }
+    public int DaXoaMem { get; set; }
+}
+
 // ---------------------------------------------------------------------------
 // DASHBOARD SERVICE — Thống kê tổng quan
 // ---------------------------------------------------------------------------
@@ -41,26 +64,42 @@ public class DashboardThongKe
 // ---------------------------------------------------------------------------
 public interface IKhoaHocService
 {
-    // Lấy danh sách (có phân trang và tìm kiếm)
-    Task<List<KhoaHoc>> LayDanhSachAsync(string? tuKhoa = null, int? danhMucId = null);
+    // Lấy danh sách (phân trang tại DB + tìm kiếm/lọc)
+    Task<PagedResult<KhoaHoc>> LayDanhSachPhanTrangAsync(
+        string? tuKhoa = null,
+        int? danhMucId = null,
+        int? trangThai = null,
+        int page = 1,
+        int pageSize = 10);
+
+    // Tạo slug chuẩn + chống trùng cho khóa học
+    Task<string> TaoSlugKhoaHocAsync(string tenKhoaHoc, int? boQuaKhoaHocId = null);
+
+    // Thống kê mini card cho trang quản lý khóa học
+    Task<KhoaHocQuanLyThongKe> LayThongKeQuanLyAsync();
 
     // Lấy 1 khóa học theo ID
     Task<KhoaHoc?> LayTheoIdAsync(int id);
 
     // Thêm khóa học mới → trả về ID sau khi tạo
-    Task<int> ThemAsync(KhoaHoc khoaHoc);
+    Task<int> ThemAsync(KhoaHoc khoaHoc, string? nguoiThucHien = null);
 
-    // Cập nhật khóa học → trả về true nếu thành công
-    Task<bool> CapNhatAsync(KhoaHoc khoaHoc);
+    // Cập nhật khóa học, có kiểm tra nghiệp vụ
+    Task<ServiceResult> CapNhatCoKiemTraAsync(KhoaHoc khoaHoc, string? nguoiThucHien = null);
 
     // Xóa mềm (soft delete) — chỉ set deleted_at, không xóa thật
-    Task<bool> XoaMemAsync(int id);
+    Task<ServiceResult> XoaMemAsync(int id, string? nguoiThucHien = null);
 
     // Thùng rác — lấy danh sách đã xóa mềm
     Task<List<KhoaHoc>> LayThuRacAsync();
 
     // Khôi phục khóa học từ thùng rác
-    Task<bool> KhoiPhucAsync(int id);
+    Task<ServiceResult> KhoiPhucAsync(int id, string? nguoiThucHien = null);
+
+    // Bulk actions cho khóa học
+    Task<ServiceResult> DoiTrangThaiHangLoatAsync(List<int> ids, byte trangThai, string? nguoiThucHien = null);
+    Task<ServiceResult> XoaMemHangLoatAsync(List<int> ids, string? nguoiThucHien = null);
+    Task<ServiceResult> KhoiPhucHangLoatAsync(List<int> ids, string? nguoiThucHien = null);
 
     // Lấy tất cả danh mục để hiển thị dropdown
     Task<List<DanhMucKhoaHoc>> LayDanhMucAsync();
@@ -73,13 +112,13 @@ public interface IKhoaHocService
 
     Task<bool> CapNhatDanhMucAsync(DanhMucKhoaHoc danhMuc);
 
-    Task<bool> XoaMemDanhMucAsync(int id);
+    Task<ServiceResult> XoaMemDanhMucAsync(int id, string? nguoiThucHien = null);
 
     // Thùng rác danh mục
     Task<List<DanhMucKhoaHoc>> LayThuRacDanhMucAsync();
 
     // Khôi phục danh mục
-    Task<bool> KhoiPhucDanhMucAsync(int id);
+    Task<ServiceResult> KhoiPhucDanhMucAsync(int id, string? nguoiThucHien = null);
 }
 
 // ---------------------------------------------------------------------------
