@@ -23,7 +23,7 @@ public class KhoaHocController(IKhoaHocService khoaHocService) : Controller
         ViewBag.DanhMucs  = await khoaHocService.LayDanhMucAsync();
 
         var danhSach = await khoaHocService.LayDanhSachAsync(tuKhoa, danhMucId);
-        return View(danhSach);
+        return View("~/Views/Admin/KhoaHoc/Index.cshtml", danhSach);
     }
 
     // GET /Admin/KhoaHoc/ChiTiet/5
@@ -32,7 +32,7 @@ public class KhoaHocController(IKhoaHocService khoaHocService) : Controller
     {
         var khoaHoc = await khoaHocService.LayTheoIdAsync(id);
         if (khoaHoc == null) return NotFound("Không tìm thấy khóa học");
-        return View(khoaHoc);
+        return View("~/Views/Admin/KhoaHoc/ChiTiet.cshtml", khoaHoc);
     }
 
     // GET /Admin/KhoaHoc/Them
@@ -40,7 +40,7 @@ public class KhoaHocController(IKhoaHocService khoaHocService) : Controller
     public async Task<IActionResult> Them()
     {
         ViewBag.DanhMucs = await khoaHocService.LayDanhMucAsync();
-        return View(new KhoaHoc());
+        return View("~/Views/Admin/KhoaHoc/Them.cshtml", new KhoaHoc());
     }
 
     // POST /Admin/KhoaHoc/Them
@@ -52,7 +52,7 @@ public class KhoaHocController(IKhoaHocService khoaHocService) : Controller
         if (!ModelState.IsValid) // Kiểm tra validation từ Data Annotations
         {
             ViewBag.DanhMucs = await khoaHocService.LayDanhMucAsync();
-            return View(khoaHoc); // Trả lại form với lỗi validation
+            return View("~/Views/Admin/KhoaHoc/Them.cshtml", khoaHoc);
         }
 
         // Tự tạo slug từ tên khóa học (sẽ bổ sung helper sau)
@@ -74,7 +74,7 @@ public class KhoaHocController(IKhoaHocService khoaHocService) : Controller
         var khoaHoc = await khoaHocService.LayTheoIdAsync(id);
         if (khoaHoc == null) return NotFound();
         ViewBag.DanhMucs = await khoaHocService.LayDanhMucAsync();
-        return View(khoaHoc);
+        return View("~/Views/Admin/KhoaHoc/Sua.cshtml", khoaHoc);
     }
 
     // POST /Admin/KhoaHoc/Sua
@@ -85,7 +85,7 @@ public class KhoaHocController(IKhoaHocService khoaHocService) : Controller
         if (!ModelState.IsValid)
         {
             ViewBag.DanhMucs = await khoaHocService.LayDanhMucAsync();
-            return View(khoaHoc);
+            return View("~/Views/Admin/KhoaHoc/Sua.cshtml", khoaHoc);
         }
 
         var ketQua = await khoaHocService.CapNhatAsync(khoaHoc);

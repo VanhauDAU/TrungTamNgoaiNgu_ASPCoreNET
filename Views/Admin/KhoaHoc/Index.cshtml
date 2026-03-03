@@ -1,0 +1,126 @@
+@model List<TrungTamNgoaiNgu.Models.KhoaHoc>
+@{
+    ViewData["Title"] = "Khóa học";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+}
+
+<div class="page-header">
+    <div>
+        <div class="page-title">Quản lý khóa học</div>
+        <div class="page-subtitle">Tổng: <strong>@Model.Count</strong> khóa học đang hiển thị</div>
+    </div>
+    <a asp-action="Create" class="btn btn-primary">
+        <i class="bi bi-plus-lg"></i> Thêm khóa học
+    </a>
+</div>
+
+<!-- THANH TÌM KIẾM -->
+<form method="get" class="search-bar">
+    <div class="search-input-wrapper">
+        <i class="bi bi-search"></i>
+        <input type="text" name="tuKhoa" value="@ViewBag.TuKhoa"
+               class="form-control" placeholder="Tìm tên khóa học..." />
+    </div>
+    <select name="danhMucId" class="form-control" style="width:200px">
+        <option value="">-- Tất cả danh mục --</option>
+        @foreach (var dm in (List<TrungTamNgoaiNgu.Models.DanhMucKhoaHoc>)ViewBag.DanhMucs)
+        {
+            if (ViewBag.DanhMucId?.ToString() == dm.DanhMucId.ToString())
+            {
+                <option value="@dm.DanhMucId" selected>@dm.TenDanhMuc</option>
+            }
+            else
+            {
+                <option value="@dm.DanhMucId">@dm.TenDanhMuc</option>
+            }
+        }
+    </select>
+    <button type="submit" class="btn btn-outline"><i class="bi bi-funnel"></i> Lọc</button>
+    @if (ViewBag.TuKhoa != null || ViewBag.DanhMucId != null)
+    {
+        <a asp-action="Index" class="btn btn-outline"><i class="bi bi-x"></i> Xóa lọc</a>
+    }
+</form>
+
+<!-- BẢNG DANH SÁCH -->
+<div class="card">
+    <div class="table-wrapper">
+        @if (Model.Count == 0)
+        {
+            <div class="empty-state">
+                <i class="bi bi-journal-x"></i>
+                <p>Không tìm thấy khóa học nào</p>
+            </div>
+        }
+        else
+        {
+            <table>
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Tên khóa học</th>
+                        <th>Danh mục</th>
+                        <th>Số lớp</th>
+                        <th>Trạng thái</th>
+                        <th>Ngày tạo</th>
+                        <th>Thao tác</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @for (int i = 0; i < Model.Count; i++)
+                    {
+                        var kh = Model[i];
+                        <tr>
+                            <td style="color:var(--text-muted); font-size:.8rem">@(i + 1)</td>
+                            <td>
+                                <div style="font-weight:600">@kh.TenKhoaHoc</div>
+                                <div style="font-size:.78rem; color:var(--text-muted)">@kh.Slug</div>
+                            </td>
+                            <td>
+                                <span class="badge badge-indigo">@(kh.DanhMuc?.TenDanhMuc ?? "—")</span>
+                            </td>
+                            <td>@kh.LopHocs?.Count</td>
+                            <td>
+                                @if (kh.TrangThai == 1)
+                                {
+                                    <span class="badge badge-success">Đang mở</span>
+                                }
+                                else if (kh.TrangThai == 2)
+                                {
+                                    <span class="badge badge-warning">Sắp khai giảng</span>
+                                }
+                                else
+                                {
+                                    <span class="badge badge-gray">Đã đóng</span>
+                                }
+                            </td>
+                            <td style="color:var(--text-muted); font-size:.8rem">
+                                @kh.CreatedAt.ToString("dd/MM/yyyy")
+                            </td>
+                            <td>
+                                <div style="display:flex; gap:4px; flex-wrap:wrap">
+                                    <a asp-action="ChiTiet" asp-route-id="@kh.KhoaHocId"
+                                       class="btn btn-outline btn-sm" title="Chi tiết">
+                                        <i class="bi bi-eye"></i>
+                                    </a>
+                                    <a asp-action="Sua" asp-route-id="@kh.KhoaHocId"
+                                       class="btn btn-outline btn-sm" title="Sửa">
+                                        <i class="bi bi-pencil"></i>
+                                    </a>
+                                    <form method="post" asp-action="Xoa" asp-route-id="@kh.KhoaHocId"
+                                          onsubmit="return confirm('Xóa khóa học «@kh.TenKhoaHoc»?')"
+                                          style="display:inline">
+                                        @Html.AntiForgeryToken()
+                                        <button type="submit" class="btn btn-danger btn-sm" title="Xóa">
+                                            <i class="bi bi-trash"></i>
+                                        </button>
+                                    </form>
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        }
+    </div>
+</div>

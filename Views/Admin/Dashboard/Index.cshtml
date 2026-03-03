@@ -1,0 +1,147 @@
+@model TrungTamNgoaiNgu.Services.Interfaces.DashboardThongKe
+@{
+    ViewData["Title"] = "Dashboard";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+}
+
+<!-- ===== TIÊU ĐỀ TRANG ===== -->
+<div class="page-header">
+    <div>
+        <div class="page-title">Tổng quan hệ thống</div>
+        <div class="page-subtitle">Chào mừng trở lại! Đây là dữ liệu hôm nay, @DateTime.Now.ToString("dd/MM/yyyy")</div>
+    </div>
+</div>
+
+<!-- ===== THỐNG KÊ (STAT CARDS) ===== -->
+<div class="stat-grid">
+    <div class="stat-card">
+        <div class="stat-icon indigo"><i class="bi bi-person-fill"></i></div>
+        <div>
+            <div class="stat-value">@Model.SoHocVien</div>
+            <div class="stat-label">Học viên</div>
+        </div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-icon green"><i class="bi bi-mortarboard-fill"></i></div>
+        <div>
+            <div class="stat-value">@Model.SoGiaoVien</div>
+            <div class="stat-label">Giáo viên</div>
+        </div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-icon amber"><i class="bi bi-journal-richtext"></i></div>
+        <div>
+            <div class="stat-value">@Model.SoKhoaHoc</div>
+            <div class="stat-label">Khóa học</div>
+        </div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-icon blue"><i class="bi bi-people-fill"></i></div>
+        <div>
+            <div class="stat-value">@Model.SoLopHocDangDay</div>
+            <div class="stat-label">Lớp đang mở</div>
+        </div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-icon teal"><i class="bi bi-clipboard2-check-fill"></i></div>
+        <div>
+            <div class="stat-value">@Model.SoDangKyMoi</div>
+            <div class="stat-label">Đăng ký tháng này</div>
+        </div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-icon rose"><i class="bi bi-cash-stack"></i></div>
+        <div>
+            <div class="stat-value">@Model.DoanhThuThang.ToString("N0")đ</div>
+            <div class="stat-label">Doanh thu tháng</div>
+        </div>
+    </div>
+</div>
+
+<!-- ===== 2 BẢNG PHÍA DƯỚI ===== -->
+<div style="display:grid; grid-template-columns: 1fr 1fr; gap:20px; flex-wrap:wrap">
+
+    <!-- Đăng ký mới nhất -->
+    <div class="card">
+        <div class="card-header">
+            <span><i class="bi bi-clipboard2-plus text-indigo"></i> Đăng ký mới nhất</span>
+            <a asp-controller="LopHoc" asp-action="Index" class="btn btn-outline btn-sm">Xem tất cả</a>
+        </div>
+        <div class="table-wrapper">
+            @if (Model.DangKyMoiNhat.Count == 0)
+            {
+                <div class="empty-state">
+                    <i class="bi bi-inbox"></i>
+                    <p>Chưa có đăng ký nào</p>
+                </div>
+            }
+            else
+            {
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Học viên</th>
+                            <th>Lớp học</th>
+                            <th>Ngày ĐK</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var dk in Model.DangKyMoiNhat)
+                        {
+                            <tr>
+                                <td>@(dk.TaiKhoan?.HoSo?.HoTen ?? "—")</td>
+                                <td>@(dk.LopHoc?.TenLopHoc ?? "—")</td>
+                                <td style="color:var(--text-muted); font-size:.8rem">
+                                    @dk.CreatedAt.ToString("dd/MM/yyyy")
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            }
+        </div>
+    </div>
+
+    <!-- Hóa đơn chưa thanh toán -->
+    <div class="card">
+        <div class="card-header">
+            <span><i class="bi bi-exclamation-circle text-warning"></i> Hóa đơn chưa thanh toán</span>
+            <a asp-controller="HoaDon" asp-action="Index" class="btn btn-outline btn-sm">Xem tất cả</a>
+        </div>
+        <div class="table-wrapper">
+            @if (Model.HoaDonChuaThanhToan.Count == 0)
+            {
+                <div class="empty-state">
+                    <i class="bi bi-check-circle" style="color:var(--success)"></i>
+                    <p>Tất cả đã thanh toán</p>
+                </div>
+            }
+            else
+            {
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Học viên</th>
+                            <th>Số tiền</th>
+                            <th>Trạng thái</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var hd in Model.HoaDonChuaThanhToan)
+                        {
+                            <tr>
+                                <td>@(hd.TaiKhoan?.HoSo?.HoTen ?? "—")</td>
+                                <td style="font-weight:600; color:var(--danger)">
+                                    @((hd.TongTienSauThue > 0 ? hd.TongTienSauThue : hd.TongTien ?? 0).ToString("N0"))đ
+                                </td>
+                                <td>
+                                    <span class="badge badge-warning">Chưa TT</span>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            }
+        </div>
+    </div>
+</div>

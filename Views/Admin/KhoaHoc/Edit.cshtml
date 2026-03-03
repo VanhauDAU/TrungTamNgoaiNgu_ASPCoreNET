@@ -1,0 +1,95 @@
+@model TrungTamNgoaiNgu.Models.KhoaHoc
+@{
+    ViewData["Title"] = "Sửa khóa học";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+}
+
+<div class="page-header">
+    <div>
+        <div class="page-title">Sửa khóa học</div>
+        <div class="page-subtitle">Đang chỉnh sửa: <strong>@Model.TenKhoaHoc</strong></div>
+    </div>
+    <a asp-action="Index" class="btn btn-outline">
+        <i class="bi bi-arrow-left"></i> Quay lại
+    </a>
+</div>
+
+<div style="max-width:720px">
+    <div class="card">
+        <div class="card-header">
+            <span><i class="bi bi-pencil-square"></i> Chỉnh sửa thông tin</span>
+            <span class="badge badge-gray">ID: #@Model.KhoaHocId</span>
+        </div>
+        <div class="card-body">
+            <form asp-action="Sua" method="post">
+                @Html.AntiForgeryToken()
+                <input type="hidden" asp-for="KhoaHocId" />
+
+                <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px">
+                    <div class="form-group" style="grid-column:1/-1">
+                        <label asp-for="TenKhoaHoc">Tên khóa học <span style="color:var(--danger)">*</span></label>
+                        <input asp-for="TenKhoaHoc" class="form-control" />
+                        <span asp-validation-for="TenKhoaHoc" class="text-danger"></span>
+                    </div>
+
+                    <div class="form-group">
+                        <label asp-for="DanhMucId">Danh mục</label>
+                        <select asp-for="DanhMucId" class="form-control">
+                            <option value="">-- Chọn danh mục --</option>
+                            @foreach (var dm in (List<TrungTamNgoaiNgu.Models.DanhMucKhoaHoc>)ViewBag.DanhMucs)
+                            {
+                                if (Model.DanhMucId == dm.DanhMucId)
+                                {
+                                    <option value="@dm.DanhMucId" selected>@dm.TenDanhMuc</option>
+                                }
+                                else
+                                {
+                                    <option value="@dm.DanhMucId">@dm.TenDanhMuc</option>
+                                }
+                            }
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label asp-for="TrangThai">Trạng thái</label>
+                        <select asp-for="TrangThai" class="form-control">
+                            @if (Model.TrangThai == 1) { <option value="1" selected>✅ Đang mở</option> }
+                            else { <option value="1">✅ Đang mở</option> }
+                            @if (Model.TrangThai == 2) { <option value="2" selected>🔜 Sắp khai giảng</option> }
+                            else { <option value="2">🔜 Sắp khai giảng</option> }
+                            @if (Model.TrangThai == 0) { <option value="0" selected>❌ Đã đóng</option> }
+                            else { <option value="0">❌ Đã đóng</option> }
+                        </select>
+                    </div>
+
+                    <div class="form-group" style="grid-column:1/-1">
+                        <label asp-for="MoTa">Mô tả ngắn</label>
+                        <textarea asp-for="MoTa" class="form-control" rows="3"></textarea>
+                    </div>
+
+                    <div class="form-group" style="grid-column:1/-1">
+                        <label asp-for="DoiTuong">Đối tượng học viên</label>
+                        <input asp-for="DoiTuong" class="form-control" />
+                    </div>
+
+                    <div class="form-group" style="grid-column:1/-1">
+                        <label asp-for="KetQuaDatDuoc">Kết quả đạt được</label>
+                        <textarea asp-for="KetQuaDatDuoc" class="form-control" rows="3"></textarea>
+                    </div>
+
+                    <div class="form-group" style="grid-column:1/-1">
+                        <label asp-for="YeuCauDauVao">Yêu cầu đầu vào</label>
+                        <input asp-for="YeuCauDauVao" class="form-control" />
+                    </div>
+                </div>
+
+                <div style="display:flex; gap:8px; justify-content:flex-end; margin-top:8px">
+                    <a asp-action="Index" class="btn btn-outline">Hủy</a>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="bi bi-check-lg"></i> Cập nhật
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

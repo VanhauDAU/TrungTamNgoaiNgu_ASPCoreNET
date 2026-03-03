@@ -18,19 +18,18 @@ public class DashboardService(AppDbContext db) : IDashboardService
         var thangHienTai = DateTime.Now.Month;
         var namHienTai = DateTime.Now.Year;
 
-        // Chạy nhiều query song song (await Task.WhenAll) để tối ưu tốc độ
-        var soHocVienTask    = db.TaiKhoans.CountAsync(tk => tk.Role == 0 && tk.DeletedAt == null);
-        var soGiaoVienTask   = db.TaiKhoans.CountAsync(tk => tk.Role == 1 && tk.DeletedAt == null);
-        var soNhanVienTask   = db.TaiKhoans.CountAsync(tk => tk.Role == 2 && tk.DeletedAt == null);
-        var soKhoaHocTask    = db.KhoaHocs.CountAsync(kh => kh.TrangThai == 1 && kh.DeletedAt == null);
-        var soLopHocTask     = db.LopHocs.CountAsync(lh => lh.TrangThai == 4 || lh.TrangThai == 1);
-        var soDangKyTask     = db.DangKyLopHocs.CountAsync(
+        // ⚠️ EF Core DbContext KHÔNG thread-safe
+        // → KHÔNG dùng Task.WhenAll, phải await từng query một cách tuần tự
+        var soHocVien  = await db.TaiKhoans.CountAsync(tk => tk.Role == 0 && tk.DeletedAt == null);
+        var soGiaoVien = await db.TaiKhoans.CountAsync(tk => tk.Role == 1 && tk.DeletedAt == null);
+        var soNhanVien = await db.TaiKhoans.CountAsync(tk => tk.Role == 2 && tk.DeletedAt == null);
+        var soKhoaHoc  = await db.KhoaHocs.CountAsync(kh => kh.TrangThai == 1 && kh.DeletedAt == null);
+        var soLopHoc   = await db.LopHocs.CountAsync(lh => lh.TrangThai == 4 || lh.TrangThai == 1);
+
+        var soDangKy = await db.DangKyLopHocs.CountAsync(
             dk => dk.CreatedAt.Month == thangHienTai && dk.CreatedAt.Year == namHienTai);
 
-        await Task.WhenAll(soHocVienTask, soGiaoVienTask, soNhanVienTask,
-                           soKhoaHocTask, soLopHocTask, soDangKyTask);
-
-        // Tính doanh thu tháng hiện tại (tổng các phiếu thu hợp lệ)
+        // Tính doanh thu tháng hiện tại
         var doanhThu = await db.PhieuThus
             .Where(pt => pt.TrangThai == 1
                       && pt.NgayThu.HasValue
@@ -38,7 +37,7 @@ public class DashboardService(AppDbContext db) : IDashboardService
                       && pt.NgayThu.Value.Year == namHienTai)
             .SumAsync(pt => pt.SoTien ?? 0);
 
-        // 5 đăng ký mới nhất (kèm thông tin học viên và lớp học)
+        // 5 đăng ký mới nhất
         var dangKyMoiNhat = await db.DangKyLopHocs
             .Include(dk => dk.TaiKhoan).ThenInclude(tk => tk!.HoSo)
             .Include(dk => dk.LopHoc)
@@ -56,14 +55,14 @@ public class DashboardService(AppDbContext db) : IDashboardService
 
         return new DashboardThongKe
         {
-            SoHocVien         = soHocVienTask.Result,
-            SoGiaoVien        = soGiaoVienTask.Result,
-            SoNhanVien        = soNhanVienTask.Result,
-            SoKhoaHoc         = soKhoaHocTask.Result,
-            SoLopHocDangDay   = soLopHocTask.Result,
-            SoDangKyMoi       = soDangKyTask.Result,
-            DoanhThuThang     = doanhThu,
-            DangKyMoiNhat     = dangKyMoiNhat,
+            SoHocVien           = soHocVien,
+            SoGiaoVien          = soGiaoVien,
+            SoNhanVien          = soNhanVien,
+            SoKhoaHoc           = soKhoaHoc,
+            SoLopHocDangDay     = soLopHoc,
+            SoDangKyMoi         = soDangKy,
+            DoanhThuThang       = doanhThu,
+            DangKyMoiNhat       = dangKyMoiNhat,
             HoaDonChuaThanhToan = hoaDonChuaTT
         };
     }

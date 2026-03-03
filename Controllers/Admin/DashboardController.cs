@@ -19,6 +19,7 @@ public class DashboardController(IDashboardService dashboardService) : Controlle
     public async Task<IActionResult> Index()
     {
         var thongKe = await dashboardService.LayThongKeAsync();
-        return View(thongKe); // Truyền dữ liệu xuống View
+        // Chỉ định rõ đường dẫn vì controller nằm trong namespace con Admin
+        return View("~/Views/Admin/Dashboard/Index.cshtml", thongKe);
     }
 }
