@@ -56,6 +56,12 @@ public interface IKhoaHocService
     // Xóa mềm (soft delete) — chỉ set deleted_at, không xóa thật
     Task<bool> XoaMemAsync(int id);
 
+    // Thùng rác — lấy danh sách đã xóa mềm
+    Task<List<KhoaHoc>> LayThuRacAsync();
+
+    // Khôi phục khóa học từ thùng rác
+    Task<bool> KhoiPhucAsync(int id);
+
     // Lấy tất cả danh mục để hiển thị dropdown
     Task<List<DanhMucKhoaHoc>> LayDanhMucAsync();
 
@@ -68,6 +74,12 @@ public interface IKhoaHocService
     Task<bool> CapNhatDanhMucAsync(DanhMucKhoaHoc danhMuc);
 
     Task<bool> XoaMemDanhMucAsync(int id);
+
+    // Thùng rác danh mục
+    Task<List<DanhMucKhoaHoc>> LayThuRacDanhMucAsync();
+
+    // Khôi phục danh mục
+    Task<bool> KhoiPhucDanhMucAsync(int id);
 }
 
 // ---------------------------------------------------------------------------

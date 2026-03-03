@@ -2,50 +2,87 @@
 @{
     ViewData["Title"] = "Khóa học";
     Layout = "~/Views/Shared/_AdminLayout.cshtml";
+    int pg         = ViewBag.Page ?? 1;
+    int pgSize     = ViewBag.PageSize ?? 10;
+    int total      = ViewBag.Total ?? Model.Count;
+    int totalPages = (int)Math.Ceiling(total / (double)pgSize);
+    string tuKhoa     = ViewBag.TuKhoa ?? "";
+    string trangThaiQ = ViewBag.TrangThai?.ToString() ?? "";
+    string danhMucIdQ = ViewBag.DanhMucId?.ToString() ?? "";
 }
 
 <div class="page-header">
     <div>
         <div class="page-title">Quản lý khóa học</div>
-        <div class="page-subtitle">Tổng: <strong>@Model.Count</strong> khóa học đang hiển thị</div>
+        <div class="page-sub">Tổng: <strong>@total</strong> khóa học</div>
     </div>
-    <a asp-action="Create" class="btn btn-primary">
-        <i class="bi bi-plus-lg"></i> Thêm khóa học
-    </a>
+    <div style="display:flex; gap:8px">
+        <a asp-action="Trash" class="btn btn-outline">
+            <i class="bi bi-trash3"></i> Thùng rác
+        </a>
+        <a asp-action="Create" class="btn btn-primary">
+            <i class="bi bi-plus-lg"></i> Thêm khóa học
+        </a>
+    </div>
 </div>
 
-<!-- THANH TÌM KIẾM -->
-<form method="get" class="search-bar">
-    <div class="search-input-wrapper">
-        <i class="bi bi-search"></i>
-        <input type="text" name="tuKhoa" value="@ViewBag.TuKhoa"
-               class="form-control" placeholder="Tìm tên khóa học..." />
-    </div>
-    <select name="danhMucId" class="form-control" style="width:200px">
-        <option value="">-- Tất cả danh mục --</option>
-        @foreach (var dm in (List<TrungTamNgoaiNgu.Models.DanhMucKhoaHoc>)ViewBag.DanhMucs)
-        {
-            if (ViewBag.DanhMucId?.ToString() == dm.DanhMucId.ToString())
-            {
-                <option value="@dm.DanhMucId" selected>@dm.TenDanhMuc</option>
-            }
-            else
-            {
-                <option value="@dm.DanhMucId">@dm.TenDanhMuc</option>
-            }
-        }
-    </select>
-    <button type="submit" class="btn btn-outline"><i class="bi bi-funnel"></i> Lọc</button>
-    @if (ViewBag.TuKhoa != null || ViewBag.DanhMucId != null)
-    {
-        <a asp-action="Index" class="btn btn-outline"><i class="bi bi-x"></i> Xóa lọc</a>
-    }
-</form>
+<!-- BỘ LỌC -->
+<div class="card" style="margin-bottom:16px">
+    <div class="card-body" style="padding:14px 20px">
+        <form method="get" style="display:flex; gap:10px; flex-wrap:wrap; align-items:center">
+            <div class="search-wrap" style="min-width:240px; flex:2">
+                <i class="bi bi-search"></i>
+                <input type="text" name="tuKhoa" value="@tuKhoa" class="form-control"
+                       placeholder="Tìm tên khóa học..." />
+            </div>
 
-<!-- BẢNG DANH SÁCH -->
+            <select name="danhMucId" class="form-control" style="width:180px">
+                <option value="">Tất cả danh mục</option>
+                @foreach (var dm in (List<TrungTamNgoaiNgu.Models.DanhMucKhoaHoc>)ViewBag.DanhMucs)
+                {
+                    if (danhMucIdQ == dm.DanhMucId.ToString())
+                    {
+                        <option value="@dm.DanhMucId" selected>@dm.TenDanhMuc</option>
+                    }
+                    else
+                    {
+                        <option value="@dm.DanhMucId">@dm.TenDanhMuc</option>
+                    }
+                }
+            </select>
+
+            <select name="trangThai" class="form-control" style="width:170px">
+                <option value="">Tất cả trạng thái</option>
+                @if (trangThaiQ == "1") { <option value="1" selected>✅ Đang mở</option> }
+                else { <option value="1">✅ Đang mở</option> }
+                @if (trangThaiQ == "2") { <option value="2" selected>🔜 Sắp khai giảng</option> }
+                else { <option value="2">🔜 Sắp khai giảng</option> }
+                @if (trangThaiQ == "0") { <option value="0" selected>❌ Đã đóng</option> }
+                else { <option value="0">❌ Đã đóng</option> }
+            </select>
+
+            <select name="pageSize" class="form-control" style="width:130px">
+                @if (pgSize == 10) { <option value="10" selected>10 dòng/trang</option> }
+                else { <option value="10">10 dòng/trang</option> }
+                @if (pgSize == 20) { <option value="20" selected>20 dòng/trang</option> }
+                else { <option value="20">20 dòng/trang</option> }
+                @if (pgSize == 50) { <option value="50" selected>50 dòng/trang</option> }
+                else { <option value="50">50 dòng/trang</option> }
+            </select>
+
+            <button type="submit" class="btn btn-primary"><i class="bi bi-funnel-fill"></i> Lọc</button>
+            @if (!string.IsNullOrEmpty(tuKhoa) || !string.IsNullOrEmpty(danhMucIdQ) || !string.IsNullOrEmpty(trangThaiQ))
+            {
+                <a asp-action="Index" class="btn btn-outline"><i class="bi bi-x-circle"></i> Xóa lọc</a>
+            }
+        </form>
+    </div>
+</div>
+
+<!-- BẢNG -->
 <div class="card">
-    <div class="table-wrapper">
-        @if (Model.Count == 0)
+    <div class="table-wrap">
+        @if (!Model.Any())
         {
             <div class="empty-state">
                 <i class="bi bi-journal-x"></i>
@@ -58,6 +95,7 @@
                 <thead>
                     <tr>
                         <th>#</th>
+                        <th>Ảnh</th>
                         <th>Tên khóa học</th>
                         <th>Danh mục</th>
                         <th>Số lớp</th>
@@ -71,47 +109,56 @@
                     {
                         var kh = Model[i];
                         <tr>
-                            <td style="color:var(--text-muted); font-size:.8rem">@(i + 1)</td>
+                            <td style="color:var(--muted); font-size:.8rem">@((pg-1)*pgSize + i + 1)</td>
                             <td>
-                                <div style="font-weight:600">@kh.TenKhoaHoc</div>
-                                <div style="font-size:.78rem; color:var(--text-muted)">@kh.Slug</div>
-                            </td>
-                            <td>
-                                <span class="badge badge-indigo">@(kh.DanhMuc?.TenDanhMuc ?? "—")</span>
-                            </td>
-                            <td>@kh.LopHocs?.Count</td>
-                            <td>
-                                @if (kh.TrangThai == 1)
+                                @if (!string.IsNullOrEmpty(kh.AnhKhoaHoc))
                                 {
-                                    <span class="badge badge-success">Đang mở</span>
-                                }
-                                else if (kh.TrangThai == 2)
-                                {
-                                    <span class="badge badge-warning">Sắp khai giảng</span>
+                                    <img src="@kh.AnhKhoaHoc" alt="@kh.TenKhoaHoc"
+                                         style="width:60px; height:40px; object-fit:cover; border-radius:6px; border:1px solid var(--border)" />
                                 }
                                 else
                                 {
-                                    <span class="badge badge-gray">Đã đóng</span>
+                                    <div style="width:60px; height:40px; background:#f3f4f6; border-radius:6px;
+                                                display:flex; align-items:center; justify-content:center;
+                                                border:1px solid var(--border); color:#9ca3af; font-size:.8rem">
+                                        <i class="bi bi-image"></i>
+                                    </div>
                                 }
                             </td>
-                            <td style="color:var(--text-muted); font-size:.8rem">
+                            <td>
+                                <div style="font-weight:600; max-width:220px">@kh.TenKhoaHoc</div>
+                                <div style="font-size:.74rem; color:var(--muted)">@kh.Slug</div>
+                            </td>
+                            <td>
+                                @if (kh.DanhMuc != null)
+                                { <span class="badge badge-indigo">@kh.DanhMuc.TenDanhMuc</span> }
+                                else { <span style="color:var(--muted)">—</span> }
+                            </td>
+                            <td>
+                                <span class="badge badge-gray">@(kh.LopHocs?.Count ?? 0) lớp</span>
+                            </td>
+                            <td>
+                                @if (kh.TrangThai == 1)
+                                { <span class="badge badge-success">Đang mở</span> }
+                                else if (kh.TrangThai == 2)
+                                { <span class="badge badge-warning">Sắp khai giảng</span> }
+                                else
+                                { <span class="badge badge-danger">Đã đóng</span> }
+                            </td>
+                            <td style="font-size:.8rem; color:var(--muted)">
                                 @kh.CreatedAt.ToString("dd/MM/yyyy")
                             </td>
                             <td>
-                                <div style="display:flex; gap:4px; flex-wrap:wrap">
-                                    <a asp-action="ChiTiet" asp-route-id="@kh.KhoaHocId"
-                                       class="btn btn-outline btn-sm" title="Chi tiết">
-                                        <i class="bi bi-eye"></i>
-                                    </a>
-                                    <a asp-action="Sua" asp-route-id="@kh.KhoaHocId"
-                                       class="btn btn-outline btn-sm" title="Sửa">
+                                <div style="display:flex; gap:4px">
+                                    <a asp-action="Edit" asp-route-id="@kh.KhoaHocId"
+                                       class="btn btn-outline btn-sm" title="Chỉnh sửa">
                                         <i class="bi bi-pencil"></i>
                                     </a>
-                                    <form method="post" asp-action="Xoa" asp-route-id="@kh.KhoaHocId"
-                                          onsubmit="return confirm('Xóa khóa học «@kh.TenKhoaHoc»?')"
+                                    <form method="post" asp-action="softdelete" asp-route-id="@kh.KhoaHocId"
+                                          onsubmit="return confirm('Chuyển &laquo;@kh.TenKhoaHoc&raquo; vào thùng rác?')"
                                           style="display:inline">
                                         @Html.AntiForgeryToken()
-                                        <button type="submit" class="btn btn-danger btn-sm" title="Xóa">
+                                        <button type="submit" class="btn btn-danger btn-sm" title="Xóa mềm">
                                             <i class="bi bi-trash"></i>
                                         </button>
                                     </form>
@@ -121,6 +168,41 @@
                     }
                 </tbody>
             </table>
+
+            @if (totalPages > 1)
+            {
+                <div style="display:flex; align-items:center; justify-content:space-between;
+                            padding:14px 20px; border-top:1px solid var(--border)">
+                    <div style="font-size:.82rem; color:var(--muted)">
+                        Trang <strong>@pg</strong> / @totalPages &nbsp;·&nbsp; @total mục
+                    </div>
+                    <div style="display:flex; gap:4px">
+                        @if (pg > 1)
+                        {
+                            <a href="?page=@(pg-1)&tuKhoa=@tuKhoa&danhMucId=@danhMucIdQ&trangThai=@trangThaiQ&pageSize=@pgSize"
+                               class="btn btn-outline btn-sm"><i class="bi bi-chevron-left"></i></a>
+                        }
+                        @for (int p = Math.Max(1, pg - 2); p <= Math.Min(totalPages, pg + 2); p++)
+                        {
+                            if (p == pg)
+                            {
+                                <a href="?page=@p&tuKhoa=@tuKhoa&danhMucId=@danhMucIdQ&trangThai=@trangThaiQ&pageSize=@pgSize"
+                                   class="btn btn-sm btn-primary">@p</a>
+                            }
+                            else
+                            {
+                                <a href="?page=@p&tuKhoa=@tuKhoa&danhMucId=@danhMucIdQ&trangThai=@trangThaiQ&pageSize=@pgSize"
+                                   class="btn btn-sm btn-outline">@p</a>
+                            }
+                        }
+                        @if (pg < totalPages)
+                        {
+                            <a href="?page=@(pg+1)&tuKhoa=@tuKhoa&danhMucId=@danhMucIdQ&trangThai=@trangThaiQ&pageSize=@pgSize"
+                               class="btn btn-outline btn-sm"><i class="bi bi-chevron-right"></i></a>
+                        }
+                    </div>
+                </div>
+            }
         }
     </div>
 </div>

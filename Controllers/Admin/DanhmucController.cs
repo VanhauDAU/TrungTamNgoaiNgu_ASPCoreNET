@@ -13,11 +13,23 @@ namespace TrungTamNgoaiNgu.Controllers.Admin;
 public class DanhMucController(IKhoaHocService khoaHocService) : Controller
 {
     // GET /Admin/DanhMuc
-    public async Task<IActionResult> Index(string? tuKhoa)
+    public async Task<IActionResult> Index(string? tuKhoa, int? trangThai, int page = 1, int pageSize = 10)
     {
-        ViewBag.TuKhoa = tuKhoa;
-        var danhSach = await khoaHocService.LayDanhSachDanhMucAsync(tuKhoa);
-        return View("~/Views/Admin/DanhMuc/Index.cshtml", danhSach);
+        ViewBag.TuKhoa    = tuKhoa;
+        ViewBag.TrangThai = trangThai;
+
+        var tatCa = await khoaHocService.LayDanhSachDanhMucAsync(tuKhoa);
+
+        // Lọc trạng thái phía server
+        if (trangThai.HasValue)
+            tatCa = tatCa.Where(d => (int)d.TrangThai == trangThai.Value).ToList();
+
+        ViewBag.Total    = tatCa.Count;
+        ViewBag.Page     = page;
+        ViewBag.PageSize = pageSize;
+
+        var trang = tatCa.Skip((page - 1) * pageSize).Take(pageSize).ToList();
+        return View("~/Views/Admin/DanhMuc/Index.cshtml", trang);
     }
 
     // GET /Admin/DanhMuc/Create
@@ -79,14 +91,32 @@ public class DanhMucController(IKhoaHocService khoaHocService) : Controller
         return RedirectToAction(nameof(Index));
     }
 
-    // POST /Admin/DanhMuc/Delete/5
+    // POST /Admin/DanhMuc/softdelete/5 — Xóa mềm
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Delete(int id)
+    public async Task<IActionResult> softdelete(int id)
     {
         var ketQua = await khoaHocService.XoaMemDanhMucAsync(id);
-        TempData[ketQua ? "ThanhCong" : "LoiXay"] = 
-            ketQua ? "Đã xóa danh mục khóa học!" : "Không tìm thấy danh mục!";
+        TempData[ketQua ? "ThanhCong" : "LoiXay"] =
+            ketQua ? "Đã chuyển danh mục vào thùng rác!" : "Không tìm thấy danh mục!";
         return RedirectToAction(nameof(Index));
+    }
+
+    // GET /Admin/DanhMuc/Trash — Thùng rác
+    public async Task<IActionResult> Trash()
+    {
+        var danhSach = await khoaHocService.LayThuRacDanhMucAsync();
+        return View("~/Views/Admin/DanhMuc/Trash.cshtml", danhSach);
+    }
+
+    // POST /Admin/DanhMuc/restore/5 — Khôi phục
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> restore(int id)
+    {
+        var ketQua = await khoaHocService.KhoiPhucDanhMucAsync(id);
+        TempData[ketQua ? "ThanhCong" : "LoiXay"] =
+            ketQua ? "Đã khôi phục danh mục thành công!" : "Không tìm thấy danh mục trong thùng rác!";
+        return RedirectToAction(nameof(Trash));
     }
 }
