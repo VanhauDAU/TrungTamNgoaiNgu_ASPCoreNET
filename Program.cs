@@ -53,7 +53,7 @@ app.UseAuthorization();
 
 // ===== BƯỚC 4: ROUTING =====
 
-// Admin route: /Admin/KhoaHoc/Index, /Admin/Dashboard...
+// Admin route: /Admin/KhoaHoc/Index, /Admin/CourseCategories/Index, /Admin/Dashboard...
 app.MapControllerRoute(
     name: "admin",
     pattern: "Admin/{controller=Dashboard}/{action=Index}/{id?}");

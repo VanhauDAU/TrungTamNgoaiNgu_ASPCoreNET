@@ -1,8 +1,8 @@
 // =============================================================================
-// ADMIN DANHMUC CONTROLLER
+// ADMIN COURSE CATEGORIES CONTROLLER
 // =============================================================================
 // Quản lý CRUD danh mục khóa học: Xem danh sách, Thêm, Sửa, Xóa mềm
-// URL pattern: Admin/DanhMuc/{action}
+// URL pattern: Admin/CourseCategories/{action}
 // =============================================================================
 using Microsoft.AspNetCore.Mvc;
 using TrungTamNgoaiNgu.Models;
@@ -10,9 +10,9 @@ using TrungTamNgoaiNgu.Services.Interfaces;
 
 namespace TrungTamNgoaiNgu.Controllers.Admin;
 
-public class DanhMucController(IKhoaHocService khoaHocService) : Controller
+public class CourseCategoriesController(IKhoaHocService khoaHocService) : Controller
 {
-    // GET /Admin/DanhMuc
+    // GET /Admin/CourseCategories
     public async Task<IActionResult> Index(string? tuKhoa, int? trangThai, int page = 1, int pageSize = 10)
     {
         ViewBag.TuKhoa    = tuKhoa;
@@ -29,16 +29,16 @@ public class DanhMucController(IKhoaHocService khoaHocService) : Controller
         ViewBag.PageSize = pageSize;
 
         var trang = tatCa.Skip((page - 1) * pageSize).Take(pageSize).ToList();
-        return View("~/Views/Admin/DanhMuc/Index.cshtml", trang);
+        return View("~/Views/Admin/CourseCategories/Index.cshtml", trang);
     }
 
-    // GET /Admin/DanhMuc/Create
+    // GET /Admin/CourseCategories/Create
     public IActionResult Create()
     {
-        return View("~/Views/Admin/DanhMuc/Create.cshtml", new DanhMucKhoaHoc());
+        return View("~/Views/Admin/CourseCategories/Create.cshtml", new DanhMucKhoaHoc());
     }
 
-    // POST /Admin/DanhMuc/Create
+    // POST /Admin/CourseCategories/Create
     [HttpPost]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Create(DanhMucKhoaHoc danhMuc)
@@ -48,7 +48,7 @@ public class DanhMucController(IKhoaHocService khoaHocService) : Controller
 
         if (!ModelState.IsValid)
         {
-            return View("~/Views/Admin/DanhMuc/Create.cshtml", danhMuc);
+            return View("~/Views/Admin/CourseCategories/Create.cshtml", danhMuc);
         }
 
         // Tự tạo slug từ tên danh mục
@@ -63,16 +63,16 @@ public class DanhMucController(IKhoaHocService khoaHocService) : Controller
         return RedirectToAction(nameof(Index));
     }
 
-    // GET /Admin/DanhMuc/Edit/5
+    // GET /Admin/CourseCategories/Edit/5
     public async Task<IActionResult> Edit(int id)
     {
         var danhMuc = await khoaHocService.LayDanhMucTheoIdAsync(id);
         if (danhMuc == null) return NotFound();
         
-        return View("~/Views/Admin/DanhMuc/Edit.cshtml", danhMuc);
+        return View("~/Views/Admin/CourseCategories/Edit.cshtml", danhMuc);
     }
 
-    // POST /Admin/DanhMuc/Edit
+    // POST /Admin/CourseCategories/Edit
     [HttpPost]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Edit(DanhMucKhoaHoc danhMuc)
@@ -81,7 +81,7 @@ public class DanhMucController(IKhoaHocService khoaHocService) : Controller
         
         if (!ModelState.IsValid)
         {
-            return View("~/Views/Admin/DanhMuc/Edit.cshtml", danhMuc);
+            return View("~/Views/Admin/CourseCategories/Edit.cshtml", danhMuc);
         }
 
         var ketQua = await khoaHocService.CapNhatDanhMucAsync(danhMuc);
@@ -91,7 +91,7 @@ public class DanhMucController(IKhoaHocService khoaHocService) : Controller
         return RedirectToAction(nameof(Index));
     }
 
-    // POST /Admin/DanhMuc/softdelete/5 — Xóa mềm
+    // POST /Admin/CourseCategories/softdelete/5 — Xóa mềm
     [HttpPost]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> softdelete(int id)
@@ -101,14 +101,14 @@ public class DanhMucController(IKhoaHocService khoaHocService) : Controller
         return RedirectToAction(nameof(Index));
     }
 
-    // GET /Admin/DanhMuc/Trash — Thùng rác
+    // GET /Admin/CourseCategories/Trash — Thùng rác
     public async Task<IActionResult> Trash()
     {
         var danhSach = await khoaHocService.LayThuRacDanhMucAsync();
-        return View("~/Views/Admin/DanhMuc/Trash.cshtml", danhSach);
+        return View("~/Views/Admin/CourseCategories/Trash.cshtml", danhSach);
     }
 
-    // POST /Admin/DanhMuc/restore/5 — Khôi phục
+    // POST /Admin/CourseCategories/restore/5 — Khôi phục
     [HttpPost]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> restore(int id)
