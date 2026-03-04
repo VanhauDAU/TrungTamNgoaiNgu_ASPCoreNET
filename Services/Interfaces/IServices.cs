@@ -184,9 +184,9 @@ public interface ITaiKhoanService
 }
 
 // ---------------------------------------------------------------------------
-// NHAT KY HE THONG SERVICE — Xem nhật ký thao tác
+// AUDIT LOGS SERVICE — Xem nhật ký thao tác
 // ---------------------------------------------------------------------------
-public interface INhatKyHeThongService
+public interface IAuditLogsService
 {
     Task<PagedResult<NhatKyHeThong>> LayDanhSachPhanTrangAsync(
         string? module = null,

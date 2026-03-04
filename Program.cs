@@ -27,7 +27,7 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 builder.Services.AddScoped<IDashboardService, DashboardService>();
 builder.Services.AddScoped<IKhoaHocService,   KhoaHocService>();
 builder.Services.AddScoped<ITaiChinhService,  TaiChinhService>();
-builder.Services.AddScoped<INhatKyHeThongService, NhatKyHeThongService>();
+builder.Services.AddScoped<IAuditLogsService, AuditLogsService>();
 
 // ===== BƯỚC 2: XÂY DỰNG APP =====
 var app = builder.Build();

@@ -5,7 +5,7 @@ using TrungTamNgoaiNgu.Services.Interfaces;
 
 namespace TrungTamNgoaiNgu.Services;
 
-public class NhatKyHeThongService(AppDbContext db) : INhatKyHeThongService
+public class AuditLogsService(AppDbContext db) : IAuditLogsService
 {
     public async Task<PagedResult<NhatKyHeThong>> LayDanhSachPhanTrangAsync(
         string? module = null,

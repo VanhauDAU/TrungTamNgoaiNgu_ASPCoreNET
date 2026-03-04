@@ -2,11 +2,11 @@
 @{
     ViewData["Title"] = "Chi tiết nhật ký";
     Layout = "~/Views/Shared/_AdminLayout.cshtml";
-    string returnUrl = ViewBag.ReturnUrl?.ToString() ?? Url.Action("Index", "NhatKyHeThong")!;
+    string returnUrl = ViewBag.ReturnUrl?.ToString() ?? Url.Action("Index", "AuditLogs")!;
 }
 
 @section Styles {
-    <link rel="stylesheet" href="~/css/admin-nhatky.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/admin-auditlogs.css" asp-append-version="true" />
 }
 
 <div class="page-header">
