@@ -59,9 +59,9 @@ public class DashboardThongKe
 }
 
 // ---------------------------------------------------------------------------
-// KHOA HOC SERVICE — Quản lý khóa học
+// COURSE SERVICE — Quản lý khóa học
 // ---------------------------------------------------------------------------
-public interface IKhoaHocService
+public interface ICoursesService
 {
     // Lấy danh sách (phân trang tại DB + tìm kiếm/lọc)
     Task<PagedResult<KhoaHoc>> LayDanhSachPhanTrangAsync(
@@ -121,9 +121,9 @@ public interface IKhoaHocService
 }
 
 // ---------------------------------------------------------------------------
-// LOP HOC SERVICE — Quản lý lớp học
+// CLASSES SERVICE — Quản lý lớp học
 // ---------------------------------------------------------------------------
-public interface ILopHocService
+public interface IClassesService
 {
     Task<List<LopHoc>> LayDanhSachAsync(int? khoaHocId = null, int? coSoId = null, byte? trangThai = null);
     Task<LopHoc?> LayTheoIdAsync(int id);
@@ -136,9 +136,9 @@ public interface ILopHocService
 }
 
 // ---------------------------------------------------------------------------
-// HOC VIEN SERVICE — Quản lý học viên
+// STUDENTS SERVICE — Quản lý học viên
 // ---------------------------------------------------------------------------
-public interface IHocVienService
+public interface IStudentsService
 {
     Task<List<TaiKhoan>> LayDanhSachAsync(string? tuKhoa = null);
     Task<TaiKhoan?> LayTheoIdAsync(int id);
@@ -152,9 +152,9 @@ public interface IHocVienService
 }
 
 // ---------------------------------------------------------------------------
-// TAI CHINH SERVICE — Quản lý hóa đơn và phiếu thu
+// FINANCE SERVICE — Quản lý hóa đơn và phiếu thu
 // ---------------------------------------------------------------------------
-public interface ITaiChinhService
+public interface IFinanceService
 {
     Task<List<HoaDon>> LayDanhSachHoaDonAsync(int? trangThai = null, string? tuKhoa = null);
     Task<HoaDon?> LayHoaDonTheoIdAsync(int id);
@@ -167,9 +167,9 @@ public interface ITaiChinhService
 }
 
 // ---------------------------------------------------------------------------
-// TAI KHOAN SERVICE — Đăng nhập, phân quyền
+// AUTH SERVICE — Đăng nhập, phân quyền
 // ---------------------------------------------------------------------------
-public interface ITaiKhoanService
+public interface IAuthService
 {
     // Kiểm tra đăng nhập → trả về TaiKhoan nếu đúng, null nếu sai
     Task<TaiKhoan?> DangNhapAsync(string taiKhoan, string matKhau);

@@ -25,8 +25,8 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 // AddScoped: tạo 1 instance mới cho mỗi HTTP request
 // Controller khai báo interface trong constructor → .NET tự inject implementation
 builder.Services.AddScoped<IDashboardService, DashboardService>();
-builder.Services.AddScoped<IKhoaHocService,   KhoaHocService>();
-builder.Services.AddScoped<ITaiChinhService,  TaiChinhService>();
+builder.Services.AddScoped<ICoursesService,    CoursesService>();
+builder.Services.AddScoped<IFinanceService,  FinanceService>();
 builder.Services.AddScoped<IAuditLogsService, AuditLogsService>();
 
 // ===== BƯỚC 2: XÂY DỰNG APP =====
