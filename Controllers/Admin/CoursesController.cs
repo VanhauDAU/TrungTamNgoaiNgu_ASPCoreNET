@@ -1,8 +1,8 @@
 // =============================================================================
-// ADMIN KHOA HOC CONTROLLER
+// ADMIN COURSES CONTROLLER
 // =============================================================================
 // Quản lý CRUD khóa học: Xem danh sách, Thêm, Sửa, Xóa
-// URL pattern: /Admin/KhoaHoc/{action}
+// URL pattern: /Admin/Courses/{action}
 // =============================================================================
 
 using Microsoft.AspNetCore.Mvc;
@@ -11,7 +11,7 @@ using TrungTamNgoaiNgu.Services.Interfaces;
 
 namespace TrungTamNgoaiNgu.Controllers.Admin;
 
-public class KhoaHocController(IKhoaHocService khoaHocService, IWebHostEnvironment env) : Controller
+public class CoursesController(IKhoaHocService khoaHocService, IWebHostEnvironment env) : Controller
 {
     private static readonly string[] AllowedImageExtensions = [".jpg", ".jpeg", ".png", ".webp"];
     private static readonly HashSet<string> AllowedImageMimeTypes = new(StringComparer.OrdinalIgnoreCase)
@@ -20,7 +20,7 @@ public class KhoaHocController(IKhoaHocService khoaHocService, IWebHostEnvironme
     };
     private const long MaxImageSizeBytes = 5 * 1024 * 1024;
 
-    // GET /Admin/KhoaHoc
+    // GET /Admin/Courses
     public async Task<IActionResult> Index(string? tuKhoa, int? danhMucId, int? trangThai, int page = 1, int pageSize = 10)
     {
         ViewBag.TuKhoa    = tuKhoa;
@@ -35,27 +35,27 @@ public class KhoaHocController(IKhoaHocService khoaHocService, IWebHostEnvironme
         ViewBag.Page     = ketQua.Page;
         ViewBag.PageSize = ketQua.PageSize;
 
-        return View("~/Views/Admin/KhoaHoc/Index.cshtml", ketQua.Items);
+        return View("~/Views/Admin/Courses/Index.cshtml", ketQua.Items);
     }
 
-    // GET /Admin/KhoaHoc/ChiTiet/5
+    // GET /Admin/Courses/Detail/5
     // Xem chi tiết 1 khóa học
-    public async Task<IActionResult> ChiTiet(int id)
+    public async Task<IActionResult> Detail(int id)
     {
         var khoaHoc = await khoaHocService.LayTheoIdAsync(id);
         if (khoaHoc == null) return NotFound("Không tìm thấy khóa học");
-        return View("~/Views/Admin/KhoaHoc/ChiTiet.cshtml", khoaHoc);
+        return View("~/Views/Admin/Courses/Detail.cshtml", khoaHoc);
     }
 
-    // GET /Admin/KhoaHoc/Create
+    // GET /Admin/Courses/Create
     // Hiển thị form thêm khóa học mới
     public async Task<IActionResult> Create()
     {
         ViewBag.DanhMucs = await khoaHocService.LayDanhMucAsync();
-        return View("~/Views/Admin/KhoaHoc/Create.cshtml", new KhoaHoc());
+        return View("~/Views/Admin/Courses/Create.cshtml", new KhoaHoc());
     }
 
-    // POST /Admin/KhoaHoc/Create
+    // POST /Admin/Courses/Create
     // Xử lý form submit thêm khóa học
     [HttpPost]
     [ValidateAntiForgeryToken]
@@ -69,7 +69,7 @@ public class KhoaHocController(IKhoaHocService khoaHocService, IWebHostEnvironme
         if (!ModelState.IsValid)
         {
             ViewBag.DanhMucs = await khoaHocService.LayDanhMucAsync();
-            return View("~/Views/Admin/KhoaHoc/Create.cshtml", khoaHoc);
+            return View("~/Views/Admin/Courses/Create.cshtml", khoaHoc);
         }
 
         // Xử lý upload ảnh nếu có
@@ -84,17 +84,17 @@ public class KhoaHocController(IKhoaHocService khoaHocService, IWebHostEnvironme
         return RedirectToAction(nameof(Index));
     }
 
-    // GET /Admin/KhoaHoc/Edit/5
+    // GET /Admin/Courses/Edit/5
     // Hiển thị form sửa khóa học
     public async Task<IActionResult> Edit(int id)
     {
         var khoaHoc = await khoaHocService.LayTheoIdAsync(id);
         if (khoaHoc == null) return NotFound();
         ViewBag.DanhMucs = await khoaHocService.LayDanhMucAsync();
-        return View("~/Views/Admin/KhoaHoc/Edit.cshtml", khoaHoc);
+        return View("~/Views/Admin/Courses/Edit.cshtml", khoaHoc);
     }
 
-    // POST /Admin/KhoaHoc/Edit
+    // POST /Admin/Courses/Edit
     [HttpPost]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Edit(KhoaHoc khoaHoc, IFormFile? anhFile)
@@ -106,7 +106,7 @@ public class KhoaHocController(IKhoaHocService khoaHocService, IWebHostEnvironme
         if (!ModelState.IsValid)
         {
             ViewBag.DanhMucs = await khoaHocService.LayDanhMucAsync();
-            return View("~/Views/Admin/KhoaHoc/Edit.cshtml", khoaHoc);
+            return View("~/Views/Admin/Courses/Edit.cshtml", khoaHoc);
         }
 
         // Xử lý upload ảnh mới nếu có
@@ -124,14 +124,14 @@ public class KhoaHocController(IKhoaHocService khoaHocService, IWebHostEnvironme
         {
             ModelState.AddModelError("TrangThai", ketQua.ThongBao);
             ViewBag.DanhMucs = await khoaHocService.LayDanhMucAsync();
-            return View("~/Views/Admin/KhoaHoc/Edit.cshtml", khoaHoc);
+            return View("~/Views/Admin/Courses/Edit.cshtml", khoaHoc);
         }
 
         TempData["ThanhCong"] = ketQua.ThongBao;
         return RedirectToAction(nameof(Index));
     }
 
-    // POST /Admin/KhoaHoc/softdelete/5 — Xóa mềm
+    // POST /Admin/Courses/softdelete/5 — Xóa mềm
     [HttpPost]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> softdelete(int id)
@@ -141,14 +141,14 @@ public class KhoaHocController(IKhoaHocService khoaHocService, IWebHostEnvironme
         return RedirectToAction(nameof(Index));
     }
 
-    // GET /Admin/KhoaHoc/Trash — Thùng rác
+    // GET /Admin/Courses/Trash — Thùng rác
     public async Task<IActionResult> Trash()
     {
         var danhSach = await khoaHocService.LayThuRacAsync();
-        return View("~/Views/Admin/KhoaHoc/Trash.cshtml", danhSach);
+        return View("~/Views/Admin/Courses/Trash.cshtml", danhSach);
     }
 
-    // POST /Admin/KhoaHoc/restore/5 — Khôi phục
+    // POST /Admin/Courses/restore/5 — Khôi phục
     [HttpPost]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> restore(int id)
