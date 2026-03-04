@@ -14,7 +14,7 @@
 
 @{
     var ctrl   = ViewContext.RouteData.Values["controller"]?.ToString() ?? "";
-    bool inDaoTao   = ctrl is "KhoaHoc" or "CourseCategories" or "LopHoc";
+    bool inDaoTao   = ctrl is "Courses" or "CourseCategories" or "LopHoc";
     bool inNhanSu   = ctrl is "HocVien" or "GiaoVien";
     bool inTaiChinh = ctrl is "HoaDon" or "Luong";
     bool inHeThong  = ctrl is "CoSo" or "ThongBao" or "AuditLogs";
@@ -54,8 +54,8 @@
             <div class="sb-items @(inDaoTao ? "open" : "")" id="g-daotao">
                 <a class="sb-item @(ctrl == "CourseCategories" ? "active" : "")"
                    asp-controller="CourseCategories" asp-action="Index" asp-route-area="">Danh mục khóa học</a>
-                <a class="sb-item @(ctrl == "KhoaHoc" ? "active" : "")"
-                   asp-controller="KhoaHoc" asp-action="Index" asp-route-area="">Khóa học</a>
+                <a class="sb-item @(ctrl == "Courses" ? "active" : "")"
+                   asp-controller="Courses" asp-action="Index" asp-route-area="">Khóa học</a>
                 <a class="sb-item @(ctrl == "LopHoc" ? "active" : "")"
                    asp-controller="LopHoc" asp-action="Index" asp-route-area="">Lớp học</a>
             </div>
