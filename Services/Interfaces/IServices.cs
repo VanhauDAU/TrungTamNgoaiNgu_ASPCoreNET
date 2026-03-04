@@ -152,9 +152,9 @@ public interface IHocVienService
 }
 
 // ---------------------------------------------------------------------------
-// TAI CHINH SERVICE — Quản lý hóa đơn và phiếu thu
+// FINANCE SERVICE — Quản lý hóa đơn và phiếu thu
 // ---------------------------------------------------------------------------
-public interface ITaiChinhService
+public interface IFinanceService
 {
     Task<List<HoaDon>> LayDanhSachHoaDonAsync(int? trangThai = null, string? tuKhoa = null);
     Task<HoaDon?> LayHoaDonTheoIdAsync(int id);

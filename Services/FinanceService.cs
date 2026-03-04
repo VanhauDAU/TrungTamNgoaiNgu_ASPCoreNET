@@ -1,5 +1,5 @@
 // =============================================================================
-// TAI CHINH SERVICE — IMPLEMENTATION
+// FINANCE SERVICE — IMPLEMENTATION
 // =============================================================================
 
 using Microsoft.EntityFrameworkCore;
@@ -9,7 +9,7 @@ using TrungTamNgoaiNgu.Services.Interfaces;
 
 namespace TrungTamNgoaiNgu.Services;
 
-public class TaiChinhService(AppDbContext db) : ITaiChinhService
+public class FinanceService(AppDbContext db) : IFinanceService
 {
     public async Task<List<HoaDon>> LayDanhSachHoaDonAsync(int? trangThai = null, string? tuKhoa = null)
     {

@@ -26,7 +26,7 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 // Controller khai báo interface trong constructor → .NET tự inject implementation
 builder.Services.AddScoped<IDashboardService, DashboardService>();
 builder.Services.AddScoped<ICoursesService,    CoursesService>();
-builder.Services.AddScoped<ITaiChinhService,  TaiChinhService>();
+builder.Services.AddScoped<IFinanceService,  FinanceService>();
 builder.Services.AddScoped<IAuditLogsService, AuditLogsService>();
 
 // ===== BƯỚC 2: XÂY DỰNG APP =====
