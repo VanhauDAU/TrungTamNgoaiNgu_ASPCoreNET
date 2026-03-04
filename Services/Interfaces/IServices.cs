@@ -34,8 +34,6 @@ public class KhoaHocQuanLyThongKe
     public int DangHoatDong { get; set; }
     public int TamNgung { get; set; }
     public int DaXoaMem { get; set; }
-    public int LopDangMo { get; set; }
-    public int LopSapKhaiGiang { get; set; }
 }
 
 // ---------------------------------------------------------------------------

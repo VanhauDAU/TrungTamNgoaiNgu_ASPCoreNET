@@ -84,9 +84,7 @@ public class KhoaHocService(AppDbContext db) : IKhoaHocService
             TongKhoaHoc = await db.KhoaHocs.CountAsync(k => k.DeletedAt == null),
             DangHoatDong = await db.KhoaHocs.CountAsync(k => k.DeletedAt == null && k.TrangThai != 0),
             TamNgung = await db.KhoaHocs.CountAsync(k => k.DeletedAt == null && k.TrangThai == 0),
-            DaXoaMem = await db.KhoaHocs.CountAsync(k => k.DeletedAt != null),
-            LopDangMo = await db.LopHocs.CountAsync(l => l.TrangThai == 1 || l.TrangThai == 4),
-            LopSapKhaiGiang = await db.LopHocs.CountAsync(l => l.TrangThai == 0)
+            DaXoaMem = await db.KhoaHocs.CountAsync(k => k.DeletedAt != null)
         };
     }
 
