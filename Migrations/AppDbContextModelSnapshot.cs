@@ -1139,6 +1139,46 @@ namespace TrungTamNgoaiNgu.Migrations
                     b.ToTable("nhomquyen");
                 });
 
+            modelBuilder.Entity("TrungTamNgoaiNgu.Models.NhatKyHeThong", b =>
+                {
+                    b.Property<long>("NhatKyId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint")
+                        .HasColumnName("nhatKyId");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("NhatKyId"));
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2")
+                        .HasColumnName("created_at");
+
+                    b.Property<string>("HanhDong")
+                        .IsRequired()
+                        .HasMaxLength(150)
+                        .HasColumnType("nvarchar(150)")
+                        .HasColumnName("hanhDong");
+
+                    b.Property<string>("Module")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)")
+                        .HasColumnName("module");
+
+                    b.Property<string>("NguoiThucHien")
+                        .IsRequired()
+                        .HasMaxLength(150)
+                        .HasColumnType("nvarchar(150)")
+                        .HasColumnName("nguoiThucHien");
+
+                    b.Property<string>("NoiDung")
+                        .HasColumnType("nvarchar(max)")
+                        .HasColumnName("noiDung");
+
+                    b.HasKey("NhatKyId");
+
+                    b.ToTable("nhatkyhethong");
+                });
+
             modelBuilder.Entity("TrungTamNgoaiNgu.Models.PhanQuyen", b =>
                 {
                     b.Property<int>("PhanQuyenId")

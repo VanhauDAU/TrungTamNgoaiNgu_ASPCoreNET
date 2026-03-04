@@ -1,0 +1,385 @@
+/* KhoaHoc module styles (Index/Create/Edit/Trash) */
+
+.kh-header-actions {
+    display: flex;
+    gap: 8px;
+}
+
+.kh-filter-card {
+    margin-bottom: 16px;
+}
+
+.kh-mini-stats {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+    gap: 12px;
+    margin-bottom: 16px;
+}
+
+.kh-mini-card {
+    background: #fff;
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    box-shadow: var(--sh);
+    padding: 12px 14px;
+}
+
+.kh-mini-label {
+    font-size: .74rem;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: .04em;
+}
+
+.kh-mini-value {
+    font-size: 1.3rem;
+    font-weight: 800;
+    margin-top: 2px;
+}
+
+.kh-mini-card.all .kh-mini-value { color: #111827; }
+.kh-mini-card.open .kh-mini-value { color: #047857; }
+.kh-mini-card.soon .kh-mini-value { color: #b45309; }
+.kh-mini-card.closed .kh-mini-value { color: #b91c1c; }
+.kh-mini-card.deleted .kh-mini-value { color: #6b7280; }
+
+.kh-filter-body {
+    padding: 14px 20px;
+}
+
+.kh-filter-form {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    align-items: center;
+}
+
+.kh-search-wrap {
+    min-width: 240px;
+    flex: 2;
+}
+
+.kh-select-danhmuc {
+    width: 180px;
+}
+
+.kh-select-trangthai {
+    width: 170px;
+}
+
+.kh-select-pagesize {
+    width: 130px;
+}
+
+.kh-bulk-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin-bottom: 10px;
+}
+
+.kh-bulk-row.in-card {
+    padding: 12px 16px 0;
+}
+
+.kh-bulk-controls {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+.kh-bulk-action {
+    min-width: 170px;
+}
+
+.kh-bulk-status {
+    width: 170px;
+}
+
+.kh-selected-count {
+    font-size: .82rem;
+    color: var(--muted);
+}
+
+.kh-check-col {
+    width: 36px;
+    text-align: center;
+}
+
+.kh-check {
+    width: 16px;
+    height: 16px;
+    accent-color: var(--brand);
+}
+
+.kh-col-index {
+    color: var(--muted);
+    font-size: .8rem;
+}
+
+.kh-thumb {
+    width: 60px;
+    height: 40px;
+    object-fit: cover;
+    border-radius: 6px;
+    border: 1px solid var(--border);
+}
+
+.kh-thumb-empty {
+    width: 60px;
+    height: 40px;
+    background: #f3f4f6;
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid var(--border);
+    color: #9ca3af;
+    font-size: .8rem;
+}
+
+.kh-name {
+    font-weight: 600;
+    max-width: 220px;
+}
+
+.kh-slug {
+    font-size: .74rem;
+    color: var(--muted);
+}
+
+.kh-muted {
+    color: var(--muted);
+}
+
+.kh-created {
+    font-size: .8rem;
+    color: var(--muted);
+}
+
+.kh-actions {
+    display: flex;
+    gap: 4px;
+}
+
+.kh-inline-form {
+    display: inline;
+}
+
+.kh-pagination-wrap {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 14px 20px;
+    border-top: 1px solid var(--border);
+}
+
+.kh-pagination-info {
+    font-size: .82rem;
+    color: var(--muted);
+}
+
+.kh-pagination-actions {
+    display: flex;
+    gap: 4px;
+}
+
+.kh-form-grid {
+    display: grid;
+    grid-template-columns: 1fr 340px;
+    gap: 20px;
+    align-items: start;
+}
+
+.kh-col-left,
+.kh-col-right,
+.kh-stack-14,
+.kh-stack-10,
+.kh-stack-6 {
+    display: flex;
+    flex-direction: column;
+}
+
+.kh-col-left,
+.kh-col-right {
+    gap: 16px;
+}
+
+.kh-stack-14 {
+    gap: 14px;
+}
+
+.kh-stack-10 {
+    gap: 10px;
+}
+
+.kh-stack-6 {
+    gap: 6px;
+}
+
+.kh-required {
+    color: var(--red);
+}
+
+.kh-two-col {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+}
+
+.kh-dropzone {
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    border-radius: 10px;
+    border: 2px dashed var(--border);
+    overflow: hidden;
+    margin-bottom: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #f9fafb;
+    cursor: pointer;
+    transition: border-color .2s;
+}
+
+.kh-dropzone.has-image {
+    border: 2px solid var(--brand);
+}
+
+.kh-drop-preview {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: none;
+}
+
+.kh-drop-preview.show {
+    display: block;
+}
+
+.kh-placeholder {
+    text-align: center;
+    color: var(--muted);
+}
+
+.kh-placeholder-icon {
+    font-size: 2.2rem;
+    display: block;
+    margin-bottom: 8px;
+    opacity: .5;
+}
+
+.kh-placeholder-title {
+    font-size: .82rem;
+    font-weight: 500;
+}
+
+.kh-placeholder-sub {
+    font-size: .75rem;
+    margin-top: 4px;
+}
+
+.kh-file-input {
+    display: none;
+}
+
+.kh-hidden {
+    display: none;
+}
+
+.kh-full-btn {
+    width: 100%;
+    justify-content: center;
+}
+
+.kh-pick-btn {
+    width: 100%;
+    font-size: .82rem;
+}
+
+.kh-help-text {
+    margin-top: 8px;
+    font-size: .75rem;
+    color: var(--muted);
+}
+
+.kh-draft-note {
+    margin-top: 10px;
+    border: 1px dashed #c7d2fe;
+    border-radius: 8px;
+    background: #eef2ff;
+    color: #4338ca;
+    padding: 8px 10px;
+    font-size: .8rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 8px;
+}
+
+.kh-draft-note button {
+    border: 1px solid #c7d2fe;
+    background: #fff;
+    color: #3730a3;
+    border-radius: 6px;
+    padding: 4px 8px;
+    font-size: .75rem;
+    cursor: pointer;
+}
+
+.kh-meta {
+    font-size: .78rem;
+    color: var(--muted);
+}
+
+.kh-trash-icon {
+    color: var(--red);
+}
+
+.kh-empty-ok {
+    color: var(--green);
+}
+
+.kh-trash-row {
+    opacity: .85;
+}
+
+.kh-trash-thumb {
+    width: 56px;
+    height: 38px;
+    object-fit: cover;
+    border-radius: 6px;
+    filter: grayscale(30%);
+    border: 1px solid var(--border);
+}
+
+.kh-trash-thumb-empty {
+    width: 56px;
+    height: 38px;
+    background: #f3f4f6;
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #9ca3af;
+}
+
+.kh-trash-name {
+    font-weight: 500;
+    text-decoration: line-through;
+    color: var(--muted);
+}
+
+.kh-trash-time {
+    font-size: .8rem;
+    color: var(--red);
+}
+
+@media (max-width: 1024px) {
+    .kh-form-grid {
+        grid-template-columns: 1fr;
+    }
+}

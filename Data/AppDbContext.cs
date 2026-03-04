@@ -61,6 +61,11 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
     public DbSet<Setting> Settings { get; set; }
 
     // =========================================================================
+    // NHÓM 6: NHẬT KÝ HỆ THỐNG
+    // =========================================================================
+    public DbSet<NhatKyHeThong> NhatKyHeThongs { get; set; }
+
+    // =========================================================================
     // CẤU HÌNH MỐI QUAN HỆ GIỮA CÁC BẢNG (Fluent API)
     // Dùng khi Data Annotation chưa đủ để mô tả quan hệ phức tạp
     // =========================================================================

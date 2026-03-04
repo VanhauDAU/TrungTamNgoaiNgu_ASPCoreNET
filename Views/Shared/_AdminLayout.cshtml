@@ -8,15 +8,16 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" />
     <link rel="stylesheet" href="~/css/admin.css?v=3" asp-append-version="true" />
+    @await RenderSectionAsync("Styles", required: false)
 </head>
 <body>
 
 @{
     var ctrl   = ViewContext.RouteData.Values["controller"]?.ToString() ?? "";
-    bool inDaoTao   = ctrl is "KhoaHoc" or "DanhMuc" or "LopHoc";
+    bool inDaoTao   = ctrl is "KhoaHoc" or "CourseCategories" or "LopHoc";
     bool inNhanSu   = ctrl is "HocVien" or "GiaoVien";
     bool inTaiChinh = ctrl is "HoaDon" or "Luong";
-    bool inHeThong  = ctrl is "CoSo" or "ThongBao";
+    bool inHeThong  = ctrl is "CoSo" or "ThongBao" or "AuditLogs";
 }
 
 <!-- ═══════════ SIDEBAR ═══════════ -->
@@ -51,8 +52,8 @@
                 <i class="bi bi-chevron-right arrow"></i>
             </button>
             <div class="sb-items @(inDaoTao ? "open" : "")" id="g-daotao">
-                <a class="sb-item @(ctrl == "DanhMuc" ? "active" : "")"
-                   asp-controller="DanhMuc" asp-action="Index" asp-route-area="">Danh mục khóa học</a>
+                <a class="sb-item @(ctrl == "CourseCategories" ? "active" : "")"
+                   asp-controller="CourseCategories" asp-action="Index" asp-route-area="">Danh mục khóa học</a>
                 <a class="sb-item @(ctrl == "KhoaHoc" ? "active" : "")"
                    asp-controller="KhoaHoc" asp-action="Index" asp-route-area="">Khóa học</a>
                 <a class="sb-item @(ctrl == "LopHoc" ? "active" : "")"
@@ -106,6 +107,8 @@
                    asp-controller="CoSo" asp-action="Index" asp-route-area="">Cơ sở đào tạo</a>
                 <a class="sb-item @(ctrl == "ThongBao" ? "active" : "")"
                    asp-controller="ThongBao" asp-action="Index" asp-route-area="">Thông báo</a>
+                <a class="sb-item @(ctrl == "AuditLogs" ? "active" : "")"
+                   asp-controller="AuditLogs" asp-action="Index" asp-route-area="">Nhật ký hệ thống</a>
                 <a class="sb-item" href="/" target="_blank">Xem trang web ↗</a>
             </div>
         </div>
