@@ -31,9 +31,8 @@ public class ServiceResult
 public class KhoaHocQuanLyThongKe
 {
     public int TongKhoaHoc { get; set; }
-    public int DangMo { get; set; }
-    public int SapKhaiGiang { get; set; }
-    public int DaDong { get; set; }
+    public int DangHoatDong { get; set; }
+    public int TamNgung { get; set; }
     public int DaXoaMem { get; set; }
 }
 

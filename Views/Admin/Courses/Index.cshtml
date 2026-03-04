@@ -38,16 +38,12 @@
         <div class="kh-mini-value">@stats.TongKhoaHoc</div>
     </div>
     <div class="kh-mini-card open">
-        <div class="kh-mini-label">Đang mở</div>
-        <div class="kh-mini-value">@stats.DangMo</div>
-    </div>
-    <div class="kh-mini-card soon">
-        <div class="kh-mini-label">Sắp khai giảng</div>
-        <div class="kh-mini-value">@stats.SapKhaiGiang</div>
+        <div class="kh-mini-label">Khóa học hoạt động</div>
+        <div class="kh-mini-value">@stats.DangHoatDong</div>
     </div>
     <div class="kh-mini-card closed">
-        <div class="kh-mini-label">Đã đóng</div>
-        <div class="kh-mini-value">@stats.DaDong</div>
+        <div class="kh-mini-label">Khóa học tạm ngưng</div>
+        <div class="kh-mini-value">@stats.TamNgung</div>
     </div>
     <div class="kh-mini-card deleted">
         <div class="kh-mini-label">Đã xóa mềm</div>
@@ -82,12 +78,10 @@
 
             <select name="trangThai" class="form-control kh-select-trangthai">
                 <option value="">Tất cả trạng thái</option>
-                @if (trangThaiQ == "1") { <option value="1" selected>✅ Đang mở</option> }
-                else { <option value="1">✅ Đang mở</option> }
-                @if (trangThaiQ == "2") { <option value="2" selected>🔜 Sắp khai giảng</option> }
-                else { <option value="2">🔜 Sắp khai giảng</option> }
-                @if (trangThaiQ == "0") { <option value="0" selected>❌ Đã đóng</option> }
-                else { <option value="0">❌ Đã đóng</option> }
+                @if (trangThaiQ == "1") { <option value="1" selected>✅ Đang hoạt động</option> }
+                else { <option value="1">✅ Đang hoạt động</option> }
+                @if (trangThaiQ == "0") { <option value="0" selected>⏸ Tạm ngưng</option> }
+                else { <option value="0">⏸ Tạm ngưng</option> }
             </select>
 
             <select name="pageSize" class="form-control kh-select-pagesize">
@@ -131,11 +125,10 @@
                     </select>
                     <select id="bulkTrangThai" name="bulkTrangThai" class="form-control kh-bulk-status kh-hidden">
                         <option value="">-- Chọn trạng thái --</option>
-                        <option value="1">Đang mở</option>
-                        <option value="2">Sắp khai giảng</option>
-                        <option value="0">Đã đóng</option>
+                        <option value="1">Đang hoạt động</option>
+                        <option value="0">Tạm ngưng</option>
                     </select>
-                    <button type="submit" class="btn btn-primary btn-sm">Áp dụng</button>
+                    <button type="submit" class="btn btn-primary btn-sm kh-bulk-submit">Áp dụng</button>
                 </form>
                 <div id="selectedCount" class="kh-selected-count">Đã chọn: 0</div>
             </div>
@@ -191,18 +184,20 @@
                                 <span class="badge badge-gray">@(kh.LopHocs?.Count ?? 0) lớp</span>
                             </td>
                             <td>
-                                @if (kh.TrangThai == 1)
-                                { <span class="badge badge-success">Đang mở</span> }
-                                else if (kh.TrangThai == 2)
-                                { <span class="badge badge-warning">Sắp khai giảng</span> }
+                                @if (kh.TrangThai == 0)
+                                { <span class="badge badge-warning">Tạm ngưng</span> }
                                 else
-                                { <span class="badge badge-danger">Đã đóng</span> }
+                                { <span class="badge badge-success">Đang hoạt động</span> }
                             </td>
                             <td class="kh-created">
                                 @kh.CreatedAt.ToString("dd/MM/yyyy")
                             </td>
                             <td>
                                 <div class="kh-actions">
+                                    <a asp-action="Detail" asp-route-id="@kh.KhoaHocId"
+                                       class="btn btn-outline btn-sm" title="Chi tiết">
+                                        <i class="bi bi-eye"></i>
+                                    </a>
                                     <a asp-action="Edit" asp-route-id="@kh.KhoaHocId"
                                        class="btn btn-outline btn-sm" title="Chỉnh sửa">
                                         <i class="bi bi-pencil"></i>

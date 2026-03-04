@@ -87,9 +87,8 @@
                                 else { <span class="kh-muted">—</span> }
                             </td>
                             <td>
-                                @if (kh.TrangThai == 1) { <span class="badge badge-success">Đang mở</span> }
-                                else if (kh.TrangThai == 2) { <span class="badge badge-warning">Sắp khai giảng</span> }
-                                else { <span class="badge badge-danger">Đã đóng</span> }
+                                @if (kh.TrangThai == 0) { <span class="badge badge-warning">Tạm ngưng</span> }
+                                else { <span class="badge badge-success">Đang hoạt động</span> }
                             </td>
                             <td class="kh-trash-time">
                                 <i class="bi bi-clock-history"></i>
