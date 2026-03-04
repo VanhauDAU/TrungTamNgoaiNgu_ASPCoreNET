@@ -121,9 +121,9 @@ public interface ICoursesService
 }
 
 // ---------------------------------------------------------------------------
-// LOP HOC SERVICE — Quản lý lớp học
+// CLASSES SERVICE — Quản lý lớp học
 // ---------------------------------------------------------------------------
-public interface ILopHocService
+public interface IClassesService
 {
     Task<List<LopHoc>> LayDanhSachAsync(int? khoaHocId = null, int? coSoId = null, byte? trangThai = null);
     Task<LopHoc?> LayTheoIdAsync(int id);
@@ -136,9 +136,9 @@ public interface ILopHocService
 }
 
 // ---------------------------------------------------------------------------
-// HOC VIEN SERVICE — Quản lý học viên
+// STUDENTS SERVICE — Quản lý học viên
 // ---------------------------------------------------------------------------
-public interface IHocVienService
+public interface IStudentsService
 {
     Task<List<TaiKhoan>> LayDanhSachAsync(string? tuKhoa = null);
     Task<TaiKhoan?> LayTheoIdAsync(int id);
@@ -167,9 +167,9 @@ public interface IFinanceService
 }
 
 // ---------------------------------------------------------------------------
-// TAI KHOAN SERVICE — Đăng nhập, phân quyền
+// AUTH SERVICE — Đăng nhập, phân quyền
 // ---------------------------------------------------------------------------
-public interface ITaiKhoanService
+public interface IAuthService
 {
     // Kiểm tra đăng nhập → trả về TaiKhoan nếu đúng, null nếu sai
     Task<TaiKhoan?> DangNhapAsync(string taiKhoan, string matKhau);
