@@ -14,7 +14,7 @@
         <div class="page-sub">Đang chỉnh sửa: <strong>@Model.TenKhoaHoc</strong></div>
     </div>
     <div class="kh-header-actions">
-        <a asp-action="" class="btn btn-outline">
+        <a asp-action="Trash" class="btn btn-outline">
             <i class="bi bi-trash3"></i> Thùng rác
         </a>
         <a asp-action="Index" class="btn btn-outline">
@@ -68,12 +68,10 @@
                         <div class="form-group">
                             <label asp-for="TrangThai">Trạng thái</label>
                             <select asp-for="TrangThai" class="form-control">
-                                @if (Model.TrangThai == 1) { <option value="1" selected>✅ Đang mở</option> }
-                                else { <option value="1">✅ Đang mở</option> }
-                                @if (Model.TrangThai == 2) { <option value="2" selected>🔜 Sắp khai giảng</option> }
-                                else { <option value="2">🔜 Sắp khai giảng</option> }
-                                @if (Model.TrangThai == 0) { <option value="0" selected>❌ Đã đóng</option> }
-                                else { <option value="0">❌ Đã đóng</option> }
+                                @if (Model.TrangThai != 0) { <option value="1" selected>✅ Đang hoạt động</option> }
+                                else { <option value="1">✅ Đang hoạt động</option> }
+                                @if (Model.TrangThai == 0) { <option value="0" selected>⏸ Tạm ngưng</option> }
+                                else { <option value="0">⏸ Tạm ngưng</option> }
                             </select>
                             <span asp-validation-for="TrangThai" class="text-danger"></span>
                         </div>

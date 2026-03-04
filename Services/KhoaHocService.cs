@@ -35,7 +35,13 @@ public class KhoaHocService(AppDbContext db) : IKhoaHocService
             query = query.Where(kh => kh.DanhMucId == danhMucId);
 
         if (trangThai.HasValue)
-            query = query.Where(kh => kh.TrangThai == (byte)trangThai.Value);
+        {
+            // Trạng thái khóa học chỉ còn 2 mức: 1=Đang hoạt động, 0=Tạm ngưng.
+            // Dữ liệu legacy có thể còn giá trị 2, quy về nhóm hoạt động.
+            query = trangThai.Value == 0
+                ? query.Where(kh => kh.TrangThai == 0)
+                : query.Where(kh => kh.TrangThai != 0);
+        }
 
         var total = await query.CountAsync();
 
@@ -76,10 +82,11 @@ public class KhoaHocService(AppDbContext db) : IKhoaHocService
         return new KhoaHocQuanLyThongKe
         {
             TongKhoaHoc = await db.KhoaHocs.CountAsync(k => k.DeletedAt == null),
-            DangMo = await db.KhoaHocs.CountAsync(k => k.DeletedAt == null && k.TrangThai == 1),
-            SapKhaiGiang = await db.KhoaHocs.CountAsync(k => k.DeletedAt == null && k.TrangThai == 2),
-            DaDong = await db.KhoaHocs.CountAsync(k => k.DeletedAt == null && k.TrangThai == 0),
-            DaXoaMem = await db.KhoaHocs.CountAsync(k => k.DeletedAt != null)
+            DangHoatDong = await db.KhoaHocs.CountAsync(k => k.DeletedAt == null && k.TrangThai != 0),
+            TamNgung = await db.KhoaHocs.CountAsync(k => k.DeletedAt == null && k.TrangThai == 0),
+            DaXoaMem = await db.KhoaHocs.CountAsync(k => k.DeletedAt != null),
+            LopDangMo = await db.LopHocs.CountAsync(l => l.TrangThai == 1 || l.TrangThai == 4),
+            LopSapKhaiGiang = await db.LopHocs.CountAsync(l => l.TrangThai == 0)
         };
     }
 
@@ -94,6 +101,7 @@ public class KhoaHocService(AppDbContext db) : IKhoaHocService
 
     public async Task<int> ThemAsync(KhoaHoc khoaHoc, string? nguoiThucHien = null)
     {
+        khoaHoc.TrangThai = khoaHoc.TrangThai == 0 ? (byte)0 : (byte)1;
         khoaHoc.CreatedAt = DateTime.Now;
         khoaHoc.UpdatedAt = DateTime.Now;
         db.KhoaHocs.Add(khoaHoc);
@@ -109,6 +117,8 @@ public class KhoaHocService(AppDbContext db) : IKhoaHocService
 
     public async Task<ServiceResult> CapNhatCoKiemTraAsync(KhoaHoc khoaHoc, string? nguoiThucHien = null)
     {
+        khoaHoc.TrangThai = khoaHoc.TrangThai == 0 ? (byte)0 : (byte)1;
+
         var existing = await db.KhoaHocs
             .FirstOrDefaultAsync(k => k.KhoaHocId == khoaHoc.KhoaHocId && k.DeletedAt == null);
         if (existing == null)
@@ -126,7 +136,7 @@ public class KhoaHocService(AppDbContext db) : IKhoaHocService
                 return new ServiceResult
                 {
                     ThanhCong = false,
-                    ThongBao = "Không thể đóng khóa học vì đang có lớp đang mở/đang học. Hãy đóng lớp trước."
+                    ThongBao = "Không thể tạm ngưng khóa học vì đang có lớp đang mở/đang học. Hãy xử lý lớp trước."
                 };
             }
         }
@@ -198,6 +208,8 @@ public class KhoaHocService(AppDbContext db) : IKhoaHocService
 
     public async Task<ServiceResult> DoiTrangThaiHangLoatAsync(List<int> ids, byte trangThai, string? nguoiThucHien = null)
     {
+        trangThai = trangThai == 0 ? (byte)0 : (byte)1;
+
         var idSet = ids.Where(i => i > 0).Distinct().ToList();
         if (idSet.Count == 0)
             return new ServiceResult { ThanhCong = false, ThongBao = "Vui lòng chọn ít nhất một khóa học." };
@@ -253,8 +265,8 @@ public class KhoaHocService(AppDbContext db) : IKhoaHocService
             {
                 ThanhCong = daCapNhat.Count > 0,
                 ThongBao = daCapNhat.Count > 0
-                    ? $"Đã cập nhật {daCapNhat.Count} khóa học. Có {biChan.Count} khóa học không thể đóng vì đang có lớp mở/đang học."
-                    : "Không thể đóng các khóa học đã chọn vì đang có lớp mở/đang học."
+                    ? $"Đã cập nhật {daCapNhat.Count} khóa học. Có {biChan.Count} khóa học không thể tạm ngưng vì đang có lớp mở/đang học."
+                    : "Không thể tạm ngưng các khóa học đã chọn vì đang có lớp mở/đang học."
             };
         }
 
@@ -350,13 +362,13 @@ public class KhoaHocService(AppDbContext db) : IKhoaHocService
             return new ServiceResult { ThanhCong = false, ThongBao = "Không tìm thấy danh mục." };
 
         var conKhoaHocDangMo = await db.KhoaHocs.AnyAsync(k =>
-            k.DanhMucId == id && k.DeletedAt == null && k.TrangThai == 1);
+            k.DanhMucId == id && k.DeletedAt == null && k.TrangThai != 0);
         if (conKhoaHocDangMo)
         {
             return new ServiceResult
             {
                 ThanhCong = false,
-                ThongBao = "Không thể xóa mềm danh mục vì vẫn còn khóa học đang mở. Hãy chuyển khóa học sang danh mục khác hoặc đóng khóa học trước."
+                ThongBao = "Không thể xóa mềm danh mục vì vẫn còn khóa học đang hoạt động. Hãy chuyển khóa học sang danh mục khác hoặc tạm ngưng trước."
             };
         }
 
@@ -481,9 +493,8 @@ public class KhoaHocService(AppDbContext db) : IKhoaHocService
 
     private static string TrangThaiText(byte trangThai) => trangThai switch
     {
-        1 => "Đang mở",
-        2 => "Sắp khai giảng",
-        0 => "Đã đóng",
+        1 => "Đang hoạt động",
+        0 => "Tạm ngưng",
         _ => "Không xác định"
     };
 

@@ -1,0 +1,175 @@
+@model TrungTamNgoaiNgu.Models.KhoaHoc
+@{
+    ViewData["Title"] = "Chi tiết khóa học";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+}
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/admin-courses.css" asp-append-version="true" />
+}
+
+<div class="page-header">
+    <div>
+        <div class="page-title">Chi tiết khóa học</div>
+        <div class="page-sub">@Model.TenKhoaHoc</div>
+    </div>
+    <div class="kh-header-actions">
+        <a asp-action="Edit" asp-route-id="@Model.KhoaHocId" class="btn btn-primary">
+            <i class="bi bi-pencil"></i> Chỉnh sửa
+        </a>
+        <a asp-action="Index" class="btn btn-outline">
+            <i class="bi bi-arrow-left"></i> Quay lại
+        </a>
+    </div>
+</div>
+
+<div class="kh-detail-grid">
+    <div class="card">
+        <div class="card-header"><i class="bi bi-info-circle"></i> Thông tin khóa học</div>
+        <div class="card-body kh-detail-stack">
+            <div class="kh-detail-cover-wrap">
+                @if (!string.IsNullOrEmpty(Model.AnhKhoaHoc))
+                {
+                    <img src="@Model.AnhKhoaHoc" alt="@Model.TenKhoaHoc" class="kh-detail-cover" />
+                }
+                else
+                {
+                    <div class="kh-detail-cover-empty"><i class="bi bi-image"></i></div>
+                }
+            </div>
+
+            <div class="kh-detail-item">
+                <div class="kh-detail-label">Tên khóa học</div>
+                <div class="kh-detail-value">@Model.TenKhoaHoc</div>
+            </div>
+            <div class="kh-detail-item">
+                <div class="kh-detail-label">Slug</div>
+                <div class="kh-detail-value"><code>@Model.Slug</code></div>
+            </div>
+            <div class="kh-detail-item">
+                <div class="kh-detail-label">Danh mục</div>
+                <div class="kh-detail-value">@(Model.DanhMuc?.TenDanhMuc ?? "—")</div>
+            </div>
+            <div class="kh-detail-item">
+                <div class="kh-detail-label">Trạng thái khóa học</div>
+                <div class="kh-detail-value">
+                    @if (Model.TrangThai == 0)
+                    {
+                        <span class="badge badge-warning">Tạm ngưng</span>
+                    }
+                    else
+                    {
+                        <span class="badge badge-success">Đang hoạt động</span>
+                    }
+                </div>
+            </div>
+            <div class="kh-detail-item">
+                <div class="kh-detail-label">Mô tả ngắn</div>
+                <div class="kh-detail-value">@(string.IsNullOrWhiteSpace(Model.MoTa) ? "—" : Model.MoTa)</div>
+            </div>
+            <div class="kh-detail-item">
+                <div class="kh-detail-label">Đối tượng</div>
+                <div class="kh-detail-value">@(string.IsNullOrWhiteSpace(Model.DoiTuong) ? "—" : Model.DoiTuong)</div>
+            </div>
+            <div class="kh-detail-item">
+                <div class="kh-detail-label">Kết quả đạt được</div>
+                <div class="kh-detail-value">@(string.IsNullOrWhiteSpace(Model.KetQuaDatDuoc) ? "—" : Model.KetQuaDatDuoc)</div>
+            </div>
+            <div class="kh-detail-item">
+                <div class="kh-detail-label">Yêu cầu đầu vào</div>
+                <div class="kh-detail-value">@(string.IsNullOrWhiteSpace(Model.YeuCauDauVao) ? "—" : Model.YeuCauDauVao)</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="kh-detail-right">
+        <div class="card">
+            <div class="card-header"><i class="bi bi-collection"></i> Lớp học thuộc khóa (@(Model.LopHocs?.Count ?? 0))</div>
+            <div class="table-wrap">
+                @if (Model.LopHocs == null || !Model.LopHocs.Any())
+                {
+                    <div class="empty-state">
+                        <i class="bi bi-journal-x"></i>
+                        <p>Chưa có lớp học nào.</p>
+                    </div>
+                }
+                else
+                {
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Tên lớp</th>
+                                <th>Trạng thái lớp</th>
+                                <th>Ngày bắt đầu</th>
+                                <th>Ngày kết thúc</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var lop in Model.LopHocs.OrderByDescending(l => l.CreatedAt).Take(10))
+                            {
+                                <tr>
+                                    <td>@(string.IsNullOrWhiteSpace(lop.TenLopHoc) ? "—" : lop.TenLopHoc)</td>
+                                    <td>
+                                        @if (lop.TrangThai == 1 || lop.TrangThai == 4)
+                                        {
+                                            <span class="badge badge-success">Đang mở/đang học</span>
+                                        }
+                                        else if (lop.TrangThai == 0)
+                                        {
+                                            <span class="badge badge-info">Sắp khai giảng</span>
+                                        }
+                                        else if (lop.TrangThai == 2)
+                                        {
+                                            <span class="badge badge-gray">Đã đóng</span>
+                                        }
+                                        else
+                                        {
+                                            <span class="badge badge-danger">Đã hủy</span>
+                                        }
+                                    </td>
+                                    <td>@(lop.NgayBatDau?.ToString("dd/MM/yyyy") ?? "—")</td>
+                                    <td>@(lop.NgayKetThuc?.ToString("dd/MM/yyyy") ?? "—")</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                }
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-header"><i class="bi bi-cash-stack"></i> Học phí cấu hình (@(Model.HocPhis?.Count ?? 0))</div>
+            <div class="table-wrap">
+                @if (Model.HocPhis == null || !Model.HocPhis.Any())
+                {
+                    <div class="empty-state">
+                        <i class="bi bi-cash"></i>
+                        <p>Chưa cấu hình học phí.</p>
+                    </div>
+                }
+                else
+                {
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Số buổi</th>
+                                <th>Đơn giá/buổi</th>
+                                <th>Tổng học phí</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var hp in Model.HocPhis.OrderBy(h => h.SoBuoi))
+                            {
+                                <tr>
+                                    <td>@(hp.SoBuoi?.ToString() ?? "—")</td>
+                                    <td>@((hp.DonGia ?? 0).ToString("N0"))đ</td>
+                                    <td>@(hp.TongHocPhi.ToString("N0"))đ</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                }
+            </div>
+        </div>
+    </div>
+</div>

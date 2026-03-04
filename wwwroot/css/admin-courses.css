@@ -1,4 +1,4 @@
-/* KhoaHoc module styles (Index/Create/Edit/Trash) */
+/* Courses module styles (Index/Create/Edit/Detail/Trash) */
 
 .kh-header-actions {
     display: flex;
@@ -89,14 +89,28 @@
     gap: 8px;
     align-items: center;
     flex-wrap: wrap;
+    background: linear-gradient(180deg, #f8fafc 0%, #f1f5f9 100%);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 8px 10px;
 }
 
 .kh-bulk-action {
-    min-width: 170px;
+    min-width: 190px;
 }
 
 .kh-bulk-status {
-    width: 170px;
+    width: 190px;
+}
+
+.kh-bulk-action,
+.kh-bulk-status {
+    background: #fff;
+}
+
+.kh-bulk-submit {
+    min-width: 92px;
+    justify-content: center;
 }
 
 .kh-selected-count {
@@ -378,8 +392,76 @@
     color: var(--red);
 }
 
+.kh-detail-grid {
+    display: grid;
+    grid-template-columns: 1.15fr 1fr;
+    gap: 16px;
+}
+
+.kh-detail-right {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.kh-detail-stack {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.kh-detail-cover-wrap {
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    overflow: hidden;
+    background: #f8fafc;
+}
+
+.kh-detail-cover {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.kh-detail-cover-empty {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #94a3b8;
+    font-size: 1.5rem;
+}
+
+.kh-detail-item {
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 10px 12px;
+    background: #fff;
+}
+
+.kh-detail-label {
+    font-size: .72rem;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: .04em;
+    margin-bottom: 4px;
+}
+
+.kh-detail-value {
+    font-size: .9rem;
+    color: var(--text);
+    word-break: break-word;
+}
+
 @media (max-width: 1024px) {
     .kh-form-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .kh-detail-grid {
         grid-template-columns: 1fr;
     }
 }
