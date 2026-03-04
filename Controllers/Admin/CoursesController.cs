@@ -11,7 +11,7 @@ using TrungTamNgoaiNgu.Services.Interfaces;
 
 namespace TrungTamNgoaiNgu.Controllers.Admin;
 
-public class CoursesController(IKhoaHocService khoaHocService, IWebHostEnvironment env) : Controller
+public class CoursesController(ICoursesService courseService, IWebHostEnvironment env) : Controller
 {
     private static readonly string[] AllowedImageExtensions = [".jpg", ".jpeg", ".png", ".webp"];
     private static readonly HashSet<string> AllowedImageMimeTypes = new(StringComparer.OrdinalIgnoreCase)
@@ -26,10 +26,10 @@ public class CoursesController(IKhoaHocService khoaHocService, IWebHostEnvironme
         ViewBag.TuKhoa    = tuKhoa;
         ViewBag.DanhMucId = danhMucId;
         ViewBag.TrangThai = trangThai;
-        ViewBag.DanhMucs  = await khoaHocService.LayDanhMucAsync();
-        ViewBag.Stats     = await khoaHocService.LayThongKeQuanLyAsync();
+        ViewBag.DanhMucs  = await courseService.LayDanhMucAsync();
+        ViewBag.Stats     = await courseService.LayThongKeQuanLyAsync();
 
-        var ketQua = await khoaHocService.LayDanhSachPhanTrangAsync(tuKhoa, danhMucId, trangThai, page, pageSize);
+        var ketQua = await courseService.LayDanhSachPhanTrangAsync(tuKhoa, danhMucId, trangThai, page, pageSize);
 
         ViewBag.Total    = ketQua.Total;
         ViewBag.Page     = ketQua.Page;
@@ -42,7 +42,7 @@ public class CoursesController(IKhoaHocService khoaHocService, IWebHostEnvironme
     // Xem chi tiết 1 khóa học
     public async Task<IActionResult> Detail(int id)
     {
-        var khoaHoc = await khoaHocService.LayTheoIdAsync(id);
+        var khoaHoc = await courseService.LayTheoIdAsync(id);
         if (khoaHoc == null) return NotFound("Không tìm thấy khóa học");
         return View("~/Views/Admin/Courses/Detail.cshtml", khoaHoc);
     }
@@ -51,7 +51,7 @@ public class CoursesController(IKhoaHocService khoaHocService, IWebHostEnvironme
     // Hiển thị form thêm khóa học mới
     public async Task<IActionResult> Create()
     {
-        ViewBag.DanhMucs = await khoaHocService.LayDanhMucAsync();
+        ViewBag.DanhMucs = await courseService.LayDanhMucAsync();
         return View("~/Views/Admin/Courses/Create.cshtml", new KhoaHoc());
     }
 
@@ -68,7 +68,7 @@ public class CoursesController(IKhoaHocService khoaHocService, IWebHostEnvironme
 
         if (!ModelState.IsValid)
         {
-            ViewBag.DanhMucs = await khoaHocService.LayDanhMucAsync();
+            ViewBag.DanhMucs = await courseService.LayDanhMucAsync();
             return View("~/Views/Admin/Courses/Create.cshtml", khoaHoc);
         }
 
@@ -76,9 +76,9 @@ public class CoursesController(IKhoaHocService khoaHocService, IWebHostEnvironme
         khoaHoc.AnhKhoaHoc = await LuuAnhKhoaHocAsync(anhFile);
 
         // Tạo slug chuẩn + chống trùng
-        khoaHoc.Slug = await khoaHocService.TaoSlugKhoaHocAsync(khoaHoc.TenKhoaHoc);
+        khoaHoc.Slug = await courseService.TaoSlugKhoaHocAsync(khoaHoc.TenKhoaHoc);
 
-        await khoaHocService.ThemAsync(khoaHoc, LayNguoiThucHien());
+        await courseService.ThemAsync(khoaHoc, LayNguoiThucHien());
 
         TempData["ThanhCong"] = "Đã thêm khóa học thành công!";
         return RedirectToAction(nameof(Index));
@@ -88,9 +88,9 @@ public class CoursesController(IKhoaHocService khoaHocService, IWebHostEnvironme
     // Hiển thị form sửa khóa học
     public async Task<IActionResult> Edit(int id)
     {
-        var khoaHoc = await khoaHocService.LayTheoIdAsync(id);
+        var khoaHoc = await courseService.LayTheoIdAsync(id);
         if (khoaHoc == null) return NotFound();
-        ViewBag.DanhMucs = await khoaHocService.LayDanhMucAsync();
+        ViewBag.DanhMucs = await courseService.LayDanhMucAsync();
         return View("~/Views/Admin/Courses/Edit.cshtml", khoaHoc);
     }
 
@@ -105,7 +105,7 @@ public class CoursesController(IKhoaHocService khoaHocService, IWebHostEnvironme
 
         if (!ModelState.IsValid)
         {
-            ViewBag.DanhMucs = await khoaHocService.LayDanhMucAsync();
+            ViewBag.DanhMucs = await courseService.LayDanhMucAsync();
             return View("~/Views/Admin/Courses/Edit.cshtml", khoaHoc);
         }
 
@@ -117,13 +117,13 @@ public class CoursesController(IKhoaHocService khoaHocService, IWebHostEnvironme
         }
 
         // Cập nhật slug theo tên mới (tránh trùng slug khóa học khác)
-        khoaHoc.Slug = await khoaHocService.TaoSlugKhoaHocAsync(khoaHoc.TenKhoaHoc, khoaHoc.KhoaHocId);
+        khoaHoc.Slug = await courseService.TaoSlugKhoaHocAsync(khoaHoc.TenKhoaHoc, khoaHoc.KhoaHocId);
 
-        var ketQua = await khoaHocService.CapNhatCoKiemTraAsync(khoaHoc, LayNguoiThucHien());
+        var ketQua = await courseService.CapNhatCoKiemTraAsync(khoaHoc, LayNguoiThucHien());
         if (!ketQua.ThanhCong)
         {
             ModelState.AddModelError("TrangThai", ketQua.ThongBao);
-            ViewBag.DanhMucs = await khoaHocService.LayDanhMucAsync();
+            ViewBag.DanhMucs = await courseService.LayDanhMucAsync();
             return View("~/Views/Admin/Courses/Edit.cshtml", khoaHoc);
         }
 
@@ -136,7 +136,7 @@ public class CoursesController(IKhoaHocService khoaHocService, IWebHostEnvironme
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> softdelete(int id)
     {
-        var ketQua = await khoaHocService.XoaMemAsync(id, LayNguoiThucHien());
+        var ketQua = await courseService.XoaMemAsync(id, LayNguoiThucHien());
         TempData[ketQua.ThanhCong ? "ThanhCong" : "LoiXay"] = ketQua.ThongBao;
         return RedirectToAction(nameof(Index));
     }
@@ -144,7 +144,7 @@ public class CoursesController(IKhoaHocService khoaHocService, IWebHostEnvironme
     // GET /Admin/Courses/Trash — Thùng rác
     public async Task<IActionResult> Trash()
     {
-        var danhSach = await khoaHocService.LayThuRacAsync();
+        var danhSach = await courseService.LayThuRacAsync();
         return View("~/Views/Admin/Courses/Trash.cshtml", danhSach);
     }
 
@@ -153,7 +153,7 @@ public class CoursesController(IKhoaHocService khoaHocService, IWebHostEnvironme
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> restore(int id)
     {
-        var ketQua = await khoaHocService.KhoiPhucAsync(id, LayNguoiThucHien());
+        var ketQua = await courseService.KhoiPhucAsync(id, LayNguoiThucHien());
         TempData[ketQua.ThanhCong ? "ThanhCong" : "LoiXay"] = ketQua.ThongBao;
         return RedirectToAction(nameof(Trash));
     }
@@ -171,10 +171,10 @@ public class CoursesController(IKhoaHocService khoaHocService, IWebHostEnvironme
                     TempData["LoiXay"] = "Vui lòng chọn trạng thái cần cập nhật.";
                     return RedirectToAction(nameof(Index));
                 }
-                ketQua = await khoaHocService.DoiTrangThaiHangLoatAsync(selectedIds, bulkTrangThai.Value, LayNguoiThucHien());
+                ketQua = await courseService.DoiTrangThaiHangLoatAsync(selectedIds, bulkTrangThai.Value, LayNguoiThucHien());
                 break;
             case "soft-delete":
-                ketQua = await khoaHocService.XoaMemHangLoatAsync(selectedIds, LayNguoiThucHien());
+                ketQua = await courseService.XoaMemHangLoatAsync(selectedIds, LayNguoiThucHien());
                 break;
             default:
                 TempData["LoiXay"] = "Hành động không hợp lệ.";
@@ -189,7 +189,7 @@ public class CoursesController(IKhoaHocService khoaHocService, IWebHostEnvironme
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> bulkrestore(List<int> selectedIds)
     {
-        var ketQua = await khoaHocService.KhoiPhucHangLoatAsync(selectedIds, LayNguoiThucHien());
+        var ketQua = await courseService.KhoiPhucHangLoatAsync(selectedIds, LayNguoiThucHien());
         TempData[ketQua.ThanhCong ? "ThanhCong" : "LoiXay"] = ketQua.ThongBao;
         return RedirectToAction(nameof(Trash));
     }

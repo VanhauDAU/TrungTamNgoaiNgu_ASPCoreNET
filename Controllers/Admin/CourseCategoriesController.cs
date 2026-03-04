@@ -10,7 +10,7 @@ using TrungTamNgoaiNgu.Services.Interfaces;
 
 namespace TrungTamNgoaiNgu.Controllers.Admin;
 
-public class CourseCategoriesController(IKhoaHocService khoaHocService) : Controller
+public class CourseCategoriesController(ICoursesService courseService) : Controller
 {
     // GET /Admin/CourseCategories
     public async Task<IActionResult> Index(string? tuKhoa, int? trangThai, int page = 1, int pageSize = 10)
@@ -18,7 +18,7 @@ public class CourseCategoriesController(IKhoaHocService khoaHocService) : Contro
         ViewBag.TuKhoa    = tuKhoa;
         ViewBag.TrangThai = trangThai;
 
-        var tatCa = await khoaHocService.LayDanhSachDanhMucAsync(tuKhoa);
+        var tatCa = await courseService.LayDanhSachDanhMucAsync(tuKhoa);
 
         // Lọc trạng thái phía server
         if (trangThai.HasValue)
@@ -57,7 +57,7 @@ public class CourseCategoriesController(IKhoaHocService khoaHocService) : Contro
             .Replace(" ", "-")
             .Replace("đ", "d"); // Basic mock formatting
 
-        await khoaHocService.ThemDanhMucAsync(danhMuc);
+        await courseService.ThemDanhMucAsync(danhMuc);
 
         TempData["ThanhCong"] = "Đã thêm danh mục thành công!";
         return RedirectToAction(nameof(Index));
@@ -66,7 +66,7 @@ public class CourseCategoriesController(IKhoaHocService khoaHocService) : Contro
     // GET /Admin/CourseCategories/Edit/5
     public async Task<IActionResult> Edit(int id)
     {
-        var danhMuc = await khoaHocService.LayDanhMucTheoIdAsync(id);
+        var danhMuc = await courseService.LayDanhMucTheoIdAsync(id);
         if (danhMuc == null) return NotFound();
         
         return View("~/Views/Admin/CourseCategories/Edit.cshtml", danhMuc);
@@ -84,7 +84,7 @@ public class CourseCategoriesController(IKhoaHocService khoaHocService) : Contro
             return View("~/Views/Admin/CourseCategories/Edit.cshtml", danhMuc);
         }
 
-        var ketQua = await khoaHocService.CapNhatDanhMucAsync(danhMuc);
+        var ketQua = await courseService.CapNhatDanhMucAsync(danhMuc);
         if (!ketQua) return NotFound();
 
         TempData["ThanhCong"] = "Đã cập nhật danh mục!";
@@ -96,7 +96,7 @@ public class CourseCategoriesController(IKhoaHocService khoaHocService) : Contro
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> softdelete(int id)
     {
-        var ketQua = await khoaHocService.XoaMemDanhMucAsync(id, LayNguoiThucHien());
+        var ketQua = await courseService.XoaMemDanhMucAsync(id, LayNguoiThucHien());
         TempData[ketQua.ThanhCong ? "ThanhCong" : "LoiXay"] = ketQua.ThongBao;
         return RedirectToAction(nameof(Index));
     }
@@ -104,7 +104,7 @@ public class CourseCategoriesController(IKhoaHocService khoaHocService) : Contro
     // GET /Admin/CourseCategories/Trash — Thùng rác
     public async Task<IActionResult> Trash()
     {
-        var danhSach = await khoaHocService.LayThuRacDanhMucAsync();
+        var danhSach = await courseService.LayThuRacDanhMucAsync();
         return View("~/Views/Admin/CourseCategories/Trash.cshtml", danhSach);
     }
 
@@ -113,7 +113,7 @@ public class CourseCategoriesController(IKhoaHocService khoaHocService) : Contro
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> restore(int id)
     {
-        var ketQua = await khoaHocService.KhoiPhucDanhMucAsync(id, LayNguoiThucHien());
+        var ketQua = await courseService.KhoiPhucDanhMucAsync(id, LayNguoiThucHien());
         TempData[ketQua.ThanhCong ? "ThanhCong" : "LoiXay"] = ketQua.ThongBao;
         return RedirectToAction(nameof(Trash));
     }

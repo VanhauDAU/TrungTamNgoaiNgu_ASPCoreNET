@@ -1,5 +1,5 @@
 // =============================================================================
-// KHOA HOC SERVICE — IMPLEMENTATION
+// COURSE SERVICE — IMPLEMENTATION
 // =============================================================================
 
 using Microsoft.EntityFrameworkCore;
@@ -12,7 +12,7 @@ using TrungTamNgoaiNgu.Services.Interfaces;
 
 namespace TrungTamNgoaiNgu.Services;
 
-public class KhoaHocService(AppDbContext db) : IKhoaHocService
+public class CoursesService(AppDbContext db) : ICoursesService
 {
     public async Task<PagedResult<KhoaHoc>> LayDanhSachPhanTrangAsync(
         string? tuKhoa = null,

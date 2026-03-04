@@ -59,9 +59,9 @@ public class DashboardThongKe
 }
 
 // ---------------------------------------------------------------------------
-// KHOA HOC SERVICE — Quản lý khóa học
+// COURSE SERVICE — Quản lý khóa học
 // ---------------------------------------------------------------------------
-public interface IKhoaHocService
+public interface ICoursesService
 {
     // Lấy danh sách (phân trang tại DB + tìm kiếm/lọc)
     Task<PagedResult<KhoaHoc>> LayDanhSachPhanTrangAsync(
