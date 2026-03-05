@@ -34,6 +34,8 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
     public DbSet<DangKyLopHoc> DangKyLopHocs { get; set; }
     public DbSet<BuoiHoc> BuoiHocs { get; set; }
     public DbSet<DiemDanh> DiemDanhs { get; set; }
+    public DbSet<BaiThi> BaiThis { get; set; }
+    public DbSet<DiemBaiThi> DiemBaiThis { get; set; }
 
     // =========================================================================
     // NHÓM 3: TÀI CHÍNH
@@ -58,6 +60,10 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
     public DbSet<LienHe> LienHes { get; set; }
     public DbSet<LienHeLichSu> LienHeLichSus { get; set; }
     public DbSet<LienHePhanHoi> LienHePhanHois { get; set; }
+    public DbSet<DanhGiaGiaoVien> DanhGiaGiaoViens { get; set; }
+    public DbSet<PhanHoi> PhanHois { get; set; }
+    public DbSet<TaiLieu> TaiLieus { get; set; }
+    public DbSet<NoiDungBaiHoc> NoiDungBaiHocs { get; set; }
     public DbSet<ThongBao> ThongBaos { get; set; }
     public DbSet<ThongBaoNguoiDung> ThongBaoNguoiDungs { get; set; }
     public DbSet<ThongBaoTepDinh> ThongBaoTepDinhs { get; set; }
@@ -151,11 +157,20 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
             e.Property(l => l.DonGiaMotBuoi).HasColumnType("decimal(15,2)");
             e.Property(l => l.TongTien).HasColumnType("decimal(15,2)");
         });
+        modelBuilder.Entity<DiemBaiThi>().Property(d => d.DiemSo).HasColumnType("decimal(4,2)");
         modelBuilder.Entity<PhieuThu>().Property(p => p.SoTien).HasColumnType("decimal(15,2)");
         modelBuilder.Entity<NhanSu>().Property(n => n.LuongCoBan).HasColumnType("decimal(15,2)");
         modelBuilder.Entity<CoSoDaoTao>(e => {
             e.Property(c => c.ViDo).HasColumnType("decimal(10,7)");
             e.Property(c => c.KinhDo).HasColumnType("decimal(10,7)");
         });
+
+        // Contact tracking extension tables (theo SQL (10))
+        modelBuilder.Entity<LienHeLichSu>().HasIndex(x => x.LienHeId);
+        modelBuilder.Entity<LienHePhanHoi>().HasIndex(x => x.LienHeId);
+        modelBuilder.Entity<LienHePhanHoi>()
+            .Property(x => x.Loai)
+            .HasDefaultValue("noi_bo");
+        modelBuilder.Entity<ThongBaoTepDinh>().HasIndex(x => x.ThongBaoId);
     }
 }

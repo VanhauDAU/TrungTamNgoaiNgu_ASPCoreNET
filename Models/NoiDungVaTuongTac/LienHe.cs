@@ -48,6 +48,20 @@ public class LienHe
     [Column("trangThai")]
     public byte? TrangThai { get; set; }
 
+    // tu_van | ho_tro | khieu_nai | khac
+    [Column("loaiLienHe")]
+    [MaxLength(20)]
+    public string LoaiLienHe { get; set; } = "tu_van";
+
+    [Column("ghiChuNoiBo")]
+    public string? GhiChuNoiBo { get; set; }
+
+    [Column("nguoiPhuTrachId")]
+    public int? NguoiPhuTrachId { get; set; }
+
+    [Column("thoiGianXuLy")]
+    public DateTime? ThoiGianXuLy { get; set; }
+
     [Column("taiKhoanId")]
     public int? TaiKhoanId { get; set; }
 
@@ -56,6 +70,12 @@ public class LienHe
 
     [Column("updated_at")]
     public DateTime UpdatedAt { get; set; } = DateTime.Now;
+
+    [Column("deleted_at")]
+    public DateTime? DeletedAt { get; set; }
+
+    public ICollection<LienHeLichSu> LichSus { get; set; } = [];
+    public ICollection<LienHePhanHoi> PhanHois { get; set; } = [];
 }
 
 // ---------------------------------------------------------------------------

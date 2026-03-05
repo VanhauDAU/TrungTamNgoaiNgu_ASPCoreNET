@@ -32,6 +32,9 @@ public class ThongBao
     [Column("nguoiGuiId")]
     public int? NguoiGuiId { get; set; }
 
+    [Column("loaiThongBao")]
+    public byte? LoaiThongBao { get; set; }
+
     // 0=Tất cả | 1=Theo lớp | 2=Theo khóa | 3=Cá nhân
     [Column("doiTuongGui")]
     [Display(Name = "Đối tượng gửi")]
@@ -75,6 +78,7 @@ public class ThongBao
     [ForeignKey(nameof(NguoiGuiId))]
     public TaiKhoan? NguoiGui { get; set; }
     public ICollection<ThongBaoNguoiDung> ThongBaoNguoiDungs { get; set; } = [];
+    public ICollection<ThongBaoTepDinh> TepDinhs { get; set; } = [];
 }
 
 // ---------------------------------------------------------------------------
