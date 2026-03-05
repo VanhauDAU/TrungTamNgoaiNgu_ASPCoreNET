@@ -99,24 +99,9 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
             .WithMany(dm => dm.Children)
             .HasForeignKey(dm => dm.ParentId)
             .OnDelete(DeleteBehavior.Restrict);
-
-        modelBuilder.Entity<LienHe>()
-            .Property(lh => lh.LoaiLienHe)
-            .HasDefaultValue("tu_van");
-
-        modelBuilder.Entity<LienHePhanHoi>()
-            .Property(ph => ph.Loai)
-            .HasDefaultValue("noi_bo");
-
-        modelBuilder.Entity<LienHePhanHoi>()
-            .Property(ph => ph.DaGuiEmail)
-            .HasDefaultValue(false);
-
-        modelBuilder.Entity<LienHeLichSu>()
-            .HasIndex(ls => ls.LienHeId);
-
-        modelBuilder.Entity<LienHePhanHoi>()
-            .HasIndex(ph => ph.LienHeId);
+        modelBuilder.Entity<DanhMucKhoaHoc>()
+            .HasIndex(dm => dm.ParentId)
+            .HasDatabaseName("idx_danhmuc_parent");
 
         // --- BaiViet: Many-to-Many với DanhMucBaiViet ---
         modelBuilder.Entity<BaiViet>()
@@ -166,11 +151,17 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
         });
 
         // Contact tracking extension tables (theo SQL (10))
+        modelBuilder.Entity<LienHe>()
+            .Property(x => x.LoaiLienHe)
+            .HasDefaultValue("tu_van");
         modelBuilder.Entity<LienHeLichSu>().HasIndex(x => x.LienHeId);
         modelBuilder.Entity<LienHePhanHoi>().HasIndex(x => x.LienHeId);
         modelBuilder.Entity<LienHePhanHoi>()
             .Property(x => x.Loai)
             .HasDefaultValue("noi_bo");
+        modelBuilder.Entity<LienHePhanHoi>()
+            .Property(x => x.DaGuiEmail)
+            .HasDefaultValue(false);
         modelBuilder.Entity<ThongBaoTepDinh>().HasIndex(x => x.ThongBaoId);
     }
 }

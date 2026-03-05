@@ -37,6 +37,9 @@ public class DanhMucKhoaHoc
     [Column("trangThai")]
     public byte TrangThai { get; set; } = 1;
 
+    [Column("parent_id")]
+    public int? ParentId { get; set; }
+
     [Column("created_at")]
     public DateTime CreatedAt { get; set; } = DateTime.Now;
 
@@ -49,6 +52,11 @@ public class DanhMucKhoaHoc
     
     // Một danh mục có nhiều khóa học
     public ICollection<KhoaHoc> KhoaHocs { get; set; } = [];
+
+    [ForeignKey(nameof(ParentId))]
+    public DanhMucKhoaHoc? Parent { get; set; }
+
+    public ICollection<DanhMucKhoaHoc> Children { get; set; } = [];
 
     [NotMapped]
     public bool IsDeleted => DeletedAt != null;
