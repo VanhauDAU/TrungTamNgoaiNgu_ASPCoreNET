@@ -56,8 +56,11 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
     public DbSet<Tag> Tags { get; set; }
     public DbSet<BaiViet> BaiViets { get; set; }
     public DbSet<LienHe> LienHes { get; set; }
+    public DbSet<LienHeLichSu> LienHeLichSus { get; set; }
+    public DbSet<LienHePhanHoi> LienHePhanHois { get; set; }
     public DbSet<ThongBao> ThongBaos { get; set; }
     public DbSet<ThongBaoNguoiDung> ThongBaoNguoiDungs { get; set; }
+    public DbSet<ThongBaoTepDinh> ThongBaoTepDinhs { get; set; }
     public DbSet<Setting> Settings { get; set; }
 
     // =========================================================================
@@ -83,6 +86,31 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
             .HasOne(tk => tk.NhanSu)
             .WithOne(ns => ns.TaiKhoan)
             .HasForeignKey<NhanSu>(ns => ns.TaiKhoanId);
+
+        // Danh mục khóa học hỗ trợ cây cha-con.
+        modelBuilder.Entity<DanhMucKhoaHoc>()
+            .HasOne(dm => dm.Parent)
+            .WithMany(dm => dm.Children)
+            .HasForeignKey(dm => dm.ParentId)
+            .OnDelete(DeleteBehavior.Restrict);
+
+        modelBuilder.Entity<LienHe>()
+            .Property(lh => lh.LoaiLienHe)
+            .HasDefaultValue("tu_van");
+
+        modelBuilder.Entity<LienHePhanHoi>()
+            .Property(ph => ph.Loai)
+            .HasDefaultValue("noi_bo");
+
+        modelBuilder.Entity<LienHePhanHoi>()
+            .Property(ph => ph.DaGuiEmail)
+            .HasDefaultValue(false);
+
+        modelBuilder.Entity<LienHeLichSu>()
+            .HasIndex(ls => ls.LienHeId);
+
+        modelBuilder.Entity<LienHePhanHoi>()
+            .HasIndex(ph => ph.LienHeId);
 
         // --- BaiViet: Many-to-Many với DanhMucBaiViet ---
         modelBuilder.Entity<BaiViet>()

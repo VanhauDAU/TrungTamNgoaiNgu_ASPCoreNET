@@ -11,6 +11,7 @@ Bo tai lieu nay duoc chia theo tung "vertical slice" de de doc, de cap nhat va d
 - `docs/05-huong-dan/huong-dan-phat-trien-va-lam-viec.md`: Huong dan setup dev, chay app, workflow git/migration.
 - `docs/06-deployment/huong-dan-trien-khai-he-thong.md`: Huong dan release va trien khai production.
 - `docs/07-algorithms/thuat-toan-va-quy-tac-nghiep-vu.md`: Cac thuat toan/quy tac nghiep vu quan trong.
+
 - `docs/data.sql`: Script SQL tham khao de kiem tra du lieu/bao cao nhanh.
 - `docs/progress.md`: Tien do module, da xong/chua xong, ke hoach tiep theo.
 
