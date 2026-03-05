@@ -8,6 +8,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace TrungTamNgoaiNgu.Models;
 
+
 [Table("nhatkyhethong")]
 public class NhatKyHeThong
 {
