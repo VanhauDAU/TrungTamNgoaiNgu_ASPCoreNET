@@ -182,6 +182,23 @@ public class LienHe
     [Column("trangThai")]
     public byte? TrangThai { get; set; }
 
+    [Column("loaiLienHe")]
+    [MaxLength(20)]
+    [Display(Name = "Loại liên hệ")]
+    public string LoaiLienHe { get; set; } = "tu_van";
+
+    [Column("ghiChuNoiBo")]
+    [Display(Name = "Ghi chú nội bộ")]
+    public string? GhiChuNoiBo { get; set; }
+
+    [Column("nguoiPhuTrachId")]
+    [Display(Name = "Người phụ trách")]
+    public long? NguoiPhuTrachId { get; set; }
+
+    [Column("thoiGianXuLy")]
+    [Display(Name = "Thời gian xử lý")]
+    public DateTime? ThoiGianXuLy { get; set; }
+
     [Column("taiKhoanId")]
     public int? TaiKhoanId { get; set; }
 
@@ -190,6 +207,88 @@ public class LienHe
 
     [Column("updated_at")]
     public DateTime UpdatedAt { get; set; } = DateTime.Now;
+
+    [Column("deleted_at")]
+    public DateTime? DeletedAt { get; set; }
+}
+
+// ---------------------------------------------------------------------------
+// BẢNG: lienhe_lichsu — Lịch sử xử lý liên hệ
+// ---------------------------------------------------------------------------
+[Table("lienhe_lichsu")]
+public class LienHeLichSu
+{
+    [Key]
+    [Column("lichSuId")]
+    public long LichSuId { get; set; }
+
+    [Column("lienHeId")]
+    public long LienHeId { get; set; }
+
+    [Required]
+    [Column("hanhDong")]
+    [MaxLength(100)]
+    public string HanhDong { get; set; } = string.Empty;
+
+    [Column("noiDung")]
+    public string? NoiDung { get; set; }
+
+    [Column("giaTriCu")]
+    [MaxLength(200)]
+    public string? GiaTriCu { get; set; }
+
+    [Column("giaTriMoi")]
+    [MaxLength(200)]
+    public string? GiaTriMoi { get; set; }
+
+    [Column("nguoiThucHienId")]
+    public long? NguoiThucHienId { get; set; }
+
+    [Column("tenNguoiThucHien")]
+    [MaxLength(200)]
+    public string? TenNguoiThucHien { get; set; }
+
+    [Column("created_at")]
+    public DateTime CreatedAt { get; set; } = DateTime.Now;
+}
+
+// ---------------------------------------------------------------------------
+// BẢNG: lienhe_phanhoi — Nội dung phản hồi liên hệ
+// ---------------------------------------------------------------------------
+[Table("lienhe_phanhoi")]
+public class LienHePhanHoi
+{
+    [Key]
+    [Column("phanHoiId")]
+    public long PhanHoiId { get; set; }
+
+    [Column("lienHeId")]
+    public long LienHeId { get; set; }
+
+    [Required]
+    [Column("noiDung")]
+    public string NoiDung { get; set; } = string.Empty;
+
+    [Required]
+    [Column("loai")]
+    [MaxLength(20)]
+    public string Loai { get; set; } = "noi_bo";
+
+    [Column("nguoiGuiId")]
+    public long? NguoiGuiId { get; set; }
+
+    [Column("tenNguoiGui")]
+    [MaxLength(200)]
+    public string? TenNguoiGui { get; set; }
+
+    [Column("daGuiEmail")]
+    public bool DaGuiEmail { get; set; }
+
+    [Column("created_at")]
+    public DateTime? CreatedAt { get; set; }
+
+    [Column("updated_at")]
+    public DateTime? UpdatedAt { get; set; }
 }
 
 // ---------------------------------------------------------------------------
@@ -202,7 +301,7 @@ public class ThongBao
 {
     [Key]
     [Column("thongBaoId")]
-    public long ThongBaoId { get; set; }
+    public int ThongBaoId { get; set; }
 
     [Column("tieuDe")]
     [MaxLength(255)]
@@ -223,7 +322,7 @@ public class ThongBao
     public byte? DoiTuongGui { get; set; }
 
     [Column("doiTuongId")]
-    public long? DoiTuongId { get; set; }
+    public int? DoiTuongId { get; set; }
 
     // 0=Hệ thống | 1=Học tập | 2=Tài chính | 3=Sự kiện | 4=Khẩn cấp
     [Column("loaiGui")]
@@ -260,6 +359,7 @@ public class ThongBao
     [ForeignKey(nameof(NguoiGuiId))]
     public TaiKhoan? NguoiGui { get; set; }
     public ICollection<ThongBaoNguoiDung> ThongBaoNguoiDungs { get; set; } = [];
+    public ICollection<ThongBaoTepDinh> TepDinhs { get; set; } = [];
 }
 
 // ---------------------------------------------------------------------------
@@ -270,10 +370,10 @@ public class ThongBaoNguoiDung
 {
     [Key]
     [Column("thongBaoNguoiDungId")]
-    public long ThongBaoNguoiDungId { get; set; }
+    public int ThongBaoNguoiDungId { get; set; }
 
     [Column("thongBaoId")]
-    public long? ThongBaoId { get; set; }
+    public int? ThongBaoId { get; set; }
 
     [Column("taiKhoanId")]
     public int? TaiKhoanId { get; set; }
@@ -297,6 +397,51 @@ public class ThongBaoNguoiDung
 
     [ForeignKey(nameof(TaiKhoanId))]
     public TaiKhoan? TaiKhoan { get; set; }
+}
+
+// ---------------------------------------------------------------------------
+// BẢNG: thongbao_tepdinh — File đính kèm của thông báo
+// ---------------------------------------------------------------------------
+[Table("thongbao_tepdinh")]
+public class ThongBaoTepDinh
+{
+    [Key]
+    [Column("tepDinhId")]
+    public long TepDinhId { get; set; }
+
+    [Column("thongBaoId")]
+    public int ThongBaoId { get; set; }
+
+    [Required]
+    [Column("tenFile")]
+    [MaxLength(255)]
+    public string TenFile { get; set; } = string.Empty;
+
+    [Required]
+    [Column("tenFileLuu")]
+    [MaxLength(255)]
+    public string TenFileLuu { get; set; } = string.Empty;
+
+    [Required]
+    [Column("duongDan")]
+    [MaxLength(500)]
+    public string DuongDan { get; set; } = string.Empty;
+
+    [Column("loaiFile")]
+    [MaxLength(100)]
+    public string? LoaiFile { get; set; }
+
+    [Column("kichThuoc")]
+    public long KichThuoc { get; set; }
+
+    [Column("created_at")]
+    public DateTime? CreatedAt { get; set; }
+
+    [Column("updated_at")]
+    public DateTime? UpdatedAt { get; set; }
+
+    [ForeignKey(nameof(ThongBaoId))]
+    public ThongBao? ThongBao { get; set; }
 }
 
 // ---------------------------------------------------------------------------

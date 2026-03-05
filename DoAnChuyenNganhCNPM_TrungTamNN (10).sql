@@ -2,10 +2,10 @@
 -- version 5.2.1
 -- https://www.phpmyadmin.net/
 --
--- Máy chủ: 127.0.0.1:3307
--- Thời gian đã tạo: Th3 01, 2026 lúc 10:33 AM
--- Phiên bản máy phục vụ: 11.5.2-MariaDB
--- Phiên bản PHP: 8.2.12
+-- Máy chủ: localhost
+-- Thời gian đã tạo: Th3 05, 2026 lúc 08:52 AM
+-- Phiên bản máy phục vụ: 10.4.28-MariaDB
+-- Phiên bản PHP: 8.2.4
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
@@ -18,7 +18,7 @@ SET time_zone = "+00:00";
 /*!40101 SET NAMES utf8mb4 */;
 
 --
--- Cơ sở dữ liệu: `doanchuyennganhcnpm_trungtamnn`
+-- Cơ sở dữ liệu: `DoAnChuyenNganhCNPM_TrungTamNN`
 --
 
 -- --------------------------------------------------------
@@ -65,11 +65,11 @@ CREATE TABLE `baiviet` (
 
 INSERT INTO `baiviet` (`baiVietId`, `tieuDe`, `slug`, `tomTat`, `noiDung`, `anhDaiDien`, `taiKhoanId`, `luotXem`, `trangThai`, `published_at`, `deleted_at`, `created_at`, `updated_at`) VALUES
 (3, 'Trải nghiệm học viên sau khóa IELTS tại trung tâm', 'trai-nghiem-hoc-vien-ielts', 'Chia sẻ cảm nhận của học viên sau khi hoàn thành khóa học.', '<p><strong>Nội dung b&agrave;i viết 01</strong></p>\r\n<p><strong><img src=\"http://127.0.0.1:8000/storage/bai-viet/content/6tWKYu9CQlpoUao9KpCMmpx759mF17sJmSwBNzwZ.jpg\" alt=\"\" width=\"251\" height=\"98\"></strong></p>\r\n<p style=\"text-align: center;\"><strong>Xin ch&agrave;o</strong></p>\r\n<p style=\"text-align: left;\"><span style=\"background-color: rgb(0, 0, 0); color: rgb(236, 240, 241);\"><strong><span style=\"background-color: rgb(186, 55, 42);\">Nội dung 01</span></strong></span></p>\r\n<p style=\"text-align: left;\">&nbsp;</p>\r\n<p style=\"text-align: left;\"><span style=\"background-color: rgb(0, 0, 0); color: rgb(236, 240, 241);\"><strong><span style=\"background-color: rgb(186, 55, 42);\"><a title=\"Bấm v&agrave;o để truy cập\" href=\"http://127.0.0.1:8000/blog/trai-nghiem-hoc-vien-ielts\">http://127.0.0.1:8000/blog/trai-nghiem-hoc-vien-ielts</a></span></strong></span></p>\r\n<p style=\"text-align: left;\"><span style=\"background-color: rgb(0, 0, 0); color: rgb(236, 240, 241);\"><strong><span style=\"background-color: rgb(186, 55, 42);\">Mục lục</span></strong></span></p>\r\n<ul>\r\n<li style=\"text-align: left;\"><span style=\"background-color: rgb(236, 240, 241); color: rgb(52, 73, 94);\"><strong>1.1 Hello</strong></span></li>\r\n<li style=\"text-align: left;\"><span style=\"background-color: rgb(236, 240, 241); color: rgb(52, 73, 94);\"><strong>1.2 xin ch&agrave;o</strong></span></li>\r\n</ul>\r\n<p style=\"text-align: left;\">&nbsp;</p>', 'bai-viet/bz6U6T6vqRYh4cOmFTUjIw23mkoPNFUKXenTEUZc.jpg', 1, 67, 1, '2026-01-27 13:11:43', NULL, '2026-01-27 06:11:43', '2026-02-28 08:41:58'),
-(4, 'Bí quyết đạt IELTS 8.0 trong 6 tháng', 'bi-quyet-dat-ielts-8-0-trong-6-thang', 'Hành trình chinh phục IELTS 8.0 không khó như bạn nghĩ nếu có lộ trình và phương pháp đúng đắn.', '<p style=\"text-align: justify;\"><span style=\"font-size: 16px;\">Kỳ thi IELTS không chỉ kiểm tra khả năng sử dụng tiếng Anh mà còn đòi hỏi bạn phải có một chiến lược ôn tập cẩn thận và khoa học.</span></p>\r\n<h2><span style=\"color: rgb(41, 105, 176);\">1. Xác định mục tiêu rõ ràng</span></h2>\r\n<p style=\"text-align: justify;\"><span style=\"font-size: 16px;\">Trước khi bắt đầu, hãy tự hỏi bản thân tại sao bạn cần điểm số này. Động lực thực sự sẽ giúp bạn không bỏ cuộc. Đặc biệt hãy cố gắng phân tích điểm số mục tiêu của từng kỹ năng.</span></p>\r\n<h2><span style=\"color: rgb(41, 105, 176);\">2. Lập kế hoạch học tập chi tiết</span></h2>\r\n<p style=\"text-align: justify;\"><span style=\"font-size: 16px;\">Chia nhỏ mục tiêu lớn thành các bước khả thi theo từng tuần, từng ngày. Ví dụ:</span></p>\r\n<ul>\r\n<li style=\"text-align: justify;\"><span style=\"font-size: 16px;\"><strong>Thứ 2, 4, 6:</strong> Luyện Kỹ năng Nghe và Đọc theo Format đề thi Cambridge.</span></li>\r\n<li style=\"text-align: justify;\"><span style=\"font-size: 16px;\"><strong>Thứ 3, 5, 7:</strong> Luyện Nói (ghi âm lại) và Viết (Task 1 &amp; Task 2).</span></li>\r\n<li style=\"text-align: justify;\"><span style=\"font-size: 16px;\"><strong>Chủ nhật:</strong> Làm 1 đề mock test hoàn chỉnh trong 3 tiếng.</span></li>\r\n</ul>\r\n<blockquote style=\"margin: 0 0 0 40px; border: none; padding: 0px;\">\r\n<p style=\"text-align: center;\"><span style=\"font-size: 18px; color: rgb(184, 49, 47);\"><em>\"Thành công là kết quả của sự chuẩn bị kỹ lưỡng.\"</em></span></p>\r\n</blockquote>\r\n<h2><span style=\"color: rgb(41, 105, 176);\">3. Tìm nguồn tài liệu phù hợp</span></h2>\r\n<p style=\"text-align: justify;\"><span style=\"font-size: 16px;\">Không nên ôm đồm quá nhiều sách. Bạn nên tập trung vào bộ <strong>Cambridge IELTS 10 - 18</strong> để tiếp xúc đề thi thật. Đồng thời sử dụng từ điển <em>Oxford Advanced Learner\'s Dictionary</em> để tra cứu chính xác collocation, context.</span></p>\r\n<p style=\"text-align: justify;\"><span style=\"font-size: 16px;\"><img src=\"https://images.unsplash.com/photo-1456513080510-7bf3a84b82f8?q=80&amp;w=2573&amp;auto=format&amp;fit=crop\" alt=\"\" width=\"100%\"></span></p>\r\n<p style=\"text-align: justify;\"><span style=\"font-size: 16px;\">Cuối cùng, đừng ngại mắc sai lầm. Hãy nhờ thầy cô hoặc những người đi trước (đã đạt band cao) feedback thường xuyên để biết được điểm yếu của mình ở đâu nhé. Chúc các bạn may mắn!</span></p>', 'bai-viet/bz6U6T6vqRYh4cOmFTUjIw23mkoPNFUKXenTEUZc.jpg', 1, 1500, 1, '2026-02-20 08:30:00', NULL, '2026-02-20 01:30:00', '2026-02-20 01:30:00'),
-(5, '10 lỗi sai phổ biến khi giao tiếp tiếng Anh', '10-loi-sai-pho-bien-khi-giao-tiep-tieng-anh', 'Những lỗi ngữ pháp và phát âm kinh điển mà người Việt hay mắc phải.', '<h2><span style=\"color: rgb(226, 80, 65);\">1. Bỏ quên âm đuôi (Ending sounds)</span></h2>\r\n<p><span style=\"font-size: 16px;\">Trong tiếng Việt không có khái niệm bật âm đuôi, do đó học viên thường có thói quen bỏ qua các âm như /s/, /t/, /d/, /z/ khi nói tiếng Anh. Điều này dẫn đến sự cố khó hiểu (miscommunication).</span></p>\r\n<p><span style=\"font-size: 16px;\"><strong>Ví dụ:</strong> <em>white</em> (trắng), <em>wife</em> (vợ), và <em>wine</em> (rượu) đều bị người Việt phát âm na ná giống \"oai\".</span></p>\r\n<h2><span style=\"color: rgb(226, 80, 65);\">2. Dịch từ sang từ (Word-by-word translation)</span></h2>\r\n<p><span style=\"font-size: 16px;\">Bạn nghĩ bằng tiếng Việt rồi cố gắng tìm từ tiếng Anh với nghĩa tương đương để lắp ghép lại thành 1 câu. Đây là cách chắc chắn làm câu nói của bạn mất tự nhiên.</span></p>\r\n<ul>\r\n<li><span style=\"font-size: 16px;\"><span style=\"color: rgb(226, 80, 65);\"><strong>Sai:</strong></span> I very like it. (Tôi rất thích nó)</span></li>\r\n<li><span style=\"font-size: 16px;\"><span style=\"color: rgb(41, 105, 176);\"><strong>Đúng:</strong></span> I really like it. / I like it very much.</span></li>\r\n</ul>\r\n<h2><span style=\"color: rgb(226, 80, 65);\">3. Thêm \"s\" vô tội vạ</span></h2>\r\n<p><span style=\"font-size: 16px;\">Trái ngược với lỗi mất âm đuôi, khá nhiều bạn lại thêm /s/ vào cuối bất kỳ từ tiếng Anh nào để cảm thấy giọng mình \"Tây\" hơn và \"trôi chảy\" hơn. Điều này thực sự gây khó chịu cho người bản xứ nghe chuyện.</span></p>\r\n<p><span style=\"font-size: 16px;\"><img src=\"https://plus.unsplash.com/premium_photo-1663045330310-90924ec9d582?q=80&amp;w=2670&amp;auto=format&amp;fit=crop\" alt=\"\" width=\"100%\"></span></p>\r\n<p><span style=\"font-size: 16px;\">Cách khắc phục? Hãy tập trung nghe nhiều hơn là nói trong thời gian đầu để hình thành phản xạ kết nối âm chuẩn.</span></p>', 'bai-viet/demo2.jpg', 1, 851, 1, '2026-02-22 10:15:00', NULL, '2026-02-22 03:15:00', '2026-02-28 09:37:34'),
-(6, 'Cách học từ vựng tiếng Anh nhớ lâu', 'cach-hoc-tu-vung-tieng-anh-nho-lau', 'Phương pháp Spaced Repetition (Lặp lại ngắt quãng) giúp bạn nhớ từ vựng vĩnh viễn.', '<h2><span style=\"color: rgb(84, 172, 210);\">Tại sao chúng ta hay quên từ vựng?</span></h2>\r\n<p><span style=\"font-size: 16px;\">Theo đường cong lãng quên của tiến sĩ Hermann Ebbinghaus, não bộ con người có thể quên đi khoảng <strong>70-80%</strong> kiến thức vừa học ở ngày hôm trước nếu như chẳng bao giờ ôn tập lại. Cách truyền thống viết chép từ vựng 10 lần ra nháp hoàn toàn vô dụng vì chỉ dùng đến cơ bắp (Trí nhớ ngắn hạn).</span></p>\r\n<h2><span style=\"color: rgb(84, 172, 210);\">Spaced Repetition là gì?</span></h2>\r\n<p><span style=\"font-size: 16px;\">Nó có nghĩa là \"Kỹ thuật Lặp lại ngắt quãng\". Thay vì đâm đầu ôn một danh sách từ vựng liên tục ngày này qua ngày khác, ta sẽ chủ động tính toán để học lại đúng ngay khoảnh khắc <strong>bộ não sắp sửa quên</strong> từ đó đi.</span></p>\r\n<p><span style=\"font-size: 16px;\"><strong>Các mốc thời gian tối ưu Ebbinghaus khuyên dùng:</strong></span></p>\r\n<ol>\r\n<li><span style=\"font-size: 16px;\">Lần 1: Sau 1 giờ học.</span></li>\r\n<li><span style=\"font-size: 16px;\">Lần 2: Sau 24 giờ.</span></li>\r\n<li><span style=\"font-size: 16px;\">Lần 3: Sau 3 ngày.</span></li>\r\n<li><span style=\"font-size: 16px;\">Lần 4: Sau 1 tuần.</span></li>\r\n<li><span style=\"font-size: 16px;\">Lần 5: Sau 1 tháng.</span></li>\r\n</ol>\r\n<p><span style=\"font-size: 16px;\">Bằng cách này, mọi thông tin về từ vựng (spelling, pronunciation, meaning, context) sẽ được chuyển hóa thành trí nhớ dài hạn.</span></p>\r\n<p><span style=\"font-size: 16px;\">Để tránh phải lập thời gian biểu phức tạp, bạn hãy dùng các app tạo Flashcards chạy thuật toán này sẵn như: <strong>Anki, Quizlet, hay Memrise</strong>.</span></p>', 'bai-viet/demo3.jpg', 1, 1200, 1, '2026-02-25 14:00:00', NULL, '2026-02-25 07:00:00', '2026-02-25 07:00:00'),
-(7, 'Phân biệt TOEIC, IELTS và TOEFL', 'phan-biet-toeic-ielts-va-toefl', 'Hướng dẫn chi tiết giúp bạn chọn đúng chứng chỉ tiếng Anh theo mục tiêu nghề nghiệp và học tập.', '<h2><span style=\"background-color: rgb(184, 49, 47); color: rgb(255, 255, 255);\">1. IELTS (International English Language Testing System)</span></h2>\r\n<p><span style=\"font-size: 16px;\"><strong>Mục ti&ecirc;u ch&iacute;nh:</strong> Đi du học đại học/sau đại học, định cư tại c&aacute;c quốc gia sử dụng tiếng Anh (Anh, &Uacute;c, New Zealand, Canada). Mới đ&acirc;y cũng rất chuộng để x&eacute;t tốt nghiệp Đại Học VN.</span></p>\r\n<p><span style=\"font-size: 16px;\"><strong>Đặc điểm:</strong> C&oacute; 2 module chia ra r&otilde; rệt l&agrave; Học thuật (Academic) v&agrave; Tổng qu&aacute;t (General). B&agrave;i thi y&ecirc;u cầu bạn thực sự sử dụng 4 kỹ năng (Nghe-N&oacute;i-Đọc-Viết), với phần Speaking bạn sẽ đối thoại 1-1 với gi&aacute;m khảo thực tế ảo bằng xương bằng thịt.</span></p>\r\n<h2><span style=\"background-color: rgb(41, 105, 176); color: rgb(255, 255, 255);\">2. TOEIC (Test of English for International Communication)</span></h2>\r\n<p><span style=\"font-size: 16px;\"><strong>Mục ti&ecirc;u:</strong> L&agrave;m việc thực tế tại c&aacute;c c&ocirc;ng ty, tập đo&agrave;n quốc tế, tổ chức kinh doanh đa quốc tịch tại Ch&acirc;u &Aacute;.</span></p>\r\n<p><span style=\"font-size: 16px;\"><strong>Đặc điểm:</strong> Dạng b&agrave;i phổ biến nhất chỉ c&oacute; 2 kỹ năng bị động l&agrave; Nghe v&agrave; Đọc (Listening &amp; Reading). Tất cả kiến thức xoay quanh chủ đề kinh tế, thảo luận doanh nghiệp, nh&agrave; h&agrave;ng, hợp đồng, t&agrave;i ch&iacute;nh chứ kh&ocirc;ng đi v&agrave;o khoa học x&atilde; hội.</span></p>\r\n<h2><span style=\"background-color: rgb(250, 197, 28);\">3. TOEFL (Test of English as a Foreign Language)</span></h2>\r\n<p><span style=\"font-size: 16px;\"><strong>Mục ti&ecirc;u:</strong> Gần giống IELTS, chuy&ecirc;n để apply học bổng du học Mỹ v&agrave; c&aacute;c nước Bắc Mỹ.</span></p>\r\n<p><span style=\"font-size: 16px;\"><strong>Đặc điểm:</strong> Mang đậm yếu tố h&agrave;n l&acirc;m (Academic). Rất kh&oacute;! Cấu tr&uacute;c thi tập trung kiểm tra khả năng t&iacute;ch hợp kỹ năng: v&iacute; dụ Listening một b&agrave;i diễn văn Sinh Học d&agrave;i 5 ph&uacute;t sau đ&oacute; phải Speaking t&oacute;m tắt lại nội dung v&agrave; đưa ra quan điểm ph&acirc;n t&iacute;ch phản hồi.</span></p>\r\n<p style=\"text-align: center;\"><span style=\"font-size: 18px;\">👉 <strong>Lời khuy&ecirc;n:</strong> Việc x&aacute;c định r&otilde; chứng chỉ cần lấy ngay từ đầu sẽ tiết kiệm cho bạn tối thiểu 2 năm thời gian v&agrave; chục triệu tiền bạc. Đừng học lan man!</span></p>', 'bai-viet/0X7ifD89Aa9vXyMJzFlPkgvYBHgH6194Bf4emIHJ.png', 1, 3205, 1, '2026-02-26 09:30:00', NULL, '2026-02-26 02:30:00', '2026-02-28 10:07:31'),
-(8, 'Lộ trình học tiếng Anh cho người mất gốc', 'lo-trinh-hoc-tieng-anh-cho-nguoi-mat-goc', 'Hướng dẫn chi tiết từ con số 0 đến giao tiếp trôi chảy dành cho người đã từ bỏ tiếng Anh nhiều lần.', '<h2><span style=\"color: rgb(44, 130, 201);\">Giai đoạn 1: Chuẩn h&oacute;a hệ thống ph&aacute;t &acirc;m (1 - 2 th&aacute;ng)</span></h2>\r\n<p><span style=\"font-size: 16px;\">Đa số những người \"mất gốc\" đều học ngữ ph&aacute;p v&agrave; từ vựng th&ocirc;ng qua ghi ch&eacute;p c&acirc;m lặng. Đ&oacute; l&agrave; c&aacute;ch sai! Nếu ph&aacute;t &acirc;m sai, khi m&agrave;ng nhĩ bắt s&oacute;ng được &acirc;m chuẩn của người bản ngữ, n&atilde;o bộ cũng từ chối hiểu &acirc;m đ&oacute;.</span></p>\r\n<p><span style=\"font-size: 16px;\">Giải ph&aacute;p duy nhất l&agrave; phải l&agrave;m quen với <strong>Bảng phi&ecirc;n &acirc;m quốc tế IPA (International Phonetic Alphabet)</strong> gồm 44 &acirc;m. Luyện cấu h&igrave;nh miệng của m&igrave;nh ph&aacute;t ra đ&uacute;ng 44 &acirc;m đ&oacute;.</span></p>\r\n<h2><span style=\"color: rgb(44, 130, 201);\">Giai đoạn 2: X&acirc;y vốn từ v&agrave; cấu tr&uacute;c l&otilde;i (2 - 3 th&aacute;ng)</span></h2>\r\n<p><span style=\"font-size: 16px;\">Tuyệt đối kh&ocirc;ng nhồi nh&eacute;t t&agrave;i liệu ngữ ph&aacute;p n&acirc;ng cao. Bạn chỉ cần:</span></p>\r\n<ul>\r\n<li><span style=\"font-size: 16px;\">Học vững 5 th&igrave; căn bản (Hiện tại đơn, Tiếp diễn, Qu&aacute; khứ đơn, Tương lai đơn, Hiện tại ho&agrave;n th&agrave;nh).</span></li>\r\n<li><span style=\"font-size: 16px;\">Sở hữu tối thiểu <strong>1000 - 1500 từ vựng</strong> xoay quanh bản th&acirc;n gia đ&igrave;nh, giới thiệu du lịch, c&ocirc;ng việc. Thường l&agrave; c&aacute;c động từ, danh từ m&ocirc; tả xung quanh bạn.</span></li>\r\n</ul>\r\n<h2><span style=\"color: rgb(44, 130, 201);\">Giai đoạn 3: Phản xạ (Shadowing &amp; Listening Intensive)</span></h2>\r\n<p><span style=\"font-size: 16px;\">T&igrave;m những b&agrave;i Podcast rất ngắn, rất dễ (vd: VOA Learning English, TED-Ed). Vừa mở audio nghe qua tai nghe, vừa cầm Script để <strong>nhại/nh&aacute;i lại song song</strong> tốc độ người bản ngữ. Việc n&agrave;y gi&uacute;p cải thiện cơ miệng để h&igrave;nh th&agrave;nh độ tr&ocirc;i chảy ngữ điệu (Intonation &amp; Fluency).</span></p>\r\n<p><span style=\"font-size: 16px;\"><img src=\"https://images.unsplash.com/photo-1522202176988-66273c2fd55f?q=80&amp;w=2671&amp;auto=format&amp;fit=crop\" alt=\"\" width=\"100%\"></span></p>\r\n<blockquote style=\"margin: 0 0 0 40px; border: none; padding: 0px;\">\r\n<p style=\"text-align: center;\"><span style=\"font-size: 20px; color: rgb(226, 80, 65);\"><strong><em>\"Chậm m&agrave; chắc - Đều đặn học 30 ph&uacute;t mỗi ng&agrave;y quan trọng hơn l&agrave; cuối tuần th&acirc;u đ&ecirc;m suốt s&aacute;ng 6 tiếng rồi bỏ cuộc.\"</em></strong></span></p>\r\n</blockquote>', 'bai-viet/SPCIoIy75IXRM4sDOb0GD9AYqKHRBZIi7Px4aD6i.jpg', 1, 5401, 1, '2026-02-27 18:45:00', NULL, '2026-02-27 11:45:00', '2026-02-28 09:01:38');
+(4, 'Bí quyết đạt IELTS 8.0 trong 6 tháng', 'bi-quyet-dat-ielts-8-0-trong-6-thang', 'Hành trình chinh phục IELTS 8.0 không khó như bạn nghĩ nếu có lộ trình và phương pháp đúng đắn.', '<p style=\"text-align: justify;\"><span style=\"font-size: 16px;\">Kỳ thi IELTS không chỉ kiểm tra khả năng sử dụng tiếng Anh mà còn đòi hỏi bạn phải có một chiến lược ôn tập cẩn thận và khoa học.</span></p>\r\n<h2><span style=\"color: rgb(41, 105, 176);\">1. Xác định mục tiêu rõ ràng</span></h2>\r\n<p style=\"text-align: justify;\"><span style=\"font-size: 16px;\">Trước khi bắt đầu, hãy tự hỏi bản thân tại sao bạn cần điểm số này. Động lực thực sự sẽ giúp bạn không bỏ cuộc. Đặc biệt hãy cố gắng phân tích điểm số mục tiêu của từng kỹ năng.</span></p>\r\n<h2><span style=\"color: rgb(41, 105, 176);\">2. Lập kế hoạch học tập chi tiết</span></h2>\r\n<p style=\"text-align: justify;\"><span style=\"font-size: 16px;\">Chia nhỏ mục tiêu lớn thành các bước khả thi theo từng tuần, từng ngày. Ví dụ:</span></p>\r\n<ul>\r\n<li style=\"text-align: justify;\"><span style=\"font-size: 16px;\"><strong>Thứ 2, 4, 6:</strong> Luyện Kỹ năng Nghe và Đọc theo Format đề thi Cambridge.</span></li>\r\n<li style=\"text-align: justify;\"><span style=\"font-size: 16px;\"><strong>Thứ 3, 5, 7:</strong> Luyện Nói (ghi âm lại) và Viết (Task 1 &amp; Task 2).</span></li>\r\n<li style=\"text-align: justify;\"><span style=\"font-size: 16px;\"><strong>Chủ nhật:</strong> Làm 1 đề mock test hoàn chỉnh trong 3 tiếng.</span></li>\r\n</ul>\r\n<blockquote style=\"margin: 0 0 0 40px; border: none; padding: 0px;\">\r\n<p style=\"text-align: center;\"><span style=\"font-size: 18px; color: rgb(184, 49, 47);\"><em>\"Thành công là kết quả của sự chuẩn bị kỹ lưỡng.\"</em></span></p>\r\n</blockquote>\r\n<h2><span style=\"color: rgb(41, 105, 176);\">3. Tìm nguồn tài liệu phù hợp</span></h2>\r\n<p style=\"text-align: justify;\"><span style=\"font-size: 16px;\">Không nên ôm đồm quá nhiều sách. Bạn nên tập trung vào bộ <strong>Cambridge IELTS 10 - 18</strong> để tiếp xúc đề thi thật. Đồng thời sử dụng từ điển <em>Oxford Advanced Learner\'s Dictionary</em> để tra cứu chính xác collocation, context.</span></p>\r\n<p style=\"text-align: justify;\"><span style=\"font-size: 16px;\"><img src=\"https://images.unsplash.com/photo-1456513080510-7bf3a84b82f8?q=80&amp;w=2573&amp;auto=format&amp;fit=crop\" alt=\"\" width=\"100%\"></span></p>\r\n<p style=\"text-align: justify;\"><span style=\"font-size: 16px;\">Cuối cùng, đừng ngại mắc sai lầm. Hãy nhờ thầy cô hoặc những người đi trước (đã đạt band cao) feedback thường xuyên để biết được điểm yếu của mình ở đâu nhé. Chúc các bạn may mắn!</span></p>', 'bai-viet/bz6U6T6vqRYh4cOmFTUjIw23mkoPNFUKXenTEUZc.jpg', 1, 1500, 1, '2026-02-20 08:30:00', '2026-03-05 06:35:21', '2026-02-20 01:30:00', '2026-03-05 06:35:21'),
+(5, '10 lỗi sai phổ biến khi giao tiếp tiếng Anh', '10-loi-sai-pho-bien-khi-giao-tiep-tieng-anh', 'Những lỗi ngữ pháp và phát âm kinh điển mà người Việt hay mắc phải.', '<h2><span style=\"color: rgb(226, 80, 65);\">1. Bỏ quên âm đuôi (Ending sounds)</span></h2>\r\n<p><span style=\"font-size: 16px;\">Trong tiếng Việt không có khái niệm bật âm đuôi, do đó học viên thường có thói quen bỏ qua các âm như /s/, /t/, /d/, /z/ khi nói tiếng Anh. Điều này dẫn đến sự cố khó hiểu (miscommunication).</span></p>\r\n<p><span style=\"font-size: 16px;\"><strong>Ví dụ:</strong> <em>white</em> (trắng), <em>wife</em> (vợ), và <em>wine</em> (rượu) đều bị người Việt phát âm na ná giống \"oai\".</span></p>\r\n<h2><span style=\"color: rgb(226, 80, 65);\">2. Dịch từ sang từ (Word-by-word translation)</span></h2>\r\n<p><span style=\"font-size: 16px;\">Bạn nghĩ bằng tiếng Việt rồi cố gắng tìm từ tiếng Anh với nghĩa tương đương để lắp ghép lại thành 1 câu. Đây là cách chắc chắn làm câu nói của bạn mất tự nhiên.</span></p>\r\n<ul>\r\n<li><span style=\"font-size: 16px;\"><span style=\"color: rgb(226, 80, 65);\"><strong>Sai:</strong></span> I very like it. (Tôi rất thích nó)</span></li>\r\n<li><span style=\"font-size: 16px;\"><span style=\"color: rgb(41, 105, 176);\"><strong>Đúng:</strong></span> I really like it. / I like it very much.</span></li>\r\n</ul>\r\n<h2><span style=\"color: rgb(226, 80, 65);\">3. Thêm \"s\" vô tội vạ</span></h2>\r\n<p><span style=\"font-size: 16px;\">Trái ngược với lỗi mất âm đuôi, khá nhiều bạn lại thêm /s/ vào cuối bất kỳ từ tiếng Anh nào để cảm thấy giọng mình \"Tây\" hơn và \"trôi chảy\" hơn. Điều này thực sự gây khó chịu cho người bản xứ nghe chuyện.</span></p>\r\n<p><span style=\"font-size: 16px;\"><img src=\"https://plus.unsplash.com/premium_photo-1663045330310-90924ec9d582?q=80&amp;w=2670&amp;auto=format&amp;fit=crop\" alt=\"\" width=\"100%\"></span></p>\r\n<p><span style=\"font-size: 16px;\">Cách khắc phục? Hãy tập trung nghe nhiều hơn là nói trong thời gian đầu để hình thành phản xạ kết nối âm chuẩn.</span></p>', 'bai-viet/demo2.jpg', 1, 851, 1, '2026-02-22 10:15:00', '2026-03-05 06:35:19', '2026-02-22 03:15:00', '2026-03-05 06:35:19'),
+(6, 'Cách học từ vựng tiếng Anh nhớ lâu', 'cach-hoc-tu-vung-tieng-anh-nho-lau', 'Phương pháp Spaced Repetition (Lặp lại ngắt quãng) giúp bạn nhớ từ vựng vĩnh viễn.', '<h2><span style=\"color: rgb(84, 172, 210);\">Tại sao chúng ta hay quên từ vựng?</span></h2>\r\n<p><span style=\"font-size: 16px;\">Theo đường cong lãng quên của tiến sĩ Hermann Ebbinghaus, não bộ con người có thể quên đi khoảng <strong>70-80%</strong> kiến thức vừa học ở ngày hôm trước nếu như chẳng bao giờ ôn tập lại. Cách truyền thống viết chép từ vựng 10 lần ra nháp hoàn toàn vô dụng vì chỉ dùng đến cơ bắp (Trí nhớ ngắn hạn).</span></p>\r\n<h2><span style=\"color: rgb(84, 172, 210);\">Spaced Repetition là gì?</span></h2>\r\n<p><span style=\"font-size: 16px;\">Nó có nghĩa là \"Kỹ thuật Lặp lại ngắt quãng\". Thay vì đâm đầu ôn một danh sách từ vựng liên tục ngày này qua ngày khác, ta sẽ chủ động tính toán để học lại đúng ngay khoảnh khắc <strong>bộ não sắp sửa quên</strong> từ đó đi.</span></p>\r\n<p><span style=\"font-size: 16px;\"><strong>Các mốc thời gian tối ưu Ebbinghaus khuyên dùng:</strong></span></p>\r\n<ol>\r\n<li><span style=\"font-size: 16px;\">Lần 1: Sau 1 giờ học.</span></li>\r\n<li><span style=\"font-size: 16px;\">Lần 2: Sau 24 giờ.</span></li>\r\n<li><span style=\"font-size: 16px;\">Lần 3: Sau 3 ngày.</span></li>\r\n<li><span style=\"font-size: 16px;\">Lần 4: Sau 1 tuần.</span></li>\r\n<li><span style=\"font-size: 16px;\">Lần 5: Sau 1 tháng.</span></li>\r\n</ol>\r\n<p><span style=\"font-size: 16px;\">Bằng cách này, mọi thông tin về từ vựng (spelling, pronunciation, meaning, context) sẽ được chuyển hóa thành trí nhớ dài hạn.</span></p>\r\n<p><span style=\"font-size: 16px;\">Để tránh phải lập thời gian biểu phức tạp, bạn hãy dùng các app tạo Flashcards chạy thuật toán này sẵn như: <strong>Anki, Quizlet, hay Memrise</strong>.</span></p>', 'bai-viet/demo3.jpg', 1, 1200, 1, '2026-02-25 14:00:00', '2026-03-05 06:35:17', '2026-02-25 07:00:00', '2026-03-05 06:35:17'),
+(7, 'Phân biệt TOEIC, IELTS và TOEFL', 'phan-biet-toeic-ielts-va-toefl', 'Hướng dẫn chi tiết giúp bạn chọn đúng chứng chỉ tiếng Anh theo mục tiêu nghề nghiệp và học tập.', '<h2><span style=\"background-color: rgb(184, 49, 47); color: rgb(255, 255, 255);\">1. IELTS (International English Language Testing System)</span></h2>\r\n<p><span style=\"font-size: 16px;\"><strong>Mục ti&ecirc;u ch&iacute;nh:</strong> Đi du học đại học/sau đại học, định cư tại c&aacute;c quốc gia sử dụng tiếng Anh (Anh, &Uacute;c, New Zealand, Canada). Mới đ&acirc;y cũng rất chuộng để x&eacute;t tốt nghiệp Đại Học VN.</span></p>\r\n<p><span style=\"font-size: 16px;\"><strong>Đặc điểm:</strong> C&oacute; 2 module chia ra r&otilde; rệt l&agrave; Học thuật (Academic) v&agrave; Tổng qu&aacute;t (General). B&agrave;i thi y&ecirc;u cầu bạn thực sự sử dụng 4 kỹ năng (Nghe-N&oacute;i-Đọc-Viết), với phần Speaking bạn sẽ đối thoại 1-1 với gi&aacute;m khảo thực tế ảo bằng xương bằng thịt.</span></p>\r\n<h2><span style=\"background-color: rgb(41, 105, 176); color: rgb(255, 255, 255);\">2. TOEIC (Test of English for International Communication)</span></h2>\r\n<p><span style=\"font-size: 16px;\"><strong>Mục ti&ecirc;u:</strong> L&agrave;m việc thực tế tại c&aacute;c c&ocirc;ng ty, tập đo&agrave;n quốc tế, tổ chức kinh doanh đa quốc tịch tại Ch&acirc;u &Aacute;.</span></p>\r\n<p><span style=\"font-size: 16px;\"><strong>Đặc điểm:</strong> Dạng b&agrave;i phổ biến nhất chỉ c&oacute; 2 kỹ năng bị động l&agrave; Nghe v&agrave; Đọc (Listening &amp; Reading). Tất cả kiến thức xoay quanh chủ đề kinh tế, thảo luận doanh nghiệp, nh&agrave; h&agrave;ng, hợp đồng, t&agrave;i ch&iacute;nh chứ kh&ocirc;ng đi v&agrave;o khoa học x&atilde; hội.</span></p>\r\n<h2><span style=\"background-color: rgb(250, 197, 28);\">3. TOEFL (Test of English as a Foreign Language)</span></h2>\r\n<p><span style=\"font-size: 16px;\"><strong>Mục ti&ecirc;u:</strong> Gần giống IELTS, chuy&ecirc;n để apply học bổng du học Mỹ v&agrave; c&aacute;c nước Bắc Mỹ.</span></p>\r\n<p><span style=\"font-size: 16px;\"><strong>Đặc điểm:</strong> Mang đậm yếu tố h&agrave;n l&acirc;m (Academic). Rất kh&oacute;! Cấu tr&uacute;c thi tập trung kiểm tra khả năng t&iacute;ch hợp kỹ năng: v&iacute; dụ Listening một b&agrave;i diễn văn Sinh Học d&agrave;i 5 ph&uacute;t sau đ&oacute; phải Speaking t&oacute;m tắt lại nội dung v&agrave; đưa ra quan điểm ph&acirc;n t&iacute;ch phản hồi.</span></p>\r\n<p style=\"text-align: center;\"><span style=\"font-size: 18px;\">👉 <strong>Lời khuy&ecirc;n:</strong> Việc x&aacute;c định r&otilde; chứng chỉ cần lấy ngay từ đầu sẽ tiết kiệm cho bạn tối thiểu 2 năm thời gian v&agrave; chục triệu tiền bạc. Đừng học lan man!</span></p>', 'bai-viet/0X7ifD89Aa9vXyMJzFlPkgvYBHgH6194Bf4emIHJ.png', 1, 3206, 1, '2026-02-26 09:30:00', NULL, '2026-02-26 02:30:00', '2026-03-05 07:36:49'),
+(8, 'Lộ trình học tiếng Anh cho người mất gốc', 'lo-trinh-hoc-tieng-anh-cho-nguoi-mat-goc', 'Hướng dẫn chi tiết từ con số 0 đến giao tiếp trôi chảy dành cho người đã từ bỏ tiếng Anh nhiều lần.', '<h2><span style=\"color: rgb(44, 130, 201);\">Giai đoạn 1: Chuẩn h&oacute;a hệ thống ph&aacute;t &acirc;m (1 - 2 th&aacute;ng)</span></h2>\r\n<p><span style=\"font-size: 16px;\">Đa số những người \"mất gốc\" đều học ngữ ph&aacute;p v&agrave; từ vựng th&ocirc;ng qua ghi ch&eacute;p c&acirc;m lặng. Đ&oacute; l&agrave; c&aacute;ch sai! Nếu ph&aacute;t &acirc;m sai, khi m&agrave;ng nhĩ bắt s&oacute;ng được &acirc;m chuẩn của người bản ngữ, n&atilde;o bộ cũng từ chối hiểu &acirc;m đ&oacute;.</span></p>\r\n<p><span style=\"font-size: 16px;\">Giải ph&aacute;p duy nhất l&agrave; phải l&agrave;m quen với <strong>Bảng phi&ecirc;n &acirc;m quốc tế IPA (International Phonetic Alphabet)</strong> gồm 44 &acirc;m. Luyện cấu h&igrave;nh miệng của m&igrave;nh ph&aacute;t ra đ&uacute;ng 44 &acirc;m đ&oacute;.</span></p>\r\n<h2><span style=\"color: rgb(44, 130, 201);\">Giai đoạn 2: X&acirc;y vốn từ v&agrave; cấu tr&uacute;c l&otilde;i (2 - 3 th&aacute;ng)</span></h2>\r\n<p><span style=\"font-size: 16px;\">Tuyệt đối kh&ocirc;ng nhồi nh&eacute;t t&agrave;i liệu ngữ ph&aacute;p n&acirc;ng cao. Bạn chỉ cần:</span></p>\r\n<ul>\r\n<li><span style=\"font-size: 16px;\">Học vững 5 th&igrave; căn bản (Hiện tại đơn, Tiếp diễn, Qu&aacute; khứ đơn, Tương lai đơn, Hiện tại ho&agrave;n th&agrave;nh).</span></li>\r\n<li><span style=\"font-size: 16px;\">Sở hữu tối thiểu <strong>1000 - 1500 từ vựng</strong> xoay quanh bản th&acirc;n gia đ&igrave;nh, giới thiệu du lịch, c&ocirc;ng việc. Thường l&agrave; c&aacute;c động từ, danh từ m&ocirc; tả xung quanh bạn.</span></li>\r\n</ul>\r\n<h2><span style=\"color: rgb(44, 130, 201);\">Giai đoạn 3: Phản xạ (Shadowing &amp; Listening Intensive)</span></h2>\r\n<p><span style=\"font-size: 16px;\">T&igrave;m những b&agrave;i Podcast rất ngắn, rất dễ (vd: VOA Learning English, TED-Ed). Vừa mở audio nghe qua tai nghe, vừa cầm Script để <strong>nhại/nh&aacute;i lại song song</strong> tốc độ người bản ngữ. Việc n&agrave;y gi&uacute;p cải thiện cơ miệng để h&igrave;nh th&agrave;nh độ tr&ocirc;i chảy ngữ điệu (Intonation &amp; Fluency).</span></p>\r\n<p><span style=\"font-size: 16px;\"><img src=\"https://images.unsplash.com/photo-1522202176988-66273c2fd55f?q=80&amp;w=2671&amp;auto=format&amp;fit=crop\" alt=\"\" width=\"100%\"></span></p>\r\n<blockquote style=\"margin: 0 0 0 40px; border: none; padding: 0px;\">\r\n<p style=\"text-align: center;\"><span style=\"font-size: 20px; color: rgb(226, 80, 65);\"><strong><em>\"Chậm m&agrave; chắc - Đều đặn học 30 ph&uacute;t mỗi ng&agrave;y quan trọng hơn l&agrave; cuối tuần th&acirc;u đ&ecirc;m suốt s&aacute;ng 6 tiếng rồi bỏ cuộc.\"</em></strong></span></p>\r\n</blockquote>', 'bai-viet/SPCIoIy75IXRM4sDOb0GD9AYqKHRBZIi7Px4aD6i.jpg', 1, 5401, 1, '2026-02-27 18:45:00', NULL, '2026-02-27 11:45:00', '2026-03-05 06:35:39');
 
 -- --------------------------------------------------------
 
@@ -87,11 +87,11 @@ CREATE TABLE `baiviet_danhmuc` (
 --
 
 INSERT INTO `baiviet_danhmuc` (`baiVietId`, `danhMucId`) VALUES
-(8, 1),
-(7, 4),
-(8, 4),
 (3, 5),
-(7, 5);
+(7, 4),
+(7, 5),
+(8, 1),
+(8, 4);
 
 -- --------------------------------------------------------
 
@@ -109,10 +109,10 @@ CREATE TABLE `baiviet_tag` (
 --
 
 INSERT INTO `baiviet_tag` (`baiVietId`, `tagId`) VALUES
-(7, 3),
 (3, 10),
 (3, 11),
 (3, 12),
+(7, 3),
 (7, 13),
 (8, 13);
 
@@ -233,9 +233,10 @@ CREATE TABLE `cache_locks` (
 
 CREATE TABLE `cahoc` (
   `caHocId` int(11) NOT NULL,
-  `tenCa` varchar(50) DEFAULT NULL,
+  `tenCa` varchar(100) DEFAULT NULL,
   `gioBatDau` time DEFAULT NULL,
   `gioKetThuc` time DEFAULT NULL,
+  `moTa` varchar(255) DEFAULT NULL,
   `trangThai` tinyint(4) DEFAULT 1,
   `created_at` datetime DEFAULT current_timestamp(),
   `updated_at` datetime DEFAULT current_timestamp() ON UPDATE current_timestamp()
@@ -245,9 +246,11 @@ CREATE TABLE `cahoc` (
 -- Đang đổ dữ liệu cho bảng `cahoc`
 --
 
-INSERT INTO `cahoc` (`caHocId`, `tenCa`, `gioBatDau`, `gioKetThuc`, `trangThai`, `created_at`, `updated_at`) VALUES
-(1, 'Ca Sáng 1', '08:00:00', '10:00:00', 1, '2026-01-23 20:07:20', '2026-01-23 20:07:20'),
-(2, 'Ca Tối 2', '18:00:00', '20:00:00', 1, '2026-01-23 20:07:20', '2026-01-23 20:07:20');
+INSERT INTO `cahoc` (`caHocId`, `tenCa`, `gioBatDau`, `gioKetThuc`, `moTa`, `trangThai`, `created_at`, `updated_at`) VALUES
+(1, 'Ca sáng', '08:00:00', '10:00:00', NULL, 1, '2026-01-23 20:07:20', '2026-03-05 12:49:15'),
+(2, 'Ca Tối 2', '18:00:00', '20:00:00', NULL, 1, '2026-01-23 20:07:20', '2026-03-04 22:23:39'),
+(3, 'Ca chiều', '15:00:00', '16:30:00', NULL, 1, '2026-03-04 22:24:24', '2026-03-05 12:49:18'),
+(4, 'Ca sáng', '08:00:00', '09:30:00', NULL, 1, '2026-03-04 22:34:55', '2026-03-04 22:34:55');
 
 -- --------------------------------------------------------
 
@@ -365,6 +368,7 @@ CREATE TABLE `danhmuckhoahoc` (
   `slug` varchar(100) NOT NULL,
   `moTa` text DEFAULT NULL,
   `trangThai` tinyint(4) DEFAULT 1,
+  `parent_id` int(11) DEFAULT NULL,
   `created_at` datetime DEFAULT current_timestamp(),
   `updated_at` datetime DEFAULT current_timestamp() ON UPDATE current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
@@ -373,9 +377,13 @@ CREATE TABLE `danhmuckhoahoc` (
 -- Đang đổ dữ liệu cho bảng `danhmuckhoahoc`
 --
 
-INSERT INTO `danhmuckhoahoc` (`danhMucId`, `tenDanhMuc`, `slug`, `moTa`, `trangThai`, `created_at`, `updated_at`) VALUES
-(1, 'Tiếng Anh', 'tieng-anh', 'Các loại khóa học tiếng anh từ cơ bản đến nâng cao', 1, '2026-01-23 20:07:20', '2026-02-28 14:34:15'),
-(2, 'Tiếng Nhật', 'tieng-nhat', 'Các loại khóa học tiếng nhật từ cơ bản đến nâng cao', 1, '2026-01-23 20:07:20', '2026-02-28 14:34:27');
+INSERT INTO `danhmuckhoahoc` (`danhMucId`, `tenDanhMuc`, `slug`, `moTa`, `trangThai`, `parent_id`, `created_at`, `updated_at`) VALUES
+(1, 'Tiếng Anh', 'tieng-anh', 'Các loại khóa học tiếng anh từ cơ bản đến nâng cao', 1, NULL, '2026-01-23 20:07:20', '2026-02-28 14:34:15'),
+(2, 'Tiếng Nhật', 'tieng-nhat', 'Các loại khóa học tiếng nhật từ cơ bản đến nâng cao', 1, NULL, '2026-01-23 20:07:20', '2026-02-28 14:34:27'),
+(3, 'Tiếng anh chuyên ngành', 'tieng-anh-chuyen-nganh', NULL, 1, 1, '2026-03-05 13:54:17', '2026-03-05 13:54:17'),
+(4, 'Tiếng anh cơ bản', 'tieng-anh-co-ban', NULL, 1, 1, '2026-03-05 13:54:29', '2026-03-05 13:54:29'),
+(5, 'Tiếng nhật nâng cao', 'tieng-nhat-nang-cao', NULL, 1, 2, '2026-03-05 13:56:03', '2026-03-05 13:56:03'),
+(6, 'Tiếng nhật cơ bản', 'tieng-nhat-co-ban', NULL, 1, 2, '2026-03-05 13:56:14', '2026-03-05 13:56:14');
 
 -- --------------------------------------------------------
 
@@ -590,9 +598,9 @@ CREATE TABLE `khoahoc` (
 --
 
 INSERT INTO `khoahoc` (`khoaHocId`, `danhMucId`, `tenKhoaHoc`, `slug`, `anhKhoaHoc`, `moTa`, `trangThai`, `created_at`, `updated_at`, `doiTuong`, `ketQuaDatDuoc`, `yeuCauDauVao`, `deleted_at`) VALUES
-(3, 1, 'IELTS Intensive 6.5+ 2', 'ielts-intensive-2', 'khoa-hoc/MSskHWqVdeFmSTZlVmKoJkciJzymNuQlOVTnek1d.jpg', 'Khóa học cấp tốc 3 tháng', 1, '2026-01-23 20:07:20', '2026-02-26 15:23:28', NULL, NULL, NULL, NULL),
+(3, 3, 'IELTS Intensive 6.5+ 2', 'ielts-intensive-2', 'khoa-hoc/MSskHWqVdeFmSTZlVmKoJkciJzymNuQlOVTnek1d.jpg', 'Khóa học cấp tốc 3 tháng', 1, '2026-01-23 20:07:20', '2026-03-05 14:01:03', NULL, NULL, NULL, NULL),
 (4, 1, 'Ielts cơ bản 1', 'ielts-co-ban-1', 'khoa-hoc/Fz8LGvPkv2JAvtNlsGBSSVWgrRng4FOJDMrXvT43.jpg', 'giới thiệu 01', 1, '2026-02-26 14:59:04', '2026-02-26 15:25:44', 'Người bắt đầu học', 'sẽ đạt được chứng chỉ ielts', 'yêu cầu học viên có kỹ năng thành thạo', '2026-02-26 08:25:44'),
-(5, 2, 'Tiếng Nhật sơ cấp', 'tieng-nhat-so-cap', NULL, 'mô tả 01', 1, '2026-02-27 14:05:06', '2026-02-27 14:05:14', 'Người bắt đầu học', 'chứng chỉ', 'yêu cầu 01', NULL);
+(5, 2, 'Tiếng Nhật sơ cấp', 'tieng-nhat-so-cap', 'khoa-hoc/UYbx09e1RglpqTgrQFiAUoqaWQLA5njC4hbNNhWy.jpg', 'mô tả 01', 1, '2026-02-27 14:05:06', '2026-03-05 14:29:56', 'Người bắt đầu học', 'chứng chỉ', 'yêu cầu 01', NULL);
 
 -- --------------------------------------------------------
 
@@ -608,20 +616,93 @@ CREATE TABLE `lienhe` (
   `tieuDe` varchar(255) DEFAULT NULL,
   `noiDung` text DEFAULT NULL,
   `trangThai` tinyint(4) DEFAULT NULL,
+  `loaiLienHe` enum('tu_van','ho_tro','khieu_nai','khac') NOT NULL DEFAULT 'tu_van' COMMENT 'Loại liên hệ: tu_van, ho_tro, khieu_nai, khac',
+  `ghiChuNoiBo` text DEFAULT NULL,
+  `nguoiPhuTrachId` bigint(20) UNSIGNED DEFAULT NULL,
+  `thoiGianXuLy` timestamp NULL DEFAULT NULL,
   `taiKhoanId` int(11) DEFAULT NULL,
   `created_at` datetime DEFAULT current_timestamp(),
-  `updated_at` datetime DEFAULT current_timestamp() ON UPDATE current_timestamp()
+  `updated_at` datetime DEFAULT current_timestamp() ON UPDATE current_timestamp(),
+  `deleted_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Đang đổ dữ liệu cho bảng `lienhe`
 --
 
-INSERT INTO `lienhe` (`lienHeId`, `hoTen`, `email`, `soDienThoai`, `tieuDe`, `noiDung`, `trangThai`, `taiKhoanId`, `created_at`, `updated_at`) VALUES
-(1, 'Lê Hậu', 'Levanhaum@gmail.com', NULL, 'Đăng ký tư vấn miễn phí', 'Đăng ký tư vấn miễn phí\nKhóa học quan tâm: ielts-intensive\n', 0, 1, '2026-02-06 21:38:30', '2026-02-06 21:38:30'),
-(2, 'Lê Văn Hậu', NULL, '0777464347', 'Đăng ký tư vấn miễn phí', 'Đăng ký tư vấn miễn phí\nKhóa học quan tâm: ielts-intensive\n', 0, 1, '2026-02-06 21:43:58', '2026-02-06 21:43:58'),
-(3, 'Lê Văn Sỹ', 'Levanhaum@gmail.com', '0777464347', 'Đăng ký tư vấn miễn phí', 'Đăng ký tư vấn miễn phí\nKhóa học quan tâm: English for Beginners\nCơ sở: Chi nhánh Đà Nẵng 1\n', 0, 1, '2026-02-06 21:46:26', '2026-02-06 21:46:26'),
-(4, 'Hậu Lê Văn', 'levanhaum@gmail.com', '0777464347', 'Đăng ký tư vấn miễn phí', 'Đăng ký tư vấn miễn phí\nKhóa học quan tâm: IELTS Intensive 6.5+\nCơ sở: Chi nhánh Quận 1\n', 0, 1, '2026-02-21 18:16:24', '2026-02-21 18:16:24');
+INSERT INTO `lienhe` (`lienHeId`, `hoTen`, `email`, `soDienThoai`, `tieuDe`, `noiDung`, `trangThai`, `loaiLienHe`, `ghiChuNoiBo`, `nguoiPhuTrachId`, `thoiGianXuLy`, `taiKhoanId`, `created_at`, `updated_at`, `deleted_at`) VALUES
+(1, 'Lê Hậu', 'Levanhaum@gmail.com', NULL, 'Đăng ký tư vấn miễn phí', 'Đăng ký tư vấn miễn phí\nKhóa học quan tâm: ielts-intensive\n', 3, 'tu_van', 'xin chào', 5, NULL, 1, '2026-02-06 21:38:30', '2026-03-05 08:52:18', NULL),
+(2, 'Lê Văn Hậu', NULL, '0777464347', 'Đăng ký tư vấn miễn phí', 'Đăng ký tư vấn miễn phí\nKhóa học quan tâm: ielts-intensive\n', 0, 'tu_van', NULL, NULL, NULL, 1, '2026-02-06 21:43:58', '2026-02-06 21:43:58', NULL),
+(3, 'Lê Văn Sỹ', 'Levanhaum@gmail.com', '0777464347', 'Đăng ký tư vấn miễn phí', 'Đăng ký tư vấn miễn phí\nKhóa học quan tâm: English for Beginners\nCơ sở: Chi nhánh Đà Nẵng 1\n', 1, 'tu_van', NULL, NULL, NULL, 1, '2026-02-06 21:46:26', '2026-03-04 22:34:26', NULL),
+(4, 'Hậu Lê Văn', 'levanhaum@gmail.com', '0777464347', 'Đăng ký tư vấn miễn phí', 'Đăng ký tư vấn miễn phí\nKhóa học quan tâm: IELTS Intensive 6.5+\nCơ sở: Chi nhánh Quận 1\n', 1, 'tu_van', NULL, NULL, NULL, 1, '2026-02-21 18:16:24', '2026-03-04 22:34:26', NULL),
+(5, 'Lê Ngọc Ánh', 'lengocanh@gmail.com', '0789789789', 'Đăng ký tư vấn miễn phí', 'Đăng ký tư vấn miễn phí\nKhóa học quan tâm: Tiếng Nhật sơ cấp\nCơ sở: Chi nhánh Nguyễn Văn Linh Đà Nẵng\n', 1, 'tu_van', NULL, 4, NULL, 1, '2026-03-05 12:50:09', '2026-03-05 12:52:53', NULL),
+(6, 'Thái Hữu Long Vũ', 'thaihuulongvu1509@gmail.com', NULL, 'Đăng ký tư vấn miễn phí', 'Đăng ký tư vấn miễn phí\nKhóa học quan tâm: IELTS Intensive 6.5+ 2\nCơ sở: Chi nhánh Quận 1\n', 0, 'tu_van', NULL, NULL, NULL, 1, '2026-03-05 12:54:55', '2026-03-05 12:54:55', '2026-03-05 05:54:55'),
+(7, 'Lê Minh Hoài Thương', NULL, '0789789576', 'Đăng ký tư vấn miễn phí', 'Đăng ký tư vấn miễn phí\nKhóa học quan tâm: IELTS Intensive 6.5+ 2\nCơ sở: Chi nhánh Nguyễn Văn Linh\n', 1, 'tu_van', NULL, NULL, NULL, 1, '2026-03-05 12:56:53', '2026-03-05 12:57:58', NULL);
+
+-- --------------------------------------------------------
+
+--
+-- Cấu trúc bảng cho bảng `lienhe_lichsu`
+--
+
+CREATE TABLE `lienhe_lichsu` (
+  `lichSuId` bigint(20) UNSIGNED NOT NULL,
+  `lienHeId` bigint(20) UNSIGNED NOT NULL,
+  `hanhDong` varchar(100) NOT NULL COMMENT 'Tên hành động: cap_nhat_trang_thai, ghi_chu, gan_phu_trach, phan_hoi,...',
+  `noiDung` text DEFAULT NULL COMMENT 'Mô tả chi tiết hành động',
+  `giaTriCu` varchar(200) DEFAULT NULL COMMENT 'Giá trị trước khi thay đổi',
+  `giaTriMoi` varchar(200) DEFAULT NULL COMMENT 'Giá trị sau khi thay đổi',
+  `nguoiThucHienId` bigint(20) UNSIGNED DEFAULT NULL COMMENT 'ID tài khoản thực hiện',
+  `tenNguoiThucHien` varchar(200) DEFAULT NULL COMMENT 'Cache tên để tránh query thêm',
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Đang đổ dữ liệu cho bảng `lienhe_lichsu`
+--
+
+INSERT INTO `lienhe_lichsu` (`lichSuId`, `lienHeId`, `hanhDong`, `noiDung`, `giaTriCu`, `giaTriMoi`, `nguoiThucHienId`, `tenNguoiThucHien`, `created_at`) VALUES
+(1, 1, 'ghi_chu', 'Cập nhật ghi chú nội bộ', NULL, NULL, 1, 'Lê Văn Hậu', '2026-03-05 01:49:59'),
+(2, 1, 'gan_phu_trach', 'Gán phụ trách từ \"Chưa gán\" sang \"Nguyễn Văn An\"', 'Chưa gán', 'Nguyễn Văn An', 1, 'Lê Văn Hậu', '2026-03-05 01:50:17'),
+(3, 1, 'phan_hoi', 'xin chào', NULL, NULL, 1, 'Lê Văn Hậu', '2026-03-05 01:50:51'),
+(4, 1, 'phan_hoi', 'chào bạn', NULL, NULL, 1, 'Lê Văn Hậu', '2026-03-05 01:51:08'),
+(5, 1, 'gui_email', 'alo', NULL, NULL, 1, 'Lê Văn Hậu', '2026-03-05 01:51:15'),
+(6, 1, 'cap_nhat_trang_thai', 'Chuyển từ \"Chưa xử lý\" sang \"Đã từ chối\"', 'Chưa xử lý', 'Đã từ chối', 1, 'Lê Văn Hậu', '2026-03-05 01:52:18'),
+(7, 5, 'khoi_phuc', 'Khôi phục từ thùng rác', NULL, NULL, 1, 'Lê Văn Hậu', '2026-03-05 05:50:49'),
+(8, 5, 'cap_nhat_trang_thai', 'Chuyển từ \"Chưa xử lý\" sang \"Đang xử lý\"', 'Chưa xử lý', 'Đang xử lý', 1, 'Lê Văn Hậu', '2026-03-05 05:52:41'),
+(9, 5, 'gan_phu_trach', 'Gán phụ trách từ \"Chưa gán\" sang \"John Smith\"', 'Chưa gán', 'John Smith', 1, 'Lê Văn Hậu', '2026-03-05 05:52:53'),
+(10, 5, 'phan_hoi', 'học viên yêu cầu gọi lại vào thứ 3 lúc 8h00', NULL, NULL, 1, 'Lê Văn Hậu', '2026-03-05 05:53:18'),
+(11, 7, 'phan_hoi', 'học viên muốn đăng ký lớp Thứ 5 tiếng Anh ielts intensive 6.5+', NULL, NULL, 1, 'Lê Văn Hậu', '2026-03-05 05:57:28'),
+(12, 7, 'cap_nhat_trang_thai', 'Chuyển từ \"Chưa xử lý\" sang \"Đang xử lý\"', 'Chưa xử lý', 'Đang xử lý', 1, 'Lê Văn Hậu', '2026-03-05 05:57:58');
+
+-- --------------------------------------------------------
+
+--
+-- Cấu trúc bảng cho bảng `lienhe_phanhoi`
+--
+
+CREATE TABLE `lienhe_phanhoi` (
+  `phanHoiId` bigint(20) UNSIGNED NOT NULL,
+  `lienHeId` bigint(20) UNSIGNED NOT NULL,
+  `noiDung` text NOT NULL,
+  `loai` enum('noi_bo','email') NOT NULL DEFAULT 'noi_bo',
+  `nguoiGuiId` bigint(20) UNSIGNED DEFAULT NULL,
+  `tenNguoiGui` varchar(200) DEFAULT NULL,
+  `daGuiEmail` tinyint(1) NOT NULL DEFAULT 0,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Đang đổ dữ liệu cho bảng `lienhe_phanhoi`
+--
+
+INSERT INTO `lienhe_phanhoi` (`phanHoiId`, `lienHeId`, `noiDung`, `loai`, `nguoiGuiId`, `tenNguoiGui`, `daGuiEmail`, `created_at`, `updated_at`) VALUES
+(1, 1, 'xin chào', 'noi_bo', 1, 'Lê Văn Hậu', 0, '2026-03-05 01:50:51', '2026-03-05 01:50:51'),
+(2, 1, 'chào bạn', 'noi_bo', 1, 'Lê Văn Hậu', 0, '2026-03-05 01:51:08', '2026-03-05 01:51:08'),
+(3, 1, 'alo', 'email', 1, 'Lê Văn Hậu', 0, '2026-03-05 01:51:15', '2026-03-05 01:51:15'),
+(4, 5, 'học viên yêu cầu gọi lại vào thứ 3 lúc 8h00', 'noi_bo', 1, 'Lê Văn Hậu', 0, '2026-03-05 05:53:18', '2026-03-05 05:53:18'),
+(5, 7, 'học viên muốn đăng ký lớp Thứ 5 tiếng Anh ielts intensive 6.5+', 'noi_bo', 1, 'Lê Văn Hậu', 0, '2026-03-05 05:57:28', '2026-03-05 05:57:28');
 
 -- --------------------------------------------------------
 
@@ -657,7 +738,8 @@ CREATE TABLE `lophoc` (
 INSERT INTO `lophoc` (`lopHocId`, `slug`, `tenLopHoc`, `khoaHocId`, `phongHocId`, `taiKhoanId`, `hocPhiId`, `ngayBatDau`, `ngayKetThuc`, `soBuoiDuKien`, `soHocVienToiDa`, `donGiaDay`, `lichHoc`, `coSoId`, `caHocId`, `trangThai`, `created_at`, `updated_at`) VALUES
 (9, 'lop-tieng-nhat-giao-tiep-1', 'Lớp tiếng nhật giao tiếp 1', 5, 4, NULL, 7, '2026-03-01', '2026-06-30', 35, 35, 300000.00, '2,5', 1, 1, 3, '2026-02-27 14:11:38', '2026-02-28 13:50:36'),
 (10, 'lop-tieng-nhat-giao-tiep-nang-cao', 'Lớp tiếng Nhật giao tiếp nâng cao', 5, 5, NULL, NULL, '2026-03-02', '2026-04-30', 26, 35, 250000.00, '3,4,7', 14, 1, 1, '2026-03-01 16:10:57', '2026-03-01 16:12:48'),
-(11, 'lop-tieng-nhat-giao-tiep-nang-cao-2', 'Lớp tiếng Nhật giao tiếp nâng cao 2', 5, 4, NULL, 6, '2026-03-08', '2026-04-30', 15, 25, 200000.00, '6,CN', 1, 1, 1, '2026-03-01 16:20:53', '2026-03-01 16:25:16');
+(11, 'lop-tieng-nhat-giao-tiep-nang-cao-2', 'Lớp tiếng Nhật giao tiếp nâng cao 2', 5, 4, NULL, 6, '2026-03-08', '2026-04-30', 15, 25, 200000.00, '6,CN', 1, 1, 1, '2026-03-01 16:20:53', '2026-03-01 16:25:16'),
+(12, 'lop-tieng-anh-giao-tiep-1234', 'Lớp tiếng anh giao tiếp 1234', 3, 4, 5, 5, '2026-03-08', '2026-07-31', 41, 35, 150000.00, '3,7', 1, 4, 0, '2026-03-04 22:38:02', '2026-03-04 22:38:20');
 
 -- --------------------------------------------------------
 
@@ -724,7 +806,12 @@ INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES
 (5, '2026_02_21_224430_add_address_fields_to_cosodaotao_table', 3),
 (6, '2026_02_26_152345_add_soft_delete_to_khoahoc_table', 4),
 (7, '2026_02_28_162518_add_new_fields_to_thongbao_table', 5),
-(8, '2026_03_01_153435_add_fields_to_hoadon_phieuthu_tables', 6);
+(8, '2026_03_01_153435_add_fields_to_hoadon_phieuthu_tables', 6),
+(9, '2026_03_05_013400_add_crm_fields_to_lienhe_table', 7),
+(10, '2026_03_05_013402_create_lienhe_phanhoi_table', 8),
+(11, '2026_03_05_013401_create_lienhe_lichsu_table', 7),
+(12, '2026_03_05_130245_create_thongbao_tepdinh_table', 9),
+(13, '2026_03_05_134900_add_parent_id_to_danhmuckhoahoc', 10);
 
 -- --------------------------------------------------------
 
@@ -959,9 +1046,14 @@ CREATE TABLE `sessions` (
 --
 
 INSERT INTO `sessions` (`id`, `user_id`, `ip_address`, `user_agent`, `payload`, `last_activity`) VALUES
-('6063HQFb6106prGhMohW6NQRGh0z9ImpUrUd3vXq', NULL, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36', 'YTo0OntzOjY6Il90b2tlbiI7czo0MDoiVjhUY3ZBbUo4R25iRERUVmlZNmtCZ2RsdFNYZzdSNkJENDk0cFlrdSI7czozOiJ1cmwiO2E6MTp7czo4OiJpbnRlbmRlZCI7czozNToiaHR0cDovL2xvY2FsaG9zdDo4MDAwL2FkbWluL2hvYS1kb24iO31zOjk6Il9wcmV2aW91cyI7YToyOntzOjM6InVybCI7czoyNzoiaHR0cDovL2xvY2FsaG9zdDo4MDAwL2xvZ2luIjtzOjU6InJvdXRlIjtzOjU6ImxvZ2luIjt9czo2OiJfZmxhc2giO2E6Mjp7czozOiJvbGQiO2E6MDp7fXM6MzoibmV3IjthOjA6e319fQ==', 1772355667),
-('JyQeSw76RAMrMqXmmb35LCqkXN2xDaOrsoJwIu74', 23, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36', 'YTo1OntzOjY6Il90b2tlbiI7czo0MDoiSFhMSTFpWTRGU3hxTGVHTVdFS01JQzFidWR6TzlXZjJhRFV3N1poNyI7czo2OiJfZmxhc2giO2E6Mjp7czozOiJvbGQiO2E6MDp7fXM6MzoibmV3IjthOjA6e319czo5OiJfcHJldmlvdXMiO2E6Mjp7czozOiJ1cmwiO3M6NDQ6Imh0dHA6Ly8xMjcuMC4wLjE6ODAwMC9hcGkvdGhvbmctYmFvL2NodWEtZG9jIjtzOjU6InJvdXRlIjtzOjMxOiJob21lLmFwaS50aG9uZy1iYW8udW5yZWFkLWNvdW50Ijt9czo1MDoibG9naW5fd2ViXzU5YmEzNmFkZGMyYjJmOTQwMTU4MGYwMTRjN2Y1OGVhNGUzMDk4OWQiO2k6MjM7czo0OiJhdXRoIjthOjE6e3M6MjE6InBhc3N3b3JkX2NvbmZpcm1lZF9hdCI7aToxNzcyMzU2MjczO319', 1772357424),
-('k1SVSQRALsexh6sVkO8sZpDD2n919PbgXe20dkfF', 1, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36', 'YTo1OntzOjY6Il90b2tlbiI7czo0MDoiZVVyb0lUTncwSGRCME84U2U4TWdsWEhocXJZU090MkFqSFpsTkNMWCI7czo5OiJfcHJldmlvdXMiO2E6Mjp7czozOiJ1cmwiO3M6NTA6Imh0dHA6Ly8xMjcuMC4wLjE6ODAwMC9hZG1pbi9hcGkvdGhvbmctYmFvL2Ryb3Bkb3duIjtzOjU6InJvdXRlIjtzOjI4OiJhZG1pbi5hcGkudGhvbmctYmFvLmRyb3Bkb3duIjt9czo2OiJfZmxhc2giO2E6Mjp7czozOiJvbGQiO2E6MDp7fXM6MzoibmV3IjthOjA6e319czo1MDoibG9naW5fd2ViXzU5YmEzNmFkZGMyYjJmOTQwMTU4MGYwMTRjN2Y1OGVhNGUzMDk4OWQiO2k6MTtzOjQ6ImF1dGgiO2E6MTp7czoyMToicGFzc3dvcmRfY29uZmlybWVkX2F0IjtpOjE3NzIzNTYzMzg7fX0=', 1772357417);
+('73B3FMaYQme1IwFIJe32Ex4uwXEOI3COQ2eH8Ywr', NULL, '127.0.0.1', 'curl/8.7.1', 'YTo0OntzOjY6Il90b2tlbiI7czo0MDoiNkhBWGlOS1dYa1FXcFQ2YkFuZGp3RnAzc29oMWZyNTVteXFDREg0SSI7czozOiJ1cmwiO2E6MTp7czo4OiJpbnRlbmRlZCI7czo0NToiaHR0cDovLzEyNy4wLjAuMTo4MDAwL2FkbWluL2RhbmgtbXVjLWtob2EtaG9jIjt9czo5OiJfcHJldmlvdXMiO2E6Mjp7czozOiJ1cmwiO3M6NDU6Imh0dHA6Ly8xMjcuMC4wLjE6ODAwMC9hZG1pbi9kYW5oLW11Yy1raG9hLWhvYyI7czo1OiJyb3V0ZSI7czoyOToiYWRtaW4uZGFuaC1tdWMta2hvYS1ob2MuaW5kZXgiO31zOjY6Il9mbGFzaCI7YToyOntzOjM6Im9sZCI7YTowOnt9czozOiJuZXciO2E6MDp7fX19', 1772694878),
+('cRVeaw6SRmbzM8S3IH08ciLHCoC6qf8mqOIMWuYU', NULL, '127.0.0.1', 'curl/8.7.1', 'YTozOntzOjY6Il90b2tlbiI7czo0MDoidEl3TGVOcVR2Y055WkhWVnpJcHVmNEo3d1RkdVhwVlZoNnBLOEVkVSI7czo5OiJfcHJldmlvdXMiO2E6Mjp7czozOiJ1cmwiO3M6MzA6Imh0dHA6Ly8xMjcuMC4wLjE6ODAwMC9raG9hLWhvYyI7czo1OiJyb3V0ZSI7czoxODoiaG9tZS5jb3Vyc2VzLmluZGV4Ijt9czo2OiJfZmxhc2giO2E6Mjp7czozOiJvbGQiO2E6MDp7fXM6MzoibmV3IjthOjA6e319fQ==', 1772695406),
+('MOraCZpIwmmJFveX5XhiDyruJlbrTAaDETUJyDNH', NULL, '127.0.0.1', 'curl/8.7.1', 'YTo0OntzOjY6Il90b2tlbiI7czo0MDoiblRmcFZ0ZGw4dmRkRmhrTTVad2pvbThjWmpmRzRhTFdhYkxGM05JTCI7czozOiJ1cmwiO2E6MTp7czo4OiJpbnRlbmRlZCI7czo0NToiaHR0cDovLzEyNy4wLjAuMTo4MDAwL2FkbWluL2RhbmgtbXVjLWtob2EtaG9jIjt9czo5OiJfcHJldmlvdXMiO2E6Mjp7czozOiJ1cmwiO3M6NDU6Imh0dHA6Ly8xMjcuMC4wLjE6ODAwMC9hZG1pbi9kYW5oLW11Yy1raG9hLWhvYyI7czo1OiJyb3V0ZSI7czoyOToiYWRtaW4uZGFuaC1tdWMta2hvYS1ob2MuaW5kZXgiO31zOjY6Il9mbGFzaCI7YToyOntzOjM6Im9sZCI7YTowOnt9czozOiJuZXciO2E6MDp7fX19', 1772695225),
+('nIVBc0rYKFpllGbWaPkNQcZhzM6jjeb59YfmiqF8', NULL, '127.0.0.1', 'curl/8.7.1', 'YTozOntzOjY6Il90b2tlbiI7czo0MDoiY01QeTZQZ2NubEdNT1NNQ0VPbVpHY0FYRzRMeFpBZHB6NjJnUUgzbCI7czo5OiJfcHJldmlvdXMiO2E6Mjp7czozOiJ1cmwiO3M6MzA6Imh0dHA6Ly8xMjcuMC4wLjE6ODAwMC9raG9hLWhvYyI7czo1OiJyb3V0ZSI7czoxODoiaG9tZS5jb3Vyc2VzLmluZGV4Ijt9czo2OiJfZmxhc2giO2E6Mjp7czozOiJvbGQiO2E6MDp7fXM6MzoibmV3IjthOjA6e319fQ==', 1772695633),
+('pY9oDky7W3fWwCBoLem9BXWmwAcDoLQO524186nw', 1, '127.0.0.1', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36', 'YTo1OntzOjY6Il90b2tlbiI7czo0MDoiZlFXaHhHVDI4dGllMnBiTVY5ZkVxVTBuQnhDNGVkUUpWN0F5d3UxaCI7czo2OiJfZmxhc2giO2E6Mjp7czozOiJvbGQiO2E6MDp7fXM6MzoibmV3IjthOjA6e319czo5OiJfcHJldmlvdXMiO2E6Mjp7czozOiJ1cmwiO3M6NDQ6Imh0dHA6Ly8xMjcuMC4wLjE6ODAwMC9hcGkvdGhvbmctYmFvL2NodWEtZG9jIjtzOjU6InJvdXRlIjtzOjMxOiJob21lLmFwaS50aG9uZy1iYW8udW5yZWFkLWNvdW50Ijt9czo1MDoibG9naW5fd2ViXzU5YmEzNmFkZGMyYjJmOTQwMTU4MGYwMTRjN2Y1OGVhNGUzMDk4OWQiO2k6MTtzOjQ6ImF1dGgiO2E6MTp7czoyMToicGFzc3dvcmRfY29uZmlybWVkX2F0IjtpOjE3NzI2OTA5MjU7fX0=', 1772696209),
+('VM43uSj5eEiqjpZjJYRBAF2e503cNCqFvR4jT8EL', 23, '127.0.0.1', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36', 'YTo1OntzOjY6Il90b2tlbiI7czo0MDoiMmdvMzFXekF5bjFCUzJ4UnJjTTJCMEtiSWN4WUMyaFVmMkg0NUxmTCI7czo2OiJfZmxhc2giO2E6Mjp7czozOiJvbGQiO2E6MDp7fXM6MzoibmV3IjthOjA6e319czo5OiJfcHJldmlvdXMiO2E6Mjp7czozOiJ1cmwiO3M6NDQ6Imh0dHA6Ly8xMjcuMC4wLjE6ODAwMC9hcGkvdGhvbmctYmFvL2NodWEtZG9jIjtzOjU6InJvdXRlIjtzOjMxOiJob21lLmFwaS50aG9uZy1iYW8udW5yZWFkLWNvdW50Ijt9czo1MDoibG9naW5fd2ViXzU5YmEzNmFkZGMyYjJmOTQwMTU4MGYwMTRjN2Y1OGVhNGUzMDk4OWQiO2k6MjM7czo0OiJhdXRoIjthOjE6e3M6MjE6InBhc3N3b3JkX2NvbmZpcm1lZF9hdCI7aToxNzcyNjk2MDA3O319', 1772696210),
+('wBDphjUwDeKdSEmt3RzgTl18Dx9uW2JX4YRO6OvQ', NULL, '127.0.0.1', 'curl/8.7.1', 'YTozOntzOjY6Il90b2tlbiI7czo0MDoiYzRBaGdFbEFuNDRBcDE2eTZheTZBcDVWaDZvQnd3WEluanNUN2xaSSI7czo5OiJfcHJldmlvdXMiO2E6Mjp7czozOiJ1cmwiO3M6MzA6Imh0dHA6Ly8xMjcuMC4wLjE6ODAwMC9raG9hLWhvYyI7czo1OiJyb3V0ZSI7czoxODoiaG9tZS5jb3Vyc2VzLmluZGV4Ijt9czo2OiJfZmxhc2giO2E6Mjp7czozOiJvbGQiO2E6MDp7fXM6MzoibmV3IjthOjA6e319fQ==', 1772694868),
+('xDe3MoJRkwzkQNRZFDKnB9tVao0eUo2Zdz8cDlEQ', NULL, '127.0.0.1', 'curl/8.7.1', 'YTozOntzOjY6Il90b2tlbiI7czo0MDoiaThpUTRCZWhUYjlFb0NJRmFHN1FDNXMwOEtmbnl1NTRoUzBCcUdubyI7czo5OiJfcHJldmlvdXMiO2E6Mjp7czozOiJ1cmwiO3M6MzA6Imh0dHA6Ly8xMjcuMC4wLjE6ODAwMC9raG9hLWhvYyI7czo1OiJyb3V0ZSI7czoxODoiaG9tZS5jb3Vyc2VzLmluZGV4Ijt9czo2OiJfZmxhc2giO2E6Mjp7czozOiJvbGQiO2E6MDp7fXM6MzoibmV3IjthOjA6e319fQ==', 1772695225);
 
 -- --------------------------------------------------------
 
@@ -1060,11 +1152,11 @@ CREATE TABLE `taikhoan` (
 --
 
 INSERT INTO `taikhoan` (`taiKhoanId`, `taiKhoan`, `matKhau`, `email`, `role`, `nhomQuyenId`, `trangThai`, `remember_token`, `lastLogin`, `created_at`, `updated_at`, `deleted_at`) VALUES
-(1, 'admin', '$2y$12$R12EhHjbvn9YPWfel4EVXO4Q4IF8u60X//oZvBmy.vSQ3AWjXB3AO', 'levanhaum@gmail.com', 3, NULL, 1, 'ylV0rtSxOKIJGFuF4qzwdeBBZi1JZUa5Ob2yaceEmTrSZdIwACHDQ3busYQA', '2026-03-01 16:12:18', '2026-01-23 20:07:12', '2026-03-01 16:12:18', NULL),
+(1, 'admin', '$2y$12$R12EhHjbvn9YPWfel4EVXO4Q4IF8u60X//oZvBmy.vSQ3AWjXB3AO', 'levanhaum@gmail.com', 3, NULL, 1, 'krwS7kobmSfgrYfhOqcTZDuA4PpzVBfeYsJK2RBQmO4qumlfi5Mr2OvX6Y48', '2026-03-05 13:08:45', '2026-01-23 20:07:12', '2026-03-05 13:08:45', NULL),
 (4, 'gv_john_smith', '$2y$10$abcdef', 'Levanhaum11@gmail.com', 1, 6, 0, NULL, NULL, '2026-01-23 20:07:12', '2026-02-25 18:18:17', NULL),
 (5, 'gv_le_hoa', '$2y$12$X76PLtZH03IrMNVYcJMCGuhR7iwOGUI9onnYLmZCICcWDEic8Ux7S', 'Levanhaum10@gmail.com', 1, 6, 1, NULL, '2026-02-28 17:16:44', '2026-01-23 20:07:12', '2026-02-28 17:16:44', NULL),
-(22, 'Levanhaum1@gmail.com', '$2y$12$1IY6Um0/pOUrYWknZESQmeP8aPcuEiIo.p3FBmrvlqsp7ck7bRYLy', 'Levanhaum1@gmail.com', 0, NULL, 1, NULL, '2026-02-21 11:37:31', '2026-02-21 11:30:47', '2026-02-21 11:54:20', '2026-02-21 04:54:20'),
-(23, 'User_049204011849', '$2y$12$Jl5dI7CO8vRlQIaEI5Rlh.6sTKQXeFSbBZ.9w70Lqjzv9ef0k368u', 'levanhau2@gmail.com', 0, NULL, 1, NULL, '2026-03-01 16:11:13', '2026-02-21 11:45:30', '2026-03-01 16:11:13', NULL),
+(22, 'Levanhaum1@gmail.com', '$2y$12$1IY6Um0/pOUrYWknZESQmeP8aPcuEiIo.p3FBmrvlqsp7ck7bRYLy', 'Levanhaum1@gmail.com', 0, NULL, 1, NULL, '2026-02-21 11:37:31', '2026-02-21 11:30:47', '2026-03-04 21:58:05', NULL),
+(23, 'User_049204011849', '$2y$12$Jl5dI7CO8vRlQIaEI5Rlh.6sTKQXeFSbBZ.9w70Lqjzv9ef0k368u', 'levanhau2@gmail.com', 0, NULL, 1, NULL, '2026-03-05 14:33:27', '2026-02-21 11:45:30', '2026-03-05 14:33:27', NULL),
 (26, 'User_049204011848', '$2y$12$LAlX9l/zGiYLnfbl6eQ9SeNjv5zpUWLyojiwHcc3VQSQydH/rWv9e', 'Levanhaugv@gmail.com', 1, 6, 1, NULL, '2026-02-27 17:34:21', '2026-02-25 18:37:41', '2026-02-27 17:34:21', NULL),
 (27, 'User_094949494944', '$2y$12$u.Ndwx0ohXL8X6RoRZmh..SH7X.9Zw4z4BwB2/t4QisGKQlm25Qja', 'lengocanhk4@gmail.com', 0, NULL, 1, NULL, NULL, '2026-02-27 14:20:38', '2026-02-27 14:20:38', NULL);
 
@@ -1094,13 +1186,13 @@ CREATE TABLE `tailieu` (
 --
 
 CREATE TABLE `thongbao` (
-  `thongBaoId` bigint(20) NOT NULL,
+  `thongBaoId` int(11) NOT NULL,
   `tieuDe` varchar(255) DEFAULT NULL,
   `noiDung` text DEFAULT NULL,
   `nguoiGuiId` int(11) DEFAULT NULL,
   `loaiThongBao` tinyint(4) DEFAULT NULL,
-  `doiTuongGui` tinyint(4) DEFAULT NULL COMMENT '0-Tất cả, 1-Theo lớp, 2-Theo khóa học, 3-Cá nhân',
-  `doiTuongId` bigint(20) DEFAULT NULL,
+  `doiTuongGui` tinyint(4) DEFAULT NULL COMMENT '0-Tất cả, 1-Theo lớp, 2-Theo khóa học, 3-Cá nhân, 4 - vai trò',
+  `doiTuongId` int(11) DEFAULT NULL,
   `ngayGui` datetime DEFAULT current_timestamp(),
   `trangThai` tinyint(4) DEFAULT NULL,
   `loaiGui` tinyint(4) NOT NULL DEFAULT 0 COMMENT '0=Hệ thống,1=Học tập,2=Tài chính,3=Sự kiện,4=Khẩn cấp',
@@ -1117,7 +1209,8 @@ CREATE TABLE `thongbao` (
 
 INSERT INTO `thongbao` (`thongBaoId`, `tieuDe`, `noiDung`, `nguoiGuiId`, `loaiThongBao`, `doiTuongGui`, `doiTuongId`, `ngayGui`, `trangThai`, `loaiGui`, `uuTien`, `ghim`, `hinhAnh`, `created_at`, `updated_at`) VALUES
 (2, 'Thông báo lịch bắt đầu đi học', '<p><strong>XIn chào cả nhà</strong></p><p><a href=\"http://127.0.0.1:8000/blog\" target=\"_blank\">Tôi là admin, ngày 01/03/2026 bắt đầu đi học trở lại</a></p>', 1, NULL, 0, NULL, '2026-02-28 16:40:28', 1, 1, 1, 1, NULL, '2026-02-28 16:40:28', '2026-02-28 16:45:47'),
-(4, 'test thông báo 01', '<p>Nội dung</p>', 1, NULL, 4, 0, '2026-02-28 17:17:57', 1, 1, 0, 0, NULL, '2026-02-28 17:17:57', '2026-02-28 17:17:57');
+(4, 'test thông báo 01', '<p>Nội dung</p>', 1, NULL, 4, 0, '2026-02-28 17:17:57', 1, 1, 0, 0, NULL, '2026-02-28 17:17:57', '2026-02-28 17:17:57'),
+(5, 'Test thông báo 01', '<p>Xin chào các bạn</p><p><strong>hello</strong></p>', 1, NULL, 4, 0, '2026-03-05 13:23:46', 1, 0, 0, 0, NULL, '2026-03-05 13:23:46', '2026-03-05 13:23:46');
 
 -- --------------------------------------------------------
 
@@ -1126,8 +1219,8 @@ INSERT INTO `thongbao` (`thongBaoId`, `tieuDe`, `noiDung`, `nguoiGuiId`, `loaiTh
 --
 
 CREATE TABLE `thongbaonguoidung` (
-  `thongBaoNguoiDungId` bigint(20) NOT NULL,
-  `thongBaoId` bigint(20) DEFAULT NULL,
+  `thongBaoNguoiDungId` int(11) NOT NULL,
+  `thongBaoId` int(11) DEFAULT NULL,
   `taiKhoanId` int(11) DEFAULT NULL,
   `daDoc` tinyint(4) DEFAULT 0,
   `ngayDoc` datetime DEFAULT NULL,
@@ -1145,7 +1238,36 @@ INSERT INTO `thongbaonguoidung` (`thongBaoNguoiDungId`, `thongBaoId`, `taiKhoanI
 (3, 2, 26, 0, NULL, '2026-02-28 16:40:28', '2026-02-28 16:40:28'),
 (4, 2, 27, 0, NULL, '2026-02-28 16:40:28', '2026-02-28 16:40:28'),
 (6, 4, 23, 1, '2026-02-28 17:18:42', '2026-02-28 17:17:57', '2026-02-28 17:18:42'),
-(7, 4, 27, 0, NULL, '2026-02-28 17:17:57', '2026-02-28 17:17:57');
+(7, 4, 27, 0, NULL, '2026-02-28 17:17:57', '2026-02-28 17:17:57'),
+(8, 5, 22, 0, NULL, '2026-03-05 13:23:46', '2026-03-05 13:23:46'),
+(9, 5, 23, 1, '2026-03-05 13:23:53', '2026-03-05 13:23:46', '2026-03-05 13:23:53'),
+(10, 5, 27, 0, NULL, '2026-03-05 13:23:46', '2026-03-05 13:23:46');
+
+-- --------------------------------------------------------
+
+--
+-- Cấu trúc bảng cho bảng `thongbao_tepdinh`
+--
+
+CREATE TABLE `thongbao_tepdinh` (
+  `tepDinhId` bigint(20) UNSIGNED NOT NULL,
+  `thongBaoId` int(11) NOT NULL COMMENT 'FK → thongbao.thongBaoId',
+  `tenFile` varchar(255) NOT NULL COMMENT 'Tên file gốc của người dùng',
+  `tenFileLuu` varchar(255) NOT NULL COMMENT 'Tên file lưu trên server (uuid + ext)',
+  `duongDan` varchar(500) NOT NULL COMMENT 'Relative path trong storage/public',
+  `loaiFile` varchar(100) DEFAULT NULL COMMENT 'MIME type',
+  `kichThuoc` bigint(20) UNSIGNED NOT NULL DEFAULT 0 COMMENT 'Kích thước byte',
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Đang đổ dữ liệu cho bảng `thongbao_tepdinh`
+--
+
+INSERT INTO `thongbao_tepdinh` (`tepDinhId`, `thongBaoId`, `tenFile`, `tenFileLuu`, `duongDan`, `loaiFile`, `kichThuoc`, `created_at`, `updated_at`) VALUES
+(1, 5, 'Chi tiết liên hệ #1 — Hệ thống quản lý trung tâm đào tạo ngoại ngữ FiveGenius.html', '39083e5c-2f00-4400-acc7-d5ed70b945c8.html', 'thongbao/tepdinh/39083e5c-2f00-4400-acc7-d5ed70b945c8.html', 'text/html', 82894, '2026-03-05 06:23:46', '2026-03-05 06:23:46'),
+(2, 5, 'jn25ss09p-rg_jean__4__20ee1b6fb9a9466fab51326e6497caa3_master.jpg', '901a6cce-a617-40cd-a1ff-16fe22f81823.jpg', 'thongbao/tepdinh/901a6cce-a617-40cd-a1ff-16fe22f81823.jpg', 'image/jpeg', 64771, '2026-03-05 06:23:46', '2026-03-05 06:23:46');
 
 -- --------------------------------------------------------
 
@@ -1320,7 +1442,8 @@ ALTER TABLE `danhmucbaiviet`
 --
 ALTER TABLE `danhmuckhoahoc`
   ADD PRIMARY KEY (`danhMucId`),
-  ADD UNIQUE KEY `slug` (`slug`);
+  ADD UNIQUE KEY `slug` (`slug`),
+  ADD KEY `idx_danhmuc_parent` (`parent_id`);
 
 --
 -- Chỉ mục cho bảng `diembaithi`
@@ -1396,6 +1519,19 @@ ALTER TABLE `khoahoc`
 ALTER TABLE `lienhe`
   ADD PRIMARY KEY (`lienHeId`),
   ADD KEY `fk_lh_taikhoan` (`taiKhoanId`);
+
+--
+-- Chỉ mục cho bảng `lienhe_lichsu`
+--
+ALTER TABLE `lienhe_lichsu`
+  ADD PRIMARY KEY (`lichSuId`);
+
+--
+-- Chỉ mục cho bảng `lienhe_phanhoi`
+--
+ALTER TABLE `lienhe_phanhoi`
+  ADD PRIMARY KEY (`phanHoiId`),
+  ADD KEY `lienhe_phanhoi_lienheid_index` (`lienHeId`);
 
 --
 -- Chỉ mục cho bảng `lophoc`
@@ -1544,6 +1680,13 @@ ALTER TABLE `thongbaonguoidung`
   ADD KEY `fk_tbnd_taikhoan` (`taiKhoanId`);
 
 --
+-- Chỉ mục cho bảng `thongbao_tepdinh`
+--
+ALTER TABLE `thongbao_tepdinh`
+  ADD PRIMARY KEY (`tepDinhId`),
+  ADD KEY `thongbao_tepdinh_thongbaoid_index` (`thongBaoId`);
+
+--
 -- Chỉ mục cho bảng `tinhthanh`
 --
 ALTER TABLE `tinhthanh`
@@ -1583,7 +1726,7 @@ ALTER TABLE `buoihoc`
 -- AUTO_INCREMENT cho bảng `cahoc`
 --
 ALTER TABLE `cahoc`
-  MODIFY `caHocId` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `caHocId` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- AUTO_INCREMENT cho bảng `cosodaotao`
@@ -1613,7 +1756,7 @@ ALTER TABLE `danhmucbaiviet`
 -- AUTO_INCREMENT cho bảng `danhmuckhoahoc`
 --
 ALTER TABLE `danhmuckhoahoc`
-  MODIFY `danhMucId` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `danhMucId` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
 
 --
 -- AUTO_INCREMENT cho bảng `diembaithi`
@@ -1655,13 +1798,25 @@ ALTER TABLE `khoahoc`
 -- AUTO_INCREMENT cho bảng `lienhe`
 --
 ALTER TABLE `lienhe`
-  MODIFY `lienHeId` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+  MODIFY `lienHeId` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
+
+--
+-- AUTO_INCREMENT cho bảng `lienhe_lichsu`
+--
+ALTER TABLE `lienhe_lichsu`
+  MODIFY `lichSuId` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=13;
+
+--
+-- AUTO_INCREMENT cho bảng `lienhe_phanhoi`
+--
+ALTER TABLE `lienhe_phanhoi`
+  MODIFY `phanHoiId` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 --
 -- AUTO_INCREMENT cho bảng `lophoc`
 --
 ALTER TABLE `lophoc`
-  MODIFY `lopHocId` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
+  MODIFY `lopHocId` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=13;
 
 --
 -- AUTO_INCREMENT cho bảng `luong`
@@ -1679,7 +1834,7 @@ ALTER TABLE `luongchitiet`
 -- AUTO_INCREMENT cho bảng `migrations`
 --
 ALTER TABLE `migrations`
-  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=14;
 
 --
 -- AUTO_INCREMENT cho bảng `nhomquyen`
@@ -1739,13 +1894,19 @@ ALTER TABLE `taikhoan`
 -- AUTO_INCREMENT cho bảng `thongbao`
 --
 ALTER TABLE `thongbao`
-  MODIFY `thongBaoId` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+  MODIFY `thongBaoId` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 --
 -- AUTO_INCREMENT cho bảng `thongbaonguoidung`
 --
 ALTER TABLE `thongbaonguoidung`
-  MODIFY `thongBaoNguoiDungId` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
+  MODIFY `thongBaoNguoiDungId` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
+
+--
+-- AUTO_INCREMENT cho bảng `thongbao_tepdinh`
+--
+ALTER TABLE `thongbao_tepdinh`
+  MODIFY `tepDinhId` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- AUTO_INCREMENT cho bảng `tinhthanh`
@@ -1952,8 +2113,7 @@ ALTER TABLE `thongbao`
 -- Các ràng buộc cho bảng `thongbaonguoidung`
 --
 ALTER TABLE `thongbaonguoidung`
-  ADD CONSTRAINT `fk_tbnd_taikhoan` FOREIGN KEY (`taiKhoanId`) REFERENCES `taikhoan` (`taiKhoanId`),
-  ADD CONSTRAINT `fk_tbnd_thongbao` FOREIGN KEY (`thongBaoId`) REFERENCES `thongbao` (`thongBaoId`);
+  ADD CONSTRAINT `fk_tbnd_taikhoan` FOREIGN KEY (`taiKhoanId`) REFERENCES `taikhoan` (`taiKhoanId`);
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
