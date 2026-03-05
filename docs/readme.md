@@ -4,13 +4,14 @@ Bo tai lieu nay duoc chia theo tung "vertical slice" de de doc, de cap nhat va d
 
 ## Cau truc
 
-- `docs/01-phan-tich/README.md`: Phan tich bai toan, pham vi, yeu cau nghiep vu.
-- `docs/02-tong-quan/README.md`: Tong quan kien truc, cau truc source code, luong xu ly.
-- `docs/03-database/README.md`: Mo hinh CSDL, quan he, migration, quy tac schema.
-- `docs/04-api/README.md`: Danh sach endpoint hien co (MVC route) va input/output chinh.
-- `docs/05-huong-dan/README.md`: Huong dan setup dev, chay app, workflow git/migration.
-- `docs/06-deployment/README.md`: Huong dan release va trien khai production.
-- `docs/07-algorithms/README.md`: Cac thuat toan/quy tac nghiep vu quan trong.
+- `docs/01-phan-tich/phan-tich-nghiep-vu-va-pham-vi.md`: Phan tich bai toan, pham vi, yeu cau nghiep vu.
+- `docs/02-tong-quan/kien-truc-va-tong-quan-he-thong.md`: Tong quan kien truc, cau truc source code, luong xu ly.
+- `docs/03-database/tai-lieu-co-so-du-lieu.md`: Mo hinh CSDL, quan he, migration, quy tac schema.
+- `docs/04-api/tai-lieu-endpoints-mvc.md`: Danh sach endpoint hien co (MVC route) va input/output chinh.
+- `docs/05-huong-dan/huong-dan-phat-trien-va-lam-viec.md`: Huong dan setup dev, chay app, workflow git/migration.
+- `docs/06-deployment/huong-dan-trien-khai-he-thong.md`: Huong dan release va trien khai production.
+- `docs/07-algorithms/thuat-toan-va-quy-tac-nghiep-vu.md`: Cac thuat toan/quy tac nghiep vu quan trong.
+
 - `docs/data.sql`: Script SQL tham khao de kiem tra du lieu/bao cao nhanh.
 - `docs/progress.md`: Tien do module, da xong/chua xong, ke hoach tiep theo.
 
