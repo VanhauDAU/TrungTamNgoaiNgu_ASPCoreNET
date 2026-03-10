@@ -1,111 +1,161 @@
-# 03 - Database
+# Tài Liệu Cơ Sở Dữ Liệu
 
-## 1. Nen tang CSDL
+## 1. Sơ Đồ Quan Hệ (Tóm Tắt)
 
-- SQL Server + EF Core Code-First.
-- DbContext: `Data/AppDbContext.cs`.
-- Design-time factory: `Data/AppDbContextFactory.cs`.
-- Migration hien co:
-  - `20260303095750_TaoDatabase_LanDau`
-  - `20260303111159_AddSoftDeleteToDanhMuc`
-  - `20260303195100_AddNhatKyHeThongTable`
+```
+tinhthanh
+    └── cosodaotao ──┬── phonghoc
+                     └── nhansu ──── taikhoan
+                                         │
+taikhoan ────────────────────────────────┤
+    │                                    │
+    ├── hosonguoidung                    │
+    ├── nhomquyen ──── phanquyen         │
+    │                                    │
+    └─── [học tập] ───────────────────────┘
+            │
+    danhmuckhoahoc ── khoahoc ── hocphi
+                          │
+                      lophoc ──────────── buoihoc ─── diemDanh
+                          │                                │
+                      dangkylophoc ─── hoadon ─── phieuthu
+                                           │
+                                      noidungbaihoc
+                                      danhgiagiaovien
+                                      baithi ── diembaithi
 
-## 2. Nhom bang trong he thong
+taikhoan ── [chat] ─── chat_rooms ─── chat_messages ─── chat_message_reactions
+                           │               │              chat_message_attachments
+                      chat_room_members   chat_message_deletes
+                      chat_audit_logs
 
-### Nhom 1 - Tai khoan & phan quyen
+taikhoan ── [thông báo] ── thongbao ─── thongbaonguoidung
+                                    └── thongbao_lichsu
+                                    └── thongbao_tepdinh
 
-- `taikhoan`
-- `hosonguoidung`
-- `nhansu`
-- `nhomquyen`
-- `phanquyen`
+taikhoan ── [blog] ── baiviet ─── baiviet_danhmuc ─── danhmucbaiviet
+                              └── baiviet_tag ──────── tags
 
-### Nhom 2 - Khoa hoc & lop hoc
+lienhe ─── lienhe_lichsu
+       └── lienhe_phanhoi
+```
 
-- `danhmuckhoahoc`
-- `khoahoc`
-- `hocphi`
-- `cahoc`
-- `phonghoc`
-- `lophoc`
-- `dangkylophoc`
-- `buoihoc`
-- `diemdanh`
+---
 
-### Nhom 3 - Tai chinh
+## 2. Mô Tả Chi Tiết Các Bảng
 
-- `hoadon`
-- `phieuthu`
-- `luong`
-- `luongchitiet`
+### Nhóm: Tài Khoản & Phân Quyền
 
-### Nhom 4 - Co so dao tao
+| Bảng              | Mô tả                                      | Ghi chú                         |
+| ----------------- | ------------------------------------------ | ------------------------------- |
+| `taikhoan`        | Tài khoản đăng nhập                        | role: 0=HV, 1=GV, 2=NV, 3=Admin |
+| `hosonguoidung`   | Hồ sơ cá nhân                              | 1-1 với taikhoan                |
+| `nhomquyen`       | Nhóm quyền tùy chỉnh                       | VD: Kế toán, Giáo viên          |
+| `phanquyen`       | Chi tiết quyền CRUD theo tính năng         | coXem, coThem, coSua, coXoa     |
+| `nhatky_dangnhap` | Lịch sử đăng nhập (IP, thời gian, kết quả) | Bảo mật brute-force             |
 
-- `cosodaotao`
-- `tinhthanh`
+### Nhóm: Cơ Sở & Vật Chất
 
-### Nhom 5 - Noi dung & tuong tac
+| Bảng         | Mô tả                          | Trạng thái                                   |
+| ------------ | ------------------------------ | -------------------------------------------- |
+| `cosodaotao` | Chi nhánh/cơ sở đào tạo        | trangThai: 0=Ngưng, 1=Hoạt động              |
+| `phonghoc`   | Phòng học                      | 0=Bảo trì, 1=Hoạt động, 2=Tạm ngưng, 3=Ngưng |
+| `cahoc`      | Ca học (giờ bắt đầu, kết thúc) | trangThai: 0/1                               |
+| `tinhthanh`  | Danh sách tỉnh thành VN        | 63 tỉnh thành                                |
 
-- `danhmucbaiviet`
-- `tags`
-- `baiviet`
-- `lienhe`
-- `thongbao`
-- `thongbaonguoidung`
-- `settings`
+### Nhóm: Khóa Học & Lớp Học
 
-### Nhom 6 - Audit
+| Bảng             | Mô tả                                             | Quan trọng                                 |
+| ---------------- | ------------------------------------------------- | ------------------------------------------ |
+| `danhmuckhoahoc` | Danh mục khóa học (hỗ trợ cây phân cấp parent_id) | sort_order                                 |
+| `khoahoc`        | Khóa học                                          | soft delete, doiTuong, ketQuaDatDuoc       |
+| `hocphi`         | Bảng giá học phí theo số buổi                     | Nhiều mức giá/khóa                         |
+| `lophoc`         | Lớp học cụ thể                                    | maLopHoc, lichHoc JSON, soft delete        |
+| `buoihoc`        | Từng buổi học                                     | daDiemDanh, daHoanThanh                    |
+| `dangkylophoc`   | Đăng ký lớp của học viên                          | trangThai: 0=Chờ, 1=Đang học, 2=Hoàn thành |
 
-- `nhatkyhethong`
+### Nhóm: Điểm Danh & Học Tập
 
-## 3. Quan he nghiep vu quan trong
+| Bảng              | Mô tả                                              |
+| ----------------- | -------------------------------------------------- |
+| `diemDanh`        | Điểm danh từng buổi (unique: buoiHocId+taiKhoanId) |
+| `danhgiagiaovien` | Học viên đánh giá giáo viên (sao + nhận xét)       |
+| `baithi`          | Bài kiểm tra/thi                                   |
+| `diembaithi`      | Điểm thi của từng học viên                         |
+| `tailieu`         | Tài liệu học tập (PDF, video...)                   |
+| `noidungbaihoc`   | Nội dung chi tiết từng buổi                        |
+| `phanhoi`         | Phản hồi học viên về buổi học                      |
 
-- 1 `DanhMucKhoaHoc` -> n `KhoaHoc`.
-- 1 `KhoaHoc` -> n `LopHoc`.
-- 1 `KhoaHoc` -> n `HocPhi`.
-- 1 `LopHoc` -> n `BuoiHoc`.
-- 1 `LopHoc` -> n `DangKyLopHoc`.
-- 1 `DangKyLopHoc` -> 1 `HoaDon` (hien tai qua navigation).
-- 1 `HoaDon` -> n `PhieuThu`.
-- `BaiViet` many-to-many voi `DanhMucBaiViet` qua `baiviet_danhmuc`.
-- `BaiViet` many-to-many voi `Tag` qua `baiviet_tag`.
-- `ThongBao` -> n `ThongBaoNguoiDung`.
+### Nhóm: Tài Chính
 
-## 4. Quy uoc trang thai quan trong
+| Bảng           | Mô tả                        | Công thức                                                |
+| -------------- | ---------------------------- | -------------------------------------------------------- |
+| `hoadon`       | Hóa đơn học phí              | tongTienSauThue = tongTien - giamGia + thue              |
+| `phieuthu`     | Phiếu thu tiền               | Một hóa đơn có nhiều phiếu thu                           |
+| `luong`        | Bảng lương giáo viên         | tongTienThucLanh = tongLuongDay + thuong + phuCap - phat |
+| `luongchitiet` | Chi tiết lương theo từng lớp | soBuoiDay × donGiaMotBuoi                                |
 
-- `khoahoc.trangThai`: 0 = Tam ngung, 1 = Dang hoat dong.
-- `lophoc.trangThai`: 0 = Sap mo, 1 = Dang mo, 2 = Da dong, 3 = Da huy, 4 = Dang hoc.
-- `hoadon.trangThai`: 0 = Chua thanh toan, 1 = Thanh toan mot phan, 2 = Da thanh toan du.
-- `phieuthu.trangThai`: 0 = Huy, 1 = Hop le.
-- `danhmuckhoahoc.deleted_at` va `khoahoc.deleted_at` dung cho soft delete.
+### Nhóm: Chat
 
-## 5. Cau hinh Fluent API dang dung
+| Bảng                       | Mô tả                                            |
+| -------------------------- | ------------------------------------------------ |
+| `chat_rooms`               | Phòng chat (class_group hoặc direct)             |
+| `chat_messages`            | Tin nhắn (hỗ trợ trả lời, thu hồi)               |
+| `chat_room_members`        | Thành viên phòng (vai trò: member/teacher/owner) |
+| `chat_message_reactions`   | Cảm xúc emoji trên tin nhắn                      |
+| `chat_message_attachments` | Tệp đính kèm                                     |
+| `chat_message_deletes`     | Xóa tin nhắn phía cá nhân                        |
+| `chat_audit_logs`          | Nhật ký toàn bộ hoạt động chat                   |
 
-- One-to-one:
-  - `TaiKhoan` - `HoSoNguoiDung`
-  - `TaiKhoan` - `NhanSu`
-- Many-to-many:
-  - `BaiViet` - `DanhMucBaiViet`
-  - `BaiViet` - `Tag`
-- Column mapping dac biet:
-  - `TaiKhoan.TenTaiKhoan` -> cột `taiKhoan`.
-- Decimal precision da duoc khai bao cho bang tai chinh/luong/toa do.
+### Nhóm: Thông Báo
 
-## 6. Luu y migration quan trong
+| Bảng                | Mô tả                                        |
+| ------------------- | -------------------------------------------- |
+| `thongbao`          | Thông báo hệ thống (lên lịch, ghim, ưu tiên) |
+| `thongbaonguoidung` | Mapping thông báo → người nhận (daDoc)       |
+| `thongbao_lichsu`   | Nhật ký thao tác (tạo nháp, gửi, xóa...)     |
+| `thongbao_tepdinh`  | Tệp đính kèm thông báo                       |
 
-- Khi doi kieu/cau truc cot PK/FK, phai drop constraint truoc roi moi alter column.
-- Thu tu an toan thuong la:
-  1. Drop FK phu thuoc.
-  2. Drop PK neu can alter cot PK.
-  3. Alter column.
-  4. Re-create PK.
-  5. Re-create FK.
-- Loi thuong gap: `The object ... is dependent on column ...`.
+### Nhóm: Blog & Nội Dung
 
-## 7. Checklist truoc khi chay migration
+| Bảng              | Mô tả                                      |
+| ----------------- | ------------------------------------------ |
+| `baiviet`         | Bài viết (slug, soft delete, published_at) |
+| `danhmucbaiviet`  | Danh mục bài viết                          |
+| `baiviet_danhmuc` | Quan hệ nhiều-nhiều                        |
+| `tags`            | Nhãn/tag                                   |
+| `baiviet_tag`     | Quan hệ nhiều-nhiều bài viết-tag           |
 
-- Backup DB.
-- Chay `dotnet ef migrations add <Name>`.
-- Doc file migration vua tao, kiem tra lenh alter PK/FK co dung thu tu.
-- Chay `dotnet ef database update` tren local.
-- Chay smoke test man hinh co lien quan.
+### Nhóm: CRM Liên Hệ
+
+| Bảng             | Mô tả                                                   |
+| ---------------- | ------------------------------------------------------- |
+| `lienhe`         | Liên hệ từ khách hàng (loại: tu_van, ho_tro, khieu_nai) |
+| `lienhe_lichsu`  | Nhật ký xử lý (ai làm gì, khi nào)                      |
+| `lienhe_phanhoi` | Nội dung phản hồi (nội bộ hoặc email)                   |
+
+---
+
+## 3. Danh Sách Migrations
+
+| File                                       | Mô tả                                       |
+| ------------------------------------------ | ------------------------------------------- |
+| `20260303..._TaoDatabase_LanDau`           | Schema ban đầu (toàn bộ bảng cơ bản)        |
+| `20260305..._SyncSchemaFromSql10_20260306` | Đồng bộ từ SQL v10                          |
+| `20260310_01_TaoBangChat`                  | **Mới**: 7 bảng chat realtime               |
+| `20260310_02_BaoMatDangNhap`               | **Mới**: Nhật ký đăng nhập + phaiDoiMatKhau |
+| `20260310_03_PhongHocBaoTriVaSoftDelete`   | **Mới**: Quản lý bảo trì phòng học          |
+| `20260310_04_TaiCauTrucDiemDanh`           | **Mới**: Redesign điểm danh đầy đủ          |
+| `20260310_05_NangCapHeThongThongBao`       | **Mới**: Lên lịch, ưu tiên, tệp đính kèm    |
+| `20260310_06_NangCapCRMLienHe`             | **Mới**: CRM đầy đủ cho liên hệ             |
+| `20260310_07_TaoBangHocTapBoSung`          | **Mới**: Bài thi, tài liệu, đánh giá GV     |
+
+---
+
+## 4. Quy Ước Đặt Tên
+
+- **Bảng**: camelCase tiếng Việt không dấu (`taikhoan`, `lophoc`, `buoihoc`)
+- **Khóa chính**: `{tenBang}Id` (`taiKhoanId`, `lopHocId`)
+- **Khóa ngoại**: giữ nguyên tên cột từ bảng gốc
+- **Timestamps**: `created_at`, `updated_at`, `deleted_at` (soft delete)
+- **Trạng thái**: `trangThai` (tinyint, ghi chú giá trị trong comment)

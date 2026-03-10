@@ -32,6 +32,11 @@ public class CaHoc
     [Display(Name = "Giờ kết thúc")]
     public TimeOnly? GioKetThuc { get; set; }
 
+    [Column("moTa")]
+    [MaxLength(255)]
+    [Display(Name = "Mô tả")]
+    public string? MoTa { get; set; }
+
     [Column("trangThai")]
     public byte TrangThai { get; set; } = 1;
 

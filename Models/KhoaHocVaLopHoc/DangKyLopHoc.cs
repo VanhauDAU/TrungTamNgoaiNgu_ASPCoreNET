@@ -5,11 +5,21 @@
 
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using TrungTamNgoaiNgu.Enums;
 
 namespace TrungTamNgoaiNgu.Models;
 
 // ---------------------------------------------------------------------------
-// BẢNG: danhmuckhoahoc — Danh mục phân loại khóa học (VD: Tiếng Anh, Tiếng Nhật)
+// BẢNG: dangkylophoc — Học viên đăng ký vào lớp
+//
+// TRẠNG THÁI (TrangThai): xem enum DangKyTrangThai
+//   0 CHO_THANH_TOAN         – Chưa thanh toán học phí
+//   1 DA_XAC_NHAN            – Đã thanh toán, chưa khai giảng
+//   2 DANG_HOC               – Đang tham gia học
+//   3 TAM_DUNG_NO_HOC_PHI    – Tạm dừng do nợ học phí
+//   4 BAO_LUU                – Bảo lưu (giữ quyền học sau)
+//   5 HOAN_THANH             – Hoàn thành khóa học
+//   6 HUY                   – Đã hủy đăng ký
 // ---------------------------------------------------------------------------
 
 [Table("dangkylophoc")]
@@ -31,9 +41,13 @@ public class DangKyLopHoc
     [Display(Name = "Ngày đăng ký")]
     public DateOnly? NgayDangKy { get; set; }
 
+    /// <summary>
+    /// Trạng thái đăng ký lớp học — xem <see cref="DangKyTrangThai"/>.
+    /// DB lưu dạng byte (0-6).
+    /// </summary>
     [Column("trangThai")]
     [Display(Name = "Trạng thái")]
-    public int? TrangThai { get; set; }
+    public DangKyTrangThai TrangThai { get; set; } = DangKyTrangThai.ChoThanhToan;
 
     [Column("created_at")]
     public DateTime CreatedAt { get; set; } = DateTime.Now;
@@ -49,6 +63,27 @@ public class DangKyLopHoc
     public LopHoc? LopHoc { get; set; }
 
     public HoaDon? HoaDon { get; set; }
+
+    // ---------------------------------------------------------------------------
+    // Computed properties (NotMapped)
+    // ---------------------------------------------------------------------------
+
+    [NotMapped]
+    public string TrangThaiText => TrangThai.GetLabel();
+
+    [NotMapped]
+    public string TrangThaiBadgeClass => TrangThai.GetBadgeClass();
+
+    [NotMapped]
+    public string TrangThaiIcon => TrangThai.GetIcon();
+
+    /// <summary>Học viên có được phép điểm danh không (không bị khóa)?</summary>
+    [NotMapped]
+    public bool CoTheHoc => TrangThai.CoTheHoc();
+
+    /// <summary>Bị khóa do nợ học phí?</summary>
+    [NotMapped]
+    public bool BiKhoaDiemDanh => TrangThai.BiKhoaDiemDanh();
 }
 
 // ---------------------------------------------------------------------------

@@ -5,11 +5,23 @@
 
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using TrungTamNgoaiNgu.Enums;
 
 namespace TrungTamNgoaiNgu.Models;
 
 // ---------------------------------------------------------------------------
-// BẢNG: danhmuckhoahoc — Danh mục phân loại khóa học (VD: Tiếng Anh, Tiếng Nhật)
+// BẢNG: buoihoc — Từng buổi học của lớp
+//
+// TRẠNG THÁI (TrangThai): xem enum BuoiHocTrangThai
+//   0 SAP_DIEN_RA   – Chưa đến giờ, chưa diễn ra
+//   1 DANG_DIEN_RA  – Đang trong giờ học
+//   2 DA_HOAN_THANH – Kết thúc, đã điểm danh xong
+//   3 DA_HUY        – Buổi học bị hủy
+//   4 DOI_LICH      – Dời sang ngày khác
+//
+// LưU Ý: daDiemDanh và daHoanThanh là cờ riêng, KHÔNG phải TrangThai:
+//   daDiemDanh  = true khi giáo viên đã bấm "Hoàn tất điểm danh"
+//   daHoanThanh = true khi buổi chuyển sang DA_HOAN_THANH
 // ---------------------------------------------------------------------------
 
 [Table("buoihoc")]
@@ -53,8 +65,11 @@ public class BuoiHoc
     [Column("daHoanThanh")]
     public bool DaHoanThanh { get; set; }
 
+    /// <summary>
+    /// Trạng thái buổi học — xem <see cref="BuoiHocTrangThai"/>.
+    /// </summary>
     [Column("trangThai")]
-    public byte TrangThai { get; set; } = 1;
+    public BuoiHocTrangThai TrangThai { get; set; } = BuoiHocTrangThai.SapDienRa;
 
     [Column("created_at")]
     public DateTime CreatedAt { get; set; } = DateTime.Now;
@@ -73,9 +88,22 @@ public class BuoiHoc
     public PhongHoc? PhongHoc { get; set; }
 
     public ICollection<DiemDanh> DiemDanhs { get; set; } = [];
+
+    // ---------------------------------------------------------------------------
+    // Computed properties (NotMapped)
+    // ---------------------------------------------------------------------------
+
+    [NotMapped]
+    public string TrangThaiText => TrangThai.GetLabel();
+
+    [NotMapped]
+    public string TrangThaiBadgeClass => TrangThai.GetBadgeClass();
+
+    [NotMapped]
+    public string TrangThaiIcon => TrangThai.GetIcon();
+
+    /// <summary>Buổi học có thể điểm danh được không?</summary>
+    [NotMapped]
+    public bool CoTheHoc => TrangThai.CoTheHoc();
 }
 
-// ---------------------------------------------------------------------------
-// BẢNG: diemdanh — Điểm danh học viên theo từng buổi
-// TrangThai: 0=Vắng | 1=Có mặt | 2=Đến trễ
-// ---------------------------------------------------------------------------

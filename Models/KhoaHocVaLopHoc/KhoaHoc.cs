@@ -19,6 +19,12 @@ public class KhoaHoc
     [Column("khoaHocId")]
     public int KhoaHocId { get; set; }
 
+    /// <summary>Mã khóa học — VD: KH001, IELTS-01. Tùy chọn để tra cứu nhanh.</summary>
+    [Column("maKhoaHoc")]
+    [MaxLength(20)]
+    [Display(Name = "Mã khóa học")]
+    public string? MaKhoaHoc { get; set; }
+
     [Column("danhMucId")]
     public int? DanhMucId { get; set; }
 

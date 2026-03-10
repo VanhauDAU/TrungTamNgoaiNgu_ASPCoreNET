@@ -1,81 +1,89 @@
-# 04 - API (MVC Endpoints)
+# Danh Sách API & Endpoint MVC
 
-Du an hien tai su dung server-rendered MVC, nen "API" chu yeu la endpoint HTML (khong phai REST JSON).
+## 1. Quy Ước Routing
 
-## 1. Public endpoints
+```
+Admin:  /admin/{module}/{action}/{id?}
+Client: /{route}
+API:    /api/{resource}/{action}
+```
 
-| Method | Route | Mo ta |
-|---|---|---|
-| GET | `/` | Trang chu (`Home/Index`) |
-| GET | `/Home/Privacy` | Trang privacy |
-| GET | `/Home/Error` | Trang loi |
+---
 
-## 2. Admin Dashboard
+## 2. Tài Khoản & Xác Thực
 
-| Method | Route | Mo ta |
-|---|---|---|
-| GET | `/Admin` | Dashboard mac dinh |
-| GET | `/Admin/Dashboard/Index` | Dashboard thong ke |
+| Method | URL             | Mô tả                 |
+| ------ | --------------- | --------------------- |
+| GET    | `/login`        | Trang đăng nhập       |
+| POST   | `/login`        | Xác thực, tạo session |
+| POST   | `/logout`       | Đăng xuất             |
+| GET    | `/doi-mat-khau` | Đổi mật khẩu          |
+| POST   | `/doi-mat-khau` | Lưu mật khẩu mới      |
 
-## 3. Admin Courses
+---
 
-| Method | Route | Mo ta |
-|---|---|---|
-| GET | `/Admin/Courses` | Danh sach khoa hoc (filter + paging) |
-| GET | `/Admin/Courses/Detail/{id}` | Chi tiet khoa hoc |
-| GET | `/Admin/Courses/Create` | Form tao khoa hoc |
-| POST | `/Admin/Courses/Create` | Tao khoa hoc moi |
-| GET | `/Admin/Courses/Edit/{id}` | Form sua khoa hoc |
-| POST | `/Admin/Courses/Edit` | Cap nhat khoa hoc |
-| POST | `/Admin/Courses/softdelete/{id}` | Xoa mem khoa hoc |
-| GET | `/Admin/Courses/Trash` | Danh sach khoa hoc da xoa mem |
-| POST | `/Admin/Courses/restore/{id}` | Khoi phuc khoa hoc |
-| POST | `/Admin/Courses/bulk` | Bulk doi trang thai/xoa mem |
-| POST | `/Admin/Courses/bulkrestore` | Bulk khoi phuc |
+## 3. Admin – Quản Lý Học Viên
 
-### Query params cua `GET /Admin/Courses`
+| Method | URL                        | Mô tả              |
+| ------ | -------------------------- | ------------------ |
+| GET    | `/admin/hoc-vien`          | Danh sách học viên |
+| GET    | `/admin/hoc-vien/them`     | Form thêm mới      |
+| POST   | `/admin/hoc-vien/them`     | Lưu học viên mới   |
+| GET    | `/admin/hoc-vien/{id}`     | Chi tiết học viên  |
+| POST   | `/admin/hoc-vien/{id}/xoa` | Xóa mềm            |
 
-- `tuKhoa`: tim theo ten khoa hoc.
-- `danhMucId`: loc theo danh muc.
-- `trangThai`: 0 hoac 1.
-- `page`, `pageSize`: phan trang.
+---
 
-## 4. Admin Course Categories
+## 4. Admin – Khóa Học & Lớp Học
 
-| Method | Route | Mo ta |
-|---|---|---|
-| GET | `/Admin/CourseCategories` | Danh sach danh muc |
-| GET | `/Admin/CourseCategories/Create` | Form tao danh muc |
-| POST | `/Admin/CourseCategories/Create` | Tao danh muc |
-| GET | `/Admin/CourseCategories/Edit/{id}` | Form sua danh muc |
-| POST | `/Admin/CourseCategories/Edit` | Cap nhat danh muc |
-| POST | `/Admin/CourseCategories/softdelete/{id}` | Xoa mem danh muc |
-| GET | `/Admin/CourseCategories/Trash` | Danh muc da xoa mem |
-| POST | `/Admin/CourseCategories/restore/{id}` | Khoi phuc danh muc |
+| Method   | URL                             | Mô tả              |
+| -------- | ------------------------------- | ------------------ |
+| GET      | `/admin/khoa-hoc`               | Danh sách khóa học |
+| GET/POST | `/admin/khoa-hoc/them`          | Thêm khóa học      |
+| GET/POST | `/admin/khoa-hoc/{id}/sua`      | Sửa khóa học       |
+| POST     | `/admin/khoa-hoc/{id}/xoa`      | Soft delete        |
+| GET      | `/admin/lop-hoc`                | Danh sách lớp      |
+| GET/POST | `/admin/lop-hoc/them`           | Tạo lớp mới        |
+| GET      | `/admin/lop-hoc/{id}/diem-danh` | Trang điểm danh    |
+| POST     | `/admin/lop-hoc/{id}/diem-danh` | Lưu điểm danh      |
 
-## 5. Admin Audit Logs
+---
 
-| Method | Route | Mo ta |
-|---|---|---|
-| GET | `/Admin/AuditLogs` | Danh sach nhat ky (filter + paging) |
-| GET | `/Admin/AuditLogs/Details/{id}` | Chi tiet ban ghi nhat ky |
+## 5. Admin – Tài Chính
 
-### Query params cua `GET /Admin/AuditLogs`
+| Method | URL                              | Mô tả                |
+| ------ | -------------------------------- | -------------------- |
+| GET    | `/admin/hoa-don`                 | Danh sách hóa đơn    |
+| GET    | `/admin/hoa-don/{id}`            | Chi tiết hóa đơn     |
+| POST   | `/admin/hoa-don/{id}/thanh-toan` | Ghi phiếu thu        |
+| GET    | `/admin/luong`                   | Bảng lương giáo viên |
+| POST   | `/admin/luong/tinh`              | Tính lương tháng     |
 
-- `module`: loc module (`KhoaHoc`, `DanhMuc`, `HeThong`, ...).
-- `tuKhoa`: tim fulltext co ban tren hanh dong/noi dung/nguoi thuc hien.
-- `page`, `pageSize`: phan trang.
+---
 
-## 6. Rang buoc request quan trong
+## 6. API Realtime (JSON)
 
-- Cac POST action su dung `[ValidateAntiForgeryToken]`.
-- Upload anh khoa hoc:
-  - Dinh dang: `.jpg`, `.jpeg`, `.png`, `.webp`
-  - MIME: `image/jpeg`, `image/png`, `image/webp`
-  - Kich thuoc toi da: 5MB
+| Method | URL                               | Mô tả                 |
+| ------ | --------------------------------- | --------------------- |
+| GET    | `/api/thong-bao/chua-doc`         | Số thông báo chưa đọc |
+| POST   | `/api/thong-bao/{id}/da-doc`      | Đánh dấu đã đọc       |
+| GET    | `/api/chat/phong`                 | Danh sách phòng chat  |
+| GET    | `/api/chat/phong/{id}/tin-nhan`   | Lịch sử tin nhắn      |
+| POST   | `/api/chat/tin-nhan/{id}/thu-hoi` | Thu hồi tin nhắn      |
+| POST   | `/api/chat/tin-nhan/{id}/cam-xuc` | Toggle emoji reaction |
 
-## 7. De xuat nang cap API ve sau
+---
 
-1. Tao REST API cho module Courses/Categories song song voi MVC view.
-2. Tach request/response DTO rieng.
-3. Them OpenAPI/Swagger de test nhanh va dong bo tai lieu.
+## 7. Client – Trang Học Viên
+
+| Method | URL                   | Mô tả                   |
+| ------ | --------------------- | ----------------------- |
+| GET    | `/`                   | Trang chủ               |
+| GET    | `/khoa-hoc`           | Danh sách khóa học      |
+| GET    | `/khoa-hoc/{slug}`    | Chi tiết khóa học       |
+| GET    | `/dang-ky/{lopHocId}` | Đăng ký lớp             |
+| GET    | `/lich-hoc`           | Thời khóa biểu học viên |
+| GET    | `/blog`               | Danh sách bài viết      |
+| GET    | `/blog/{slug}`        | Chi tiết bài viết       |
+| GET    | `/lien-he`            | Form liên hệ/tư vấn     |
+| POST   | `/lien-he`            | Gửi yêu cầu tư vấn      |

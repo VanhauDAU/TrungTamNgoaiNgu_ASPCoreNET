@@ -57,6 +57,23 @@ public class ThongBao
     [Display(Name = "Ghim")]
     public bool Ghim { get; set; }
 
+    // 0=Nháp | 1=Đã lên lịch | 2=Đã gửi | 3=Gửi lỗi
+    [Column("sendTrangThai")]
+    public byte SendTrangThai { get; set; } = 2;
+
+    [Column("scheduled_at")]
+    public DateTime? ScheduledAt { get; set; }
+
+    [Column("sent_at")]
+    public DateTime? SentAt { get; set; }
+
+    [Column("failed_at")]
+    public DateTime? FailedAt { get; set; }
+
+    [Column("failure_reason")]
+    [MaxLength(500)]
+    public string? FailureReason { get; set; }
+
     [Column("hinhAnh")]
     [MaxLength(255)]
     public string? HinhAnh { get; set; }
@@ -73,6 +90,9 @@ public class ThongBao
 
     [Column("updated_at")]
     public DateTime UpdatedAt { get; set; } = DateTime.Now;
+
+    [Column("deleted_at")]
+    public DateTime? DeletedAt { get; set; }
 
     // --- LIÊN KẾT ---
     [ForeignKey(nameof(NguoiGuiId))]

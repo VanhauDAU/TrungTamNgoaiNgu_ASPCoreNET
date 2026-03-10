@@ -51,6 +51,14 @@ public class TaiKhoan
     [Display(Name = "Trạng thái")]
     public byte TrangThai { get; set; } = 1;
 
+    // 1 = phải đổi mật khẩu khi đăng nhập lần đầu
+    [Column("phaiDoiMatKhau")]
+    public byte PhaiDoiMatKhau { get; set; } = 0;
+
+    [Column("remember_token")]
+    [MaxLength(100)]
+    public string? RememberToken { get; set; }
+
     [Column("lastLogin")]
     [Display(Name = "Đăng nhập lần cuối")]
     public DateTime? LastLogin { get; set; }

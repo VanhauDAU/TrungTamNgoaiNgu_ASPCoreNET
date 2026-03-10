@@ -11,13 +11,18 @@ namespace TrungTamNgoaiNgu.Models;
 // ---------------------------------------------------------------------------
 // BẢNG: danhmuckhoahoc — Danh mục phân loại khóa học (VD: Tiếng Anh, Tiếng Nhật)
 // ---------------------------------------------------------------------------
-
 [Table("danhmuckhoahoc")]
 public class DanhMucKhoaHoc
 {
     [Key]
     [Column("danhMucId")]
     public int DanhMucId { get; set; }
+
+    /// <summary>Mã danh mục — VD: TA, TN. Tùy chọn để tra cứu nhanh.</summary>
+    [Column("maDanhMuc")]
+    [MaxLength(20)]
+    [Display(Name = "Mã danh mục")]
+    public string? MaDanhMuc { get; set; }
 
     [Required(ErrorMessage = "Tên danh mục không được để trống")]
     [Column("tenDanhMuc")]
@@ -39,6 +44,10 @@ public class DanhMucKhoaHoc
 
     [Column("parent_id")]
     public int? ParentId { get; set; }
+
+    /// <summary>Thứ tự hiển thị danh mục — số nhỏ hiển trước.</summary>
+    [Column("sort_order")]
+    public uint SortOrder { get; set; } = 0;
 
     [Column("created_at")]
     public DateTime CreatedAt { get; set; } = DateTime.Now;

@@ -7,6 +7,7 @@ using System.Globalization;
 using System.Text;
 using System.Text.RegularExpressions;
 using TrungTamNgoaiNgu.Data;
+using TrungTamNgoaiNgu.Enums;
 using TrungTamNgoaiNgu.Models;
 using TrungTamNgoaiNgu.Services.Interfaces;
 
@@ -127,7 +128,9 @@ public class CoursesService(AppDbContext db) : ICoursesService
         if (khoaHoc.TrangThai == 0 && existing.TrangThai != 0)
         {
             var coLopDangMo = await db.LopHocs.AnyAsync(l =>
-                l.KhoaHocId == existing.KhoaHocId && (l.TrangThai == 1 || l.TrangThai == 4));
+                l.KhoaHocId == existing.KhoaHocId
+                && (l.TrangThai == LopHocTrangThai.DangTuyenSinh
+                    || l.TrangThai == LopHocTrangThai.DangHoc));
 
             if (coLopDangMo)
             {
@@ -224,7 +227,8 @@ public class CoursesService(AppDbContext db) : ICoursesService
             khoaHocBiChan = await db.LopHocs
                 .Where(l => l.KhoaHocId.HasValue
                          && idSet.Contains(l.KhoaHocId.Value)
-                         && (l.TrangThai == 1 || l.TrangThai == 4))
+                         && (l.TrangThai == LopHocTrangThai.DangTuyenSinh
+                             || l.TrangThai == LopHocTrangThai.DangHoc))
                 .Select(l => l.KhoaHocId!.Value)
                 .Distinct()
                 .ToHashSetAsync();

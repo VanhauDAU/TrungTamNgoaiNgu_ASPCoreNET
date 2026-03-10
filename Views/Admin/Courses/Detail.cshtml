@@ -110,22 +110,10 @@
                                 <tr>
                                     <td>@(string.IsNullOrWhiteSpace(lop.TenLopHoc) ? "—" : lop.TenLopHoc)</td>
                                     <td>
-                                        @if (lop.TrangThai == 1 || lop.TrangThai == 4)
-                                        {
-                                            <span class="badge badge-success">Đang mở/đang học</span>
-                                        }
-                                        else if (lop.TrangThai == 0)
-                                        {
-                                            <span class="badge badge-info">Sắp khai giảng</span>
-                                        }
-                                        else if (lop.TrangThai == 2)
-                                        {
-                                            <span class="badge badge-gray">Đã đóng</span>
-                                        }
-                                        else
-                                        {
-                                            <span class="badge badge-danger">Đã hủy</span>
-                                        }
+                                        <span class="@lop.TrangThaiBadgeClass">
+                                            <i class="bi @lop.TrangThaiIcon"></i>
+                                            @lop.TrangThaiText
+                                        </span>
                                     </td>
                                     <td>@(lop.NgayBatDau?.ToString("dd/MM/yyyy") ?? "—")</td>
                                     <td>@(lop.NgayKetThuc?.ToString("dd/MM/yyyy") ?? "—")</td>

@@ -5,11 +5,20 @@
 
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using TrungTamNgoaiNgu.Enums;
 
 namespace TrungTamNgoaiNgu.Models;
 
 // ---------------------------------------------------------------------------
-// BẢNG: danhmuckhoahoc — Danh mục phân loại khóa học (VD: Tiếng Anh, Tiếng Nhật)
+// BẢNG: lophoc — Lớp học cụ thể (gắn với khóa học, ca học, cơ sở, giáo viên)
+//
+// TRẠNG THÁI (TrangThai): xem enum LopHocTrangThai
+//   0 SAP_MO          – Tạo xong, chưa mở đăng ký
+//   1 DANG_TUYEN_SINH – Đang nhận đăng ký học viên
+//   2 CHOT_DANH_SACH  – Đã chốt, không nhận thêm
+//   3 DA_HUY          – Lớp bị hủy
+//   4 DANG_HOC        – Đã khai giảng, đang học
+//   5 DA_KET_THUC     – Kết thúc toàn bộ buổi học
 // ---------------------------------------------------------------------------
 
 [Table("lophoc")]
@@ -18,6 +27,11 @@ public class LopHoc
     [Key]
     [Column("lopHocId")]
     public int LopHocId { get; set; }
+
+    [Column("maLopHoc")]
+    [MaxLength(20)]
+    [Display(Name = "Mã lớp")]
+    public string? MaLopHoc { get; set; }
 
     [Column("slug")]
     [MaxLength(255)]
@@ -72,10 +86,16 @@ public class LopHoc
     [Column("caHocId")]
     public int CaHocId { get; set; }
 
-    // 0=Sắp mở | 1=Đang mở | 2=Đã đóng | 3=Đã hủy | 4=Đang học
+    /// <summary>
+    /// Trạng thái lớp học — xem <see cref="LopHocTrangThai"/> để biết các giá trị.
+    /// DB lưu dạng byte (0-5).
+    /// </summary>
     [Column("trangThai")]
     [Display(Name = "Trạng thái")]
-    public byte? TrangThai { get; set; }
+    public LopHocTrangThai TrangThai { get; set; } = LopHocTrangThai.SapMo;
+
+    [Column("deleted_at")]
+    public DateTime? DeletedAt { get; set; }
 
     [Column("created_at")]
     public DateTime CreatedAt { get; set; } = DateTime.Now;
@@ -99,11 +119,25 @@ public class LopHoc
     public ICollection<DangKyLopHoc> DangKys { get; set; } = [];
     public ICollection<BuoiHoc> BuoiHocs { get; set; } = [];
 
+    // ---------------------------------------------------------------------------
+    // Computed properties (NotMapped — không lưu DB)
+    // ---------------------------------------------------------------------------
+
+    /// <summary>Nhãn hiển thị của trạng thái (lấy từ [Display(Name)]).</summary>
     [NotMapped]
-    public string TrangThaiText => TrangThai switch {
-        0 => "Sắp mở", 1 => "Đang mở", 2 => "Đã đóng",
-        3 => "Đã hủy", 4 => "Đang học", _ => "Không xác định"
-    };
+    public string TrangThaiText => TrangThai.GetLabel();
+
+    /// <summary>CSS class Bootstrap badge theo trạng thái.</summary>
+    [NotMapped]
+    public string TrangThaiBadgeClass => TrangThai.GetBadgeClass();
+
+    /// <summary>Bootstrap Icon class theo trạng thái.</summary>
+    [NotMapped]
+    public string TrangThaiIcon => TrangThai.GetIcon();
+
+    /// <summary>Lớp đang nhận đăng ký mới không?</summary>
+    [NotMapped]
+    public bool DangNhanDangKy => TrangThai.DangNhanDangKy();
 }
 
 // ---------------------------------------------------------------------------

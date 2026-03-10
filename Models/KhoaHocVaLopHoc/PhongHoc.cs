@@ -32,11 +32,27 @@ public class PhongHoc
     [Display(Name = "Trang thiết bị")]
     public string? TrangThietBi { get; set; }
 
+    [Column("moTa")]
+    [MaxLength(500)]
+    [Display(Name = "Mô tả")]
+    public string? MoTa { get; set; }
+
+    [Column("ghiChuBaoTri")]
+    [Display(Name = "Ghi chú bảo trì")]
+    public string? GhiChuBaoTri { get; set; }
+
+    [Column("ngayBaoTri")]
+    [Display(Name = "Ngày bảo trì")]
+    public DateTime? NgayBaoTri { get; set; }
+
     [Column("coSoId")]
     public int? CoSoId { get; set; }
 
     [Column("trangThai")]
     public int TrangThai { get; set; } = 1;
+
+    [Column("deleted_at")]
+    public DateTime? DeletedAt { get; set; }
 
     [Column("created_at")]
     public DateTime CreatedAt { get; set; } = DateTime.Now;

@@ -7,6 +7,7 @@
 
 using Microsoft.EntityFrameworkCore;
 using TrungTamNgoaiNgu.Data;
+using TrungTamNgoaiNgu.Enums;
 using TrungTamNgoaiNgu.Services.Interfaces;
 
 namespace TrungTamNgoaiNgu.Services;
@@ -24,7 +25,9 @@ public class DashboardService(AppDbContext db) : IDashboardService
         var soGiaoVien = await db.TaiKhoans.CountAsync(tk => tk.Role == 1 && tk.DeletedAt == null);
         var soNhanVien = await db.TaiKhoans.CountAsync(tk => tk.Role == 2 && tk.DeletedAt == null);
         var soKhoaHoc  = await db.KhoaHocs.CountAsync(kh => kh.TrangThai == 1 && kh.DeletedAt == null);
-        var soLopHoc   = await db.LopHocs.CountAsync(lh => lh.TrangThai == 4 || lh.TrangThai == 1);
+        var soLopHoc   = await db.LopHocs.CountAsync(lh =>
+            lh.TrangThai == LopHocTrangThai.DangHoc
+            || lh.TrangThai == LopHocTrangThai.DangTuyenSinh);
 
         var soDangKy = await db.DangKyLopHocs.CountAsync(
             dk => dk.CreatedAt.Month == thangHienTai && dk.CreatedAt.Year == namHienTai);
