@@ -1,0 +1,168 @@
+@model TrungTamNgoaiNgu.Models.PhongHocManagementViewModel
+@{
+    ViewData["Title"] = "Thiết lập phòng học";
+    ViewData["SetupSection"] = "PhongHoc";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+}
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/admin-class-setup.css" asp-append-version="true" />
+}
+
+<div class="page-header setup-page-header">
+    <div>
+        <div class="page-title">Quản lý phòng học</div>
+        <div class="page-sub">Thiết lập phòng theo từng cơ sở để khi tạo lớp có thể chọn phòng và kiểm tra sĩ số theo sức chứa.</div>
+    </div>
+    <div class="setup-header-actions">
+        <a asp-controller="Classes" asp-action="Create" class="btn btn-primary"><i class="bi bi-plus-circle"></i> Tạo lớp</a>
+        <a asp-action="Index" class="btn btn-outline"><i class="bi bi-grid-1x2"></i> Tổng quan</a>
+    </div>
+</div>
+
+@await Html.PartialAsync("~/Views/Admin/ClassSetup/_SetupTabs.cshtml")
+
+<div class="setup-workspace">
+    <section class="setup-panel">
+        <div class="setup-panel-body">
+            <div class="setup-panel-title">
+                <div>
+                    <h5>Danh sách phòng học</h5>
+                    <p>Tổng cộng @Model.Items.Count phòng học đang hoạt động hoặc chờ phân công.</p>
+                </div>
+            </div>
+            <div class="setup-table-wrap">
+                @if (!Model.Items.Any())
+                {
+                    <div class="setup-empty"><i class="bi bi-door-open"></i>Chưa có phòng học nào.</div>
+                }
+                else
+                {
+                    <table class="setup-table">
+                        <thead>
+                            <tr>
+                                <th>Phòng</th>
+                                <th>Cơ sở</th>
+                                <th>Sức chứa</th>
+                                <th>Ghi chú</th>
+                                <th>Trạng thái</th>
+                                <th>Thao tác</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var item in Model.Items)
+                            {
+                                <tr>
+                                    <td>
+                                        <strong>@item.TenPhong</strong>
+                                        <div class="meta">Cập nhật @item.UpdatedAt.ToString("dd/MM/yyyy HH:mm")</div>
+                                    </td>
+                                    <td>@(item.CoSo?.TenCoSo ?? "—")</td>
+                                    <td>@item.SucChua học viên</td>
+                                    <td>
+                                        <div>@(string.IsNullOrWhiteSpace(item.TrangThietBi) ? "—" : item.TrangThietBi)</div>
+                                        <div class="meta">@(string.IsNullOrWhiteSpace(item.GhiChuBaoTri) ? "Không có ghi chú bảo trì" : item.GhiChuBaoTri)</div>
+                                    </td>
+                                    <td>
+                                        <span class="setup-badge @(item.TrangThai == 0 ? "inactive" : "active")">@(item.TrangThai == 0 ? "Tạm ngưng" : "Hoạt động")</span>
+                                    </td>
+                                    <td>
+                                        <div class="setup-actions">
+                                            <a asp-action="PhongHoc" asp-route-id="@item.PhongHocId" class="btn btn-outline btn-sm"><i class="bi bi-pencil"></i></a>
+                                            <form method="post" asp-action="DeletePhongHoc" asp-route-id="@item.PhongHocId" onsubmit="return confirm('Xóa phòng học này?')" style="display:inline;">
+                                                @Html.AntiForgeryToken()
+                                                <button type="submit" class="btn btn-danger btn-sm"><i class="bi bi-trash"></i></button>
+                                            </form>
+                                        </div>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                }
+            </div>
+        </div>
+    </section>
+
+    <aside class="setup-side">
+        <section class="setup-form-card">
+            <div class="body">
+                <div class="setup-form-title">
+                    <div>
+                        <h5>@(Model.IsEditing ? "Cập nhật phòng học" : "Thêm phòng học")</h5>
+                        <p>@(Model.IsEditing ? "Cập nhật sức chứa, thiết bị hoặc trạng thái sử dụng của phòng." : "Tạo phòng học mới để phân công ngay cho lớp.")</p>
+                    </div>
+                </div>
+                <form method="post" asp-action="PhongHoc" class="setup-form-grid">
+                    @Html.AntiForgeryToken()
+                    <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
+                    <input asp-for="Form.PhongHocId" type="hidden" />
+                    <div class="setup-group">
+                        <label asp-for="Form.CoSoId">Cơ sở đào tạo</label>
+                        <select asp-for="Form.CoSoId" class="form-control">
+                            <option value="">-- Chọn cơ sở --</option>
+                            @foreach (var item in Model.CoSos)
+                            {
+                                <option value="@item.CoSoId">@item.TenCoSo</option>
+                            }
+                        </select>
+                    </div>
+                    <div class="setup-form-grid two">
+                        <div class="setup-group">
+                            <label asp-for="Form.TenPhong"></label>
+                            <input asp-for="Form.TenPhong" class="form-control" placeholder="VD: P.301" />
+                        </div>
+                        <div class="setup-group">
+                            <label asp-for="Form.SucChua"></label>
+                            <input asp-for="Form.SucChua" type="number" min="2" class="form-control" placeholder="VD: 24" />
+                        </div>
+                    </div>
+                    <div class="setup-group">
+                        <label asp-for="Form.TrangThietBi"></label>
+                        <input asp-for="Form.TrangThietBi" class="form-control" placeholder="Máy chiếu, loa, điều hòa..." />
+                    </div>
+                    <div class="setup-group">
+                        <label asp-for="Form.MoTa"></label>
+                        <textarea asp-for="Form.MoTa" class="form-control" rows="2" placeholder="Mô tả thêm về phòng học"></textarea>
+                    </div>
+                    <div class="setup-form-grid two">
+                        <div class="setup-group">
+                            <label asp-for="Form.GhiChuBaoTri"></label>
+                            <input asp-for="Form.GhiChuBaoTri" class="form-control" />
+                        </div>
+                        <div class="setup-group">
+                            <label asp-for="Form.NgayBaoTri"></label>
+                            <input asp-for="Form.NgayBaoTri" type="date" class="form-control" />
+                        </div>
+                    </div>
+                    <div class="setup-group">
+                        <label asp-for="Form.TrangThai">Trạng thái</label>
+                        <select asp-for="Form.TrangThai" class="form-control">
+                            <option value="1">Hoạt động</option>
+                            <option value="0">Tạm ngưng</option>
+                        </select>
+                    </div>
+                    <div class="setup-form-actions">
+                        @if (Model.IsEditing)
+                        {
+                            <a asp-action="PhongHoc" class="btn btn-outline"><i class="bi bi-arrow-counterclockwise"></i> Tạo mới</a>
+                        }
+                        <button type="submit" class="btn btn-primary"><i class="bi bi-floppy2"></i> @(Model.IsEditing ? "Lưu thay đổi" : "Thêm phòng học")</button>
+                    </div>
+                </form>
+            </div>
+        </section>
+        <section class="setup-help-card">
+            <div class="body">
+                <ul class="setup-help-list">
+                    <li><i class="bi bi-check2-circle"></i><span>Phòng học cần có sức chứa chính xác vì form lớp chặn sĩ số lớn hơn hoặc bằng sức chứa.</span></li>
+                    <li><i class="bi bi-check2-circle"></i><span>Xóa phòng học là xóa mềm; hệ thống chặn nếu phòng đang được lớp sử dụng.</span></li>
+                </ul>
+            </div>
+        </section>
+    </aside>
+</div>
+
+@section Scripts {
+    @await Html.PartialAsync("_ValidationScriptsPartial")
+}

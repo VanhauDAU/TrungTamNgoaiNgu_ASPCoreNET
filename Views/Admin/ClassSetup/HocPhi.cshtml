@@ -1,0 +1,147 @@
+@model TrungTamNgoaiNgu.Models.HocPhiManagementViewModel
+@{
+    ViewData["Title"] = "Thiết lập gói học phí";
+    ViewData["SetupSection"] = "HocPhi";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+}
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/admin-class-setup.css" asp-append-version="true" />
+}
+
+<div class="page-header setup-page-header">
+    <div>
+        <div class="page-title">Quản lý gói học phí</div>
+        <div class="page-sub">Mỗi khóa học cần ít nhất một gói học phí để form tạo lớp chọn được số buổi và đơn giá tương ứng.</div>
+    </div>
+    <div class="setup-header-actions">
+        <a asp-controller="Classes" asp-action="Create" class="btn btn-primary"><i class="bi bi-plus-circle"></i> Tạo lớp</a>
+        <a asp-action="Index" class="btn btn-outline"><i class="bi bi-grid-1x2"></i> Tổng quan</a>
+    </div>
+</div>
+
+@await Html.PartialAsync("~/Views/Admin/ClassSetup/_SetupTabs.cshtml")
+
+<div class="setup-workspace">
+    <section class="setup-panel">
+        <div class="setup-panel-body">
+            <div class="setup-panel-title">
+                <div>
+                    <h5>Danh sách gói học phí</h5>
+                    <p>Tổng cộng @Model.Items.Count gói học phí theo từng khóa học.</p>
+                </div>
+            </div>
+            <div class="setup-table-wrap">
+                @if (!Model.Items.Any())
+                {
+                    <div class="setup-empty"><i class="bi bi-cash-coin"></i>Chưa có gói học phí nào.</div>
+                }
+                else
+                {
+                    <table class="setup-table">
+                        <thead>
+                            <tr>
+                                <th>Khóa học</th>
+                                <th>Số buổi</th>
+                                <th>Đơn giá</th>
+                                <th>Tổng học phí</th>
+                                <th>Trạng thái</th>
+                                <th>Thao tác</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var item in Model.Items)
+                            {
+                                <tr>
+                                    <td>
+                                        <strong>@(item.KhoaHoc?.TenKhoaHoc ?? $"Khóa học #{item.KhoaHocId}")</strong>
+                                        <div class="meta">Cập nhật @item.UpdatedAt.ToString("dd/MM/yyyy HH:mm")</div>
+                                    </td>
+                                    <td>@item.SoBuoi buổi</td>
+                                    <td>@item.DonGia?.ToString("N0") đ / buổi</td>
+                                    <td>@item.TongHocPhi.ToString("N0") đ</td>
+                                    <td>
+                                        <span class="setup-badge @(item.TrangThai == 0 ? "inactive" : "active")">@(item.TrangThai == 0 ? "Tạm ngưng" : "Hoạt động")</span>
+                                    </td>
+                                    <td>
+                                        <div class="setup-actions">
+                                            <a asp-action="HocPhi" asp-route-id="@item.HocPhiId" class="btn btn-outline btn-sm"><i class="bi bi-pencil"></i></a>
+                                            <form method="post" asp-action="DeleteHocPhi" asp-route-id="@item.HocPhiId" onsubmit="return confirm('Xóa gói học phí này?')" style="display:inline;">
+                                                @Html.AntiForgeryToken()
+                                                <button type="submit" class="btn btn-danger btn-sm"><i class="bi bi-trash"></i></button>
+                                            </form>
+                                        </div>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                }
+            </div>
+        </div>
+    </section>
+
+    <aside class="setup-side">
+        <section class="setup-form-card">
+            <div class="body">
+                <div class="setup-form-title">
+                    <div>
+                        <h5>@(Model.IsEditing ? "Cập nhật gói học phí" : "Thêm gói học phí")</h5>
+                        <p>@(Model.IsEditing ? "Điều chỉnh số buổi hoặc đơn giá cho gói đang có." : "Tạo nhanh gói học phí để form lớp có dữ liệu chọn.")</p>
+                    </div>
+                </div>
+                <form method="post" asp-action="HocPhi" class="setup-form-grid">
+                    @Html.AntiForgeryToken()
+                    <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
+                    <input asp-for="Form.HocPhiId" type="hidden" />
+                    <div class="setup-group">
+                        <label asp-for="Form.KhoaHocId">Khóa học</label>
+                        <select asp-for="Form.KhoaHocId" class="form-control">
+                            <option value="">-- Chọn khóa học --</option>
+                            @foreach (var item in Model.KhoaHocs)
+                            {
+                                <option value="@item.KhoaHocId">@item.TenKhoaHoc</option>
+                            }
+                        </select>
+                    </div>
+                    <div class="setup-form-grid two">
+                        <div class="setup-group">
+                            <label asp-for="Form.SoBuoi"></label>
+                            <input asp-for="Form.SoBuoi" type="number" min="1" class="form-control" placeholder="VD: 24" />
+                        </div>
+                        <div class="setup-group">
+                            <label asp-for="Form.DonGia"></label>
+                            <input asp-for="Form.DonGia" type="number" min="1000" step="1000" class="form-control" placeholder="VD: 250000" />
+                        </div>
+                    </div>
+                    <div class="setup-group">
+                        <label asp-for="Form.TrangThai">Trạng thái</label>
+                        <select asp-for="Form.TrangThai" class="form-control">
+                            <option value="1">Hoạt động</option>
+                            <option value="0">Tạm ngưng</option>
+                        </select>
+                    </div>
+                    <div class="setup-form-actions">
+                        @if (Model.IsEditing)
+                        {
+                            <a asp-action="HocPhi" class="btn btn-outline"><i class="bi bi-arrow-counterclockwise"></i> Tạo mới</a>
+                        }
+                        <button type="submit" class="btn btn-primary"><i class="bi bi-floppy2"></i> @(Model.IsEditing ? "Lưu thay đổi" : "Thêm gói học phí")</button>
+                    </div>
+                </form>
+            </div>
+        </section>
+        <section class="setup-help-card">
+            <div class="body">
+                <ul class="setup-help-list">
+                    <li><i class="bi bi-check2-circle"></i><span>Mỗi khóa học có thể có nhiều gói theo số buổi để mở nhiều loại lớp.</span></li>
+                    <li><i class="bi bi-check2-circle"></i><span>Không xóa được gói học phí đã được lớp học sử dụng.</span></li>
+                </ul>
+            </div>
+        </section>
+    </aside>
+</div>
+
+@section Scripts {
+    @await Html.PartialAsync("_ValidationScriptsPartial")
+}

@@ -3,6 +3,10 @@
 @{
     ViewData["Title"] = "Thêm lớp học";
     Layout = "~/Views/Shared/_AdminLayout.cshtml";
+    var coCaHoc = ((List<TrungTamNgoaiNgu.Models.CaHoc>)ViewBag.CaHocs).Any();
+    var coHocPhi = ((List<TrungTamNgoaiNgu.Models.HocPhi>)ViewBag.HocPhis).Any();
+    var coCoSo = ((List<TrungTamNgoaiNgu.Models.CoSoDaoTao>)ViewBag.CoSos).Any();
+    var coPhong = ((List<TrungTamNgoaiNgu.Models.PhongHoc>)ViewBag.PhongHocs).Any();
 }
 
 @section Styles {
@@ -68,6 +72,7 @@
         <div class="page-sub"><a asp-action="Index">Lớp học</a> / Thêm mới / Không gian tạo lớp</div>
     </div>
     <div class="lh-actions">
+        <a asp-controller="ClassSetup" asp-action="Index" class="btn btn-outline"><i class="bi bi-sliders"></i> Thiết lập dữ liệu nền</a>
         <a asp-action="Index" class="btn btn-outline"><i class="bi bi-list-ul"></i> Danh sách lớp</a>
     </div>
 </div>
@@ -79,6 +84,19 @@
         <form method="post" asp-action="Create" id="createForm">
             @Html.AntiForgeryToken()
             <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
+            @if (!coCaHoc || !coHocPhi || !coCoSo || !coPhong)
+            {
+                <div class="alert alert-warning" style="margin-bottom:1rem;">
+                    <strong>Dữ liệu nền chưa đủ để mở lớp.</strong>
+                    <div style="margin-top:.35rem;">
+                        @if (!coCaHoc) { <span>Thiếu ca học. </span> }
+                        @if (!coHocPhi) { <span>Thiếu gói học phí. </span> }
+                        @if (!coCoSo) { <span>Thiếu cơ sở đào tạo. </span> }
+                        @if (!coPhong) { <span>Thiếu phòng học. </span> }
+                        <a asp-controller="ClassSetup" asp-action="Index">Đi tới màn hình thiết lập lớp học</a>.
+                    </div>
+                </div>
+            }
 
             <!-- ═══ 1. THÔNG TIN CƠ BẢN ═══════════════════════════════════════ -->
             <div class="lh-panel">
@@ -124,6 +142,7 @@
                             <option value="@hp.HocPhiId">@hp.SoBuoi buổi · @hp.DonGia?.ToString("N0")đ/buổi</option>
                         }
                     </select>
+                    <small class="text-muted">Thiếu gói học phí? <a asp-controller="ClassSetup" asp-action="HocPhi">Quản lý ngay</a></small>
                 </div>
             </div>
             </div>
@@ -168,6 +187,7 @@
                         <option value="">-- Chọn tỉnh/thành trước --</option>
                     </select>
                     <span id="coSoDiaChi" class="text-muted" style="font-size:.75rem;margin-top:.2rem;"></span>
+                    <small class="text-muted">Thiếu cơ sở? <a asp-controller="ClassSetup" asp-action="CoSo">Thêm cơ sở đào tạo</a></small>
                 </div>
                 <div class="form-group">
                     <label class="form-label">Phòng học</label>
@@ -176,6 +196,7 @@
 
                     </select>
                     <div class="meta-hint" id="phongCapacityInfo"></div>
+                    <small class="text-muted">Thiếu phòng học? <a asp-controller="ClassSetup" asp-action="PhongHoc">Quản lý phòng học</a></small>
                 </div>
             </div>
             </div>
@@ -216,6 +237,7 @@
                         }
                     </select>
                     <span asp-validation-for="CaHocId" class="text-danger"></span>
+                    <small class="text-muted">Thiếu ca học? <a asp-controller="ClassSetup" asp-action="CaHoc">Thiết lập ca học</a></small>
                 </div>
             </div>
             </div>

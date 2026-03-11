@@ -1,0 +1,144 @@
+@model TrungTamNgoaiNgu.Models.CaHocManagementViewModel
+@{
+    ViewData["Title"] = "Thiết lập ca học";
+    ViewData["SetupSection"] = "CaHoc";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+}
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/admin-class-setup.css" asp-append-version="true" />
+}
+
+<div class="page-header setup-page-header">
+    <div>
+        <div class="page-title">Quản lý ca học</div>
+        <div class="page-sub">Tạo, sửa, xóa các ca học để lớp có thể chọn đúng khung giờ giảng dạy.</div>
+    </div>
+    <div class="setup-header-actions">
+        <a asp-controller="Classes" asp-action="Create" class="btn btn-primary"><i class="bi bi-plus-circle"></i> Tạo lớp</a>
+        <a asp-action="Index" class="btn btn-outline"><i class="bi bi-grid-1x2"></i> Tổng quan</a>
+    </div>
+</div>
+
+@await Html.PartialAsync("~/Views/Admin/ClassSetup/_SetupTabs.cshtml")
+
+<div class="setup-workspace">
+    <section class="setup-panel">
+        <div class="setup-panel-body">
+            <div class="setup-panel-title">
+                <div>
+                    <h5>Danh sách ca học</h5>
+                    <p>Tổng cộng @Model.Items.Count ca học đang sẵn sàng cho form lớp học.</p>
+                </div>
+            </div>
+            <div class="setup-table-wrap">
+                @if (!Model.Items.Any())
+                {
+                    <div class="setup-empty"><i class="bi bi-clock-history"></i>Chưa có ca học nào.</div>
+                }
+                else
+                {
+                    <table class="setup-table">
+                        <thead>
+                            <tr>
+                                <th>Tên ca</th>
+                                <th>Thời gian</th>
+                                <th>Mô tả</th>
+                                <th>Trạng thái</th>
+                                <th>Thao tác</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var item in Model.Items)
+                            {
+                                <tr>
+                                    <td><strong>@item.TenCa</strong></td>
+                                    <td>@item.GioBatDau?.ToString("HH:mm") - @item.GioKetThuc?.ToString("HH:mm")</td>
+                                    <td>
+                                        <div>@(string.IsNullOrWhiteSpace(item.MoTa) ? "—" : item.MoTa)</div>
+                                        <div class="meta">Cập nhật @item.UpdatedAt.ToString("dd/MM/yyyy HH:mm")</div>
+                                    </td>
+                                    <td>
+                                        <span class="setup-badge @(item.TrangThai == 0 ? "inactive" : "active")">@(item.TrangThai == 0 ? "Tạm ngưng" : "Hoạt động")</span>
+                                    </td>
+                                    <td>
+                                        <div class="setup-actions">
+                                            <a asp-action="CaHoc" asp-route-id="@item.CaHocId" class="btn btn-outline btn-sm"><i class="bi bi-pencil"></i></a>
+                                            <form method="post" asp-action="DeleteCaHoc" asp-route-id="@item.CaHocId" onsubmit="return confirm('Xóa ca học này?')" style="display:inline;">
+                                                @Html.AntiForgeryToken()
+                                                <button type="submit" class="btn btn-danger btn-sm"><i class="bi bi-trash"></i></button>
+                                            </form>
+                                        </div>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                }
+            </div>
+        </div>
+    </section>
+
+    <aside class="setup-side">
+        <section class="setup-form-card">
+            <div class="body">
+                <div class="setup-form-title">
+                    <div>
+                        <h5>@(Model.IsEditing ? "Cập nhật ca học" : "Thêm ca học")</h5>
+                        <p>@(Model.IsEditing ? "Chỉnh sửa ca đang có và lưu lại ngay." : "Thêm khung giờ mới để dùng khi mở lớp.")</p>
+                    </div>
+                </div>
+                <form method="post" asp-action="CaHoc" class="setup-form-grid">
+                    @Html.AntiForgeryToken()
+                    <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
+                    <input asp-for="Form.CaHocId" type="hidden" />
+                    <div class="setup-group">
+                        <label asp-for="Form.TenCa"></label>
+                        <input asp-for="Form.TenCa" class="form-control" placeholder="VD: Ca tối 2-4-6" />
+                        <span asp-validation-for="Form.TenCa" class="text-danger"></span>
+                    </div>
+                    <div class="setup-form-grid two">
+                        <div class="setup-group">
+                            <label asp-for="Form.GioBatDau"></label>
+                            <input asp-for="Form.GioBatDau" type="time" class="form-control" />
+                        </div>
+                        <div class="setup-group">
+                            <label asp-for="Form.GioKetThuc"></label>
+                            <input asp-for="Form.GioKetThuc" type="time" class="form-control" />
+                        </div>
+                    </div>
+                    <div class="setup-group">
+                        <label asp-for="Form.MoTa"></label>
+                        <textarea asp-for="Form.MoTa" class="form-control" rows="3" placeholder="Ghi chú ca học, phù hợp nhóm học viên nào..."></textarea>
+                    </div>
+                    <div class="setup-group">
+                        <label asp-for="Form.TrangThai">Trạng thái</label>
+                        <select asp-for="Form.TrangThai" class="form-control">
+                            <option value="1">Hoạt động</option>
+                            <option value="0">Tạm ngưng</option>
+                        </select>
+                    </div>
+                    <div class="setup-form-actions">
+                        @if (Model.IsEditing)
+                        {
+                            <a asp-action="CaHoc" class="btn btn-outline"><i class="bi bi-arrow-counterclockwise"></i> Tạo mới</a>
+                        }
+                        <button type="submit" class="btn btn-primary"><i class="bi bi-floppy2"></i> @(Model.IsEditing ? "Lưu thay đổi" : "Thêm ca học")</button>
+                    </div>
+                </form>
+            </div>
+        </section>
+        <section class="setup-help-card">
+            <div class="body">
+                <ul class="setup-help-list">
+                    <li><i class="bi bi-check2-circle"></i><span>Ca học nên rõ giờ bắt đầu và kết thúc để tránh trùng lịch khi phân công giáo viên.</span></li>
+                    <li><i class="bi bi-check2-circle"></i><span>Không xóa được ca học nếu đã gắn cho lớp hoặc buổi học.</span></li>
+                </ul>
+            </div>
+        </section>
+    </aside>
+</div>
+
+@section Scripts {
+    @await Html.PartialAsync("_ValidationScriptsPartial")
+}
