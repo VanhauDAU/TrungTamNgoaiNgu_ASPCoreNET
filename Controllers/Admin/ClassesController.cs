@@ -225,6 +225,7 @@ public class ClassesController(IClassesService classesService, IHttpClientFactor
             name = px.Name,
             district = px.District
         }));
+
     }
 
     /// <summary>GET /Admin/Classes/SinhMaLop?khoaHocId=1 — AJAX: sinh mã lớp tự động</summary>
