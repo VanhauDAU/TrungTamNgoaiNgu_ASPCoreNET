@@ -276,6 +276,394 @@ namespace TrungTamNgoaiNgu.Migrations
                     b.ToTable("cahoc");
                 });
 
+            modelBuilder.Entity("TrungTamNgoaiNgu.Models.ChatAuditLog", b =>
+                {
+                    b.Property<long>("ChatAuditLogId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint")
+                        .HasColumnName("chatAuditLogId");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("ChatAuditLogId"));
+
+                    b.Property<long?>("ChatMessageId")
+                        .HasColumnType("bigint")
+                        .HasColumnName("chatMessageId");
+
+                    b.Property<long?>("ChatRoomId")
+                        .HasColumnType("bigint")
+                        .HasColumnName("chatRoomId");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2")
+                        .HasColumnName("created_at");
+
+                    b.Property<string>("DuLieuCu")
+                        .HasColumnType("nvarchar(max)")
+                        .HasColumnName("duLieuCu");
+
+                    b.Property<string>("DuLieuMoi")
+                        .HasColumnType("nvarchar(max)")
+                        .HasColumnName("duLieuMoi");
+
+                    b.Property<string>("HanhDong")
+                        .IsRequired()
+                        .HasMaxLength(80)
+                        .HasColumnType("nvarchar(80)")
+                        .HasColumnName("hanhDong");
+
+                    b.Property<int?>("TaiKhoanId")
+                        .HasColumnType("int")
+                        .HasColumnName("taiKhoanId");
+
+                    b.HasKey("ChatAuditLogId");
+
+                    b.HasIndex("ChatRoomId");
+
+                    b.HasIndex("TaiKhoanId");
+
+                    b.ToTable("chat_audit_logs");
+                });
+
+            modelBuilder.Entity("TrungTamNgoaiNgu.Models.ChatMessage", b =>
+                {
+                    b.Property<long>("ChatMessageId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint")
+                        .HasColumnName("chatMessageId");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("ChatMessageId"));
+
+                    b.Property<long>("ChatRoomId")
+                        .HasColumnType("bigint")
+                        .HasColumnName("chatRoomId");
+
+                    b.Property<DateTime?>("CreatedAt")
+                        .HasColumnType("datetime2")
+                        .HasColumnName("created_at");
+
+                    b.Property<DateTime?>("DeadlineThuHoi")
+                        .HasColumnType("datetime2")
+                        .HasColumnName("deadlineThuHoi");
+
+                    b.Property<DateTime>("GuiLuc")
+                        .HasColumnType("datetime2")
+                        .HasColumnName("guiLuc");
+
+                    b.Property<string>("Loai")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("nvarchar(20)")
+                        .HasColumnName("loai");
+
+                    b.Property<string>("MetaJson")
+                        .HasColumnType("nvarchar(max)")
+                        .HasColumnName("metaJson");
+
+                    b.Property<int>("NguoiGuiId")
+                        .HasColumnType("int")
+                        .HasColumnName("nguoiGuiId");
+
+                    b.Property<string>("NoiDung")
+                        .HasColumnType("nvarchar(max)")
+                        .HasColumnName("noiDung");
+
+                    b.Property<long?>("ReplyToMessageId")
+                        .HasColumnType("bigint")
+                        .HasColumnName("replyToMessageId");
+
+                    b.Property<DateTime?>("ThuHoiLuc")
+                        .HasColumnType("datetime2")
+                        .HasColumnName("thuHoiLuc");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("datetime2")
+                        .HasColumnName("updated_at");
+
+                    b.Property<DateTime?>("XoaLuc")
+                        .HasColumnType("datetime2")
+                        .HasColumnName("xoaLuc");
+
+                    b.HasKey("ChatMessageId");
+
+                    b.HasIndex("ChatRoomId");
+
+                    b.HasIndex("NguoiGuiId");
+
+                    b.HasIndex("ReplyToMessageId");
+
+                    b.ToTable("chat_messages");
+                });
+
+            modelBuilder.Entity("TrungTamNgoaiNgu.Models.ChatMessageAttachment", b =>
+                {
+                    b.Property<long>("ChatAttachmentId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint")
+                        .HasColumnName("chatAttachmentId");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("ChatAttachmentId"));
+
+                    b.Property<long>("ChatMessageId")
+                        .HasColumnType("bigint")
+                        .HasColumnName("chatMessageId");
+
+                    b.Property<DateTime?>("CreatedAt")
+                        .HasColumnType("datetime2")
+                        .HasColumnName("created_at");
+
+                    b.Property<string>("Disk")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)")
+                        .HasColumnName("disk");
+
+                    b.Property<int?>("Height")
+                        .HasColumnType("int")
+                        .HasColumnName("height");
+
+                    b.Property<string>("Mime")
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)")
+                        .HasColumnName("mime");
+
+                    b.Property<string>("Path")
+                        .IsRequired()
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)")
+                        .HasColumnName("path");
+
+                    b.Property<long>("Size")
+                        .HasColumnType("bigint")
+                        .HasColumnName("size");
+
+                    b.Property<string>("TenGoc")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)")
+                        .HasColumnName("tenGoc");
+
+                    b.Property<string>("ThumbnailPath")
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)")
+                        .HasColumnName("thumbnailPath");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("datetime2")
+                        .HasColumnName("updated_at");
+
+                    b.Property<int?>("Width")
+                        .HasColumnType("int")
+                        .HasColumnName("width");
+
+                    b.HasKey("ChatAttachmentId");
+
+                    b.HasIndex("ChatMessageId");
+
+                    b.ToTable("chat_message_attachments");
+                });
+
+            modelBuilder.Entity("TrungTamNgoaiNgu.Models.ChatMessageDelete", b =>
+                {
+                    b.Property<long>("ChatMessageDeleteId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint")
+                        .HasColumnName("chatMessageDeleteId");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("ChatMessageDeleteId"));
+
+                    b.Property<long>("ChatMessageId")
+                        .HasColumnType("bigint")
+                        .HasColumnName("chatMessageId");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2")
+                        .HasColumnName("created_at");
+
+                    b.Property<DateTime>("DeletedAt")
+                        .HasColumnType("datetime2")
+                        .HasColumnName("deletedAt");
+
+                    b.Property<int>("TaiKhoanId")
+                        .HasColumnType("int")
+                        .HasColumnName("taiKhoanId");
+
+                    b.HasKey("ChatMessageDeleteId");
+
+                    b.HasIndex("TaiKhoanId");
+
+                    b.HasIndex("ChatMessageId", "TaiKhoanId")
+                        .IsUnique()
+                        .HasDatabaseName("UQ_chat_message_deletes_msg_user");
+
+                    b.ToTable("chat_message_deletes");
+                });
+
+            modelBuilder.Entity("TrungTamNgoaiNgu.Models.ChatMessageReaction", b =>
+                {
+                    b.Property<long>("ChatReactionId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint")
+                        .HasColumnName("chatReactionId");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("ChatReactionId"));
+
+                    b.Property<long>("ChatMessageId")
+                        .HasColumnType("bigint")
+                        .HasColumnName("chatMessageId");
+
+                    b.Property<DateTime?>("CreatedAt")
+                        .HasColumnType("datetime2")
+                        .HasColumnName("created_at");
+
+                    b.Property<string>("Emoji")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)")
+                        .HasColumnName("emoji");
+
+                    b.Property<int>("TaiKhoanId")
+                        .HasColumnType("int")
+                        .HasColumnName("taiKhoanId");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("datetime2")
+                        .HasColumnName("updated_at");
+
+                    b.HasKey("ChatReactionId");
+
+                    b.HasIndex("TaiKhoanId");
+
+                    b.HasIndex("ChatMessageId", "TaiKhoanId", "Emoji")
+                        .IsUnique()
+                        .HasDatabaseName("UQ_chat_message_reactions_msg_user_emoji");
+
+                    b.ToTable("chat_message_reactions");
+                });
+
+            modelBuilder.Entity("TrungTamNgoaiNgu.Models.ChatRoom", b =>
+                {
+                    b.Property<long>("ChatRoomId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint")
+                        .HasColumnName("chatRoomId");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("ChatRoomId"));
+
+                    b.Property<DateTime?>("CreatedAt")
+                        .HasColumnType("datetime2")
+                        .HasColumnName("created_at");
+
+                    b.Property<long?>("LastMessageId")
+                        .HasColumnType("bigint")
+                        .HasColumnName("lastMessageId");
+
+                    b.Property<string>("Loai")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("nvarchar(20)")
+                        .HasColumnName("loai");
+
+                    b.Property<int?>("LopHocId")
+                        .HasColumnType("int")
+                        .HasColumnName("lopHocId");
+
+                    b.Property<string>("MatKhauHash")
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)")
+                        .HasColumnName("matKhauHash");
+
+                    b.Property<int?>("TaoBoiId")
+                        .HasColumnType("int")
+                        .HasColumnName("taoBoiId");
+
+                    b.Property<string>("TenPhong")
+                        .HasMaxLength(150)
+                        .HasColumnType("nvarchar(150)")
+                        .HasColumnName("tenPhong");
+
+                    b.Property<byte>("TrangThai")
+                        .HasColumnType("tinyint")
+                        .HasColumnName("trangThai");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("datetime2")
+                        .HasColumnName("updated_at");
+
+                    b.HasKey("ChatRoomId");
+
+                    b.HasIndex("LopHocId");
+
+                    b.HasIndex("TaoBoiId");
+
+                    b.ToTable("chat_rooms");
+                });
+
+            modelBuilder.Entity("TrungTamNgoaiNgu.Models.ChatRoomMember", b =>
+                {
+                    b.Property<long>("ChatRoomMemberId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint")
+                        .HasColumnName("chatRoomMemberId");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("ChatRoomMemberId"));
+
+                    b.Property<long>("ChatRoomId")
+                        .HasColumnType("bigint")
+                        .HasColumnName("chatRoomId");
+
+                    b.Property<DateTime?>("CreatedAt")
+                        .HasColumnType("datetime2")
+                        .HasColumnName("created_at");
+
+                    b.Property<bool>("IsMuted")
+                        .HasColumnType("bit")
+                        .HasColumnName("isMuted");
+
+                    b.Property<DateTime?>("JoinedAt")
+                        .HasColumnType("datetime2")
+                        .HasColumnName("joinedAt");
+
+                    b.Property<DateTime?>("JoinedByPasswordAt")
+                        .HasColumnType("datetime2")
+                        .HasColumnName("joinedByPasswordAt");
+
+                    b.Property<long?>("LastReadMessageId")
+                        .HasColumnType("bigint")
+                        .HasColumnName("lastReadMessageId");
+
+                    b.Property<DateTime?>("LastSeenAt")
+                        .HasColumnType("datetime2")
+                        .HasColumnName("lastSeenAt");
+
+                    b.Property<DateTime?>("RoiAt")
+                        .HasColumnType("datetime2")
+                        .HasColumnName("roiAt");
+
+                    b.Property<int>("TaiKhoanId")
+                        .HasColumnType("int")
+                        .HasColumnName("taiKhoanId");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("datetime2")
+                        .HasColumnName("updated_at");
+
+                    b.Property<string>("VaiTro")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("nvarchar(20)")
+                        .HasColumnName("vaiTro");
+
+                    b.HasKey("ChatRoomMemberId");
+
+                    b.HasIndex("TaiKhoanId");
+
+                    b.HasIndex("ChatRoomId", "TaiKhoanId")
+                        .IsUnique()
+                        .HasDatabaseName("UQ_chat_room_members_room_user");
+
+                    b.ToTable("chat_room_members");
+                });
+
             modelBuilder.Entity("TrungTamNgoaiNgu.Models.CoSoDaoTao", b =>
                 {
                     b.Property<int>("CoSoId")
@@ -604,38 +992,73 @@ namespace TrungTamNgoaiNgu.Migrations
 
             modelBuilder.Entity("TrungTamNgoaiNgu.Models.DiemDanh", b =>
                 {
-                    b.Property<string>("DiemDanhId")
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)")
+                    b.Property<long>("DiemDanhId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint")
                         .HasColumnName("diemDanhId");
 
-                    b.Property<int?>("BuoiHocId")
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("DiemDanhId"));
+
+                    b.Property<int>("BuoiHocId")
                         .HasColumnType("int")
                         .HasColumnName("buoiHocId");
 
-                    b.Property<DateTime>("CreatedAt")
+                    b.Property<byte>("CoMat")
+                        .HasColumnType("tinyint")
+                        .HasColumnName("coMat");
+
+                    b.Property<DateTime?>("CreatedAt")
                         .HasColumnType("datetime2")
                         .HasColumnName("created_at");
+
+                    b.Property<int?>("DangKyLopHocId")
+                        .HasColumnType("int")
+                        .HasColumnName("dangKyLopHocId");
 
                     b.Property<string>("GhiChu")
                         .HasColumnType("nvarchar(max)")
                         .HasColumnName("ghiChu");
 
-                    b.Property<int?>("TaiKhoanId")
+                    b.Property<byte>("HinhThuc")
+                        .HasColumnType("tinyint")
+                        .HasColumnName("hinhThuc");
+
+                    b.Property<string>("LyDo")
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)")
+                        .HasColumnName("lyDo");
+
+                    b.Property<int?>("NguoiDiemDanhId")
+                        .HasColumnType("int")
+                        .HasColumnName("nguoiDiemDanhId");
+
+                    b.Property<short?>("PhutDiTre")
+                        .HasColumnType("smallint")
+                        .HasColumnName("phutDiTre");
+
+                    b.Property<int>("TaiKhoanId")
                         .HasColumnType("int")
                         .HasColumnName("taiKhoanId");
 
-                    b.Property<byte?>("TrangThai")
+                    b.Property<DateTime?>("ThoiGianDiemDanh")
+                        .HasColumnType("datetime2")
+                        .HasColumnName("thoiGianDiemDanh");
+
+                    b.Property<byte>("TrangThai")
                         .HasColumnType("tinyint")
                         .HasColumnName("trangThai");
 
-                    b.Property<DateTime>("UpdatedAt")
+                    b.Property<DateTime?>("UpdatedAt")
                         .HasColumnType("datetime2")
                         .HasColumnName("updated_at");
 
                     b.HasKey("DiemDanhId");
 
                     b.HasIndex("BuoiHocId");
+
+                    b.HasIndex("DangKyLopHocId");
+
+                    b.HasIndex("NguoiDiemDanhId");
 
                     b.HasIndex("TaiKhoanId");
 
@@ -1703,6 +2126,23 @@ namespace TrungTamNgoaiNgu.Migrations
                         .HasColumnType("datetime2")
                         .HasColumnName("created_at");
 
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("datetime2")
+                        .HasColumnName("deleted_at");
+
+                    b.Property<string>("GhiChuBaoTri")
+                        .HasColumnType("nvarchar(max)")
+                        .HasColumnName("ghiChuBaoTri");
+
+                    b.Property<string>("MoTa")
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)")
+                        .HasColumnName("moTa");
+
+                    b.Property<DateTime?>("NgayBaoTri")
+                        .HasColumnType("datetime2")
+                        .HasColumnName("ngayBaoTri");
+
                     b.Property<int?>("SucChua")
                         .HasColumnType("int")
                         .HasColumnName("sucChua");
@@ -1847,6 +2287,15 @@ namespace TrungTamNgoaiNgu.Migrations
                         .HasColumnType("int")
                         .HasColumnName("nhomQuyenId");
 
+                    b.Property<byte>("PhaiDoiMatKhau")
+                        .HasColumnType("tinyint")
+                        .HasColumnName("phaiDoiMatKhau");
+
+                    b.Property<string>("RememberToken")
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)")
+                        .HasColumnName("remember_token");
+
                     b.Property<byte>("Role")
                         .HasColumnType("tinyint")
                         .HasColumnName("role");
@@ -1942,6 +2391,10 @@ namespace TrungTamNgoaiNgu.Migrations
                         .HasColumnType("datetime2")
                         .HasColumnName("created_at");
 
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("datetime2")
+                        .HasColumnName("deleted_at");
+
                     b.Property<byte?>("DoiTuongGui")
                         .HasColumnType("tinyint")
                         .HasColumnName("doiTuongGui");
@@ -1949,6 +2402,15 @@ namespace TrungTamNgoaiNgu.Migrations
                     b.Property<long?>("DoiTuongId")
                         .HasColumnType("bigint")
                         .HasColumnName("doiTuongId");
+
+                    b.Property<DateTime?>("FailedAt")
+                        .HasColumnType("datetime2")
+                        .HasColumnName("failed_at");
+
+                    b.Property<string>("FailureReason")
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)")
+                        .HasColumnName("failure_reason");
 
                     b.Property<bool>("Ghim")
                         .HasColumnType("bit")
@@ -1978,6 +2440,18 @@ namespace TrungTamNgoaiNgu.Migrations
                     b.Property<string>("NoiDung")
                         .HasColumnType("nvarchar(max)")
                         .HasColumnName("noiDung");
+
+                    b.Property<DateTime?>("ScheduledAt")
+                        .HasColumnType("datetime2")
+                        .HasColumnName("scheduled_at");
+
+                    b.Property<byte>("SendTrangThai")
+                        .HasColumnType("tinyint")
+                        .HasColumnName("sendTrangThai");
+
+                    b.Property<DateTime?>("SentAt")
+                        .HasColumnType("datetime2")
+                        .HasColumnName("sent_at");
 
                     b.Property<string>("TieuDe")
                         .HasMaxLength(255)
@@ -2211,6 +2685,134 @@ namespace TrungTamNgoaiNgu.Migrations
                     b.Navigation("PhongHoc");
                 });
 
+            modelBuilder.Entity("TrungTamNgoaiNgu.Models.ChatAuditLog", b =>
+                {
+                    b.HasOne("TrungTamNgoaiNgu.Models.ChatRoom", "ChatRoom")
+                        .WithMany("AuditLogs")
+                        .HasForeignKey("ChatRoomId")
+                        .OnDelete(DeleteBehavior.SetNull);
+
+                    b.HasOne("TrungTamNgoaiNgu.Models.TaiKhoan", "TaiKhoan")
+                        .WithMany()
+                        .HasForeignKey("TaiKhoanId")
+                        .OnDelete(DeleteBehavior.SetNull);
+
+                    b.Navigation("ChatRoom");
+
+                    b.Navigation("TaiKhoan");
+                });
+
+            modelBuilder.Entity("TrungTamNgoaiNgu.Models.ChatMessage", b =>
+                {
+                    b.HasOne("TrungTamNgoaiNgu.Models.ChatRoom", "ChatRoom")
+                        .WithMany("Messages")
+                        .HasForeignKey("ChatRoomId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("TrungTamNgoaiNgu.Models.TaiKhoan", "NguoiGui")
+                        .WithMany()
+                        .HasForeignKey("NguoiGuiId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.HasOne("TrungTamNgoaiNgu.Models.ChatMessage", "ReplyToMessage")
+                        .WithMany("Replies")
+                        .HasForeignKey("ReplyToMessageId")
+                        .OnDelete(DeleteBehavior.NoAction);
+
+                    b.Navigation("ChatRoom");
+
+                    b.Navigation("NguoiGui");
+
+                    b.Navigation("ReplyToMessage");
+                });
+
+            modelBuilder.Entity("TrungTamNgoaiNgu.Models.ChatMessageAttachment", b =>
+                {
+                    b.HasOne("TrungTamNgoaiNgu.Models.ChatMessage", "ChatMessage")
+                        .WithMany("Attachments")
+                        .HasForeignKey("ChatMessageId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("ChatMessage");
+                });
+
+            modelBuilder.Entity("TrungTamNgoaiNgu.Models.ChatMessageDelete", b =>
+                {
+                    b.HasOne("TrungTamNgoaiNgu.Models.ChatMessage", "ChatMessage")
+                        .WithMany("Deletes")
+                        .HasForeignKey("ChatMessageId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("TrungTamNgoaiNgu.Models.TaiKhoan", "TaiKhoan")
+                        .WithMany()
+                        .HasForeignKey("TaiKhoanId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("ChatMessage");
+
+                    b.Navigation("TaiKhoan");
+                });
+
+            modelBuilder.Entity("TrungTamNgoaiNgu.Models.ChatMessageReaction", b =>
+                {
+                    b.HasOne("TrungTamNgoaiNgu.Models.ChatMessage", "ChatMessage")
+                        .WithMany("Reactions")
+                        .HasForeignKey("ChatMessageId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("TrungTamNgoaiNgu.Models.TaiKhoan", "TaiKhoan")
+                        .WithMany()
+                        .HasForeignKey("TaiKhoanId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("ChatMessage");
+
+                    b.Navigation("TaiKhoan");
+                });
+
+            modelBuilder.Entity("TrungTamNgoaiNgu.Models.ChatRoom", b =>
+                {
+                    b.HasOne("TrungTamNgoaiNgu.Models.LopHoc", "LopHoc")
+                        .WithMany()
+                        .HasForeignKey("LopHocId")
+                        .OnDelete(DeleteBehavior.SetNull);
+
+                    b.HasOne("TrungTamNgoaiNgu.Models.TaiKhoan", "TaoBoiTaiKhoan")
+                        .WithMany()
+                        .HasForeignKey("TaoBoiId")
+                        .OnDelete(DeleteBehavior.SetNull);
+
+                    b.Navigation("LopHoc");
+
+                    b.Navigation("TaoBoiTaiKhoan");
+                });
+
+            modelBuilder.Entity("TrungTamNgoaiNgu.Models.ChatRoomMember", b =>
+                {
+                    b.HasOne("TrungTamNgoaiNgu.Models.ChatRoom", "ChatRoom")
+                        .WithMany("Members")
+                        .HasForeignKey("ChatRoomId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("TrungTamNgoaiNgu.Models.TaiKhoan", "TaiKhoan")
+                        .WithMany()
+                        .HasForeignKey("TaiKhoanId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("ChatRoom");
+
+                    b.Navigation("TaiKhoan");
+                });
+
             modelBuilder.Entity("TrungTamNgoaiNgu.Models.CoSoDaoTao", b =>
                 {
                     b.HasOne("TrungTamNgoaiNgu.Models.TinhThanh", "TinhThanh")
@@ -2285,13 +2887,29 @@ namespace TrungTamNgoaiNgu.Migrations
                 {
                     b.HasOne("TrungTamNgoaiNgu.Models.BuoiHoc", "BuoiHoc")
                         .WithMany("DiemDanhs")
-                        .HasForeignKey("BuoiHocId");
+                        .HasForeignKey("BuoiHocId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("TrungTamNgoaiNgu.Models.DangKyLopHoc", "DangKyLopHoc")
+                        .WithMany()
+                        .HasForeignKey("DangKyLopHocId");
+
+                    b.HasOne("TrungTamNgoaiNgu.Models.TaiKhoan", "NguoiDiemDanh")
+                        .WithMany()
+                        .HasForeignKey("NguoiDiemDanhId");
 
                     b.HasOne("TrungTamNgoaiNgu.Models.TaiKhoan", "TaiKhoan")
                         .WithMany()
-                        .HasForeignKey("TaiKhoanId");
+                        .HasForeignKey("TaiKhoanId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("BuoiHoc");
+
+                    b.Navigation("DangKyLopHoc");
+
+                    b.Navigation("NguoiDiemDanh");
 
                     b.Navigation("TaiKhoan");
                 });
@@ -2576,6 +3194,26 @@ namespace TrungTamNgoaiNgu.Migrations
             modelBuilder.Entity("TrungTamNgoaiNgu.Models.BuoiHoc", b =>
                 {
                     b.Navigation("DiemDanhs");
+                });
+
+            modelBuilder.Entity("TrungTamNgoaiNgu.Models.ChatMessage", b =>
+                {
+                    b.Navigation("Attachments");
+
+                    b.Navigation("Deletes");
+
+                    b.Navigation("Reactions");
+
+                    b.Navigation("Replies");
+                });
+
+            modelBuilder.Entity("TrungTamNgoaiNgu.Models.ChatRoom", b =>
+                {
+                    b.Navigation("AuditLogs");
+
+                    b.Navigation("Members");
+
+                    b.Navigation("Messages");
                 });
 
             modelBuilder.Entity("TrungTamNgoaiNgu.Models.CoSoDaoTao", b =>

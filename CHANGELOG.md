@@ -2,6 +2,29 @@
 
 Tất cả các thay đổi nổi bật của dự án sẽ được ghi nhận trong file này.
 
+## [Unreleased] - 2026-03-11
+
+### ⚙️ Database & Migrations (Rebuild từ đầu)
+
+- **Xóa toàn bộ migrations cũ** và tạo lại từ đầu theo chuẩn EF Core để đảm bảo migration history sạch, nhất quán.
+- **Migration `InitialCreate`**: Tạo toàn bộ schema (~30 bảng) từ `AppDbContext` trong 1 migration duy nhất.
+- **Migration `AddChatTables`**: Bổ sung 7 bảng hệ thống Chat còn thiếu.
+
+### 🚀 Tính năng mới — Hệ thống Chat (Chat Models)
+
+- Tạo **7 C# Model classes** tại `Models/Chat/` mapping với các bảng chat trong SQL Schema:
+  - `ChatRoom` — Phòng chat (class_group hoặc direct 1-1)
+  - `ChatMessage` — Tin nhắn, hỗ trợ reply, thu hồi, xóa mềm
+  - `ChatRoomMember` — Thành viên phòng chat, unique constraint (room, user)
+  - `ChatMessageReaction` — Emoji reactions, unique (message, user, emoji)
+  - `ChatMessageAttachment` — Tệp đính kèm (ảnh, video, file)
+  - `ChatMessageDelete` — Xóa tin nhắn phía cá nhân
+  - `ChatAuditLog` — Nhật ký thao tác chat
+- Thêm **7 `DbSet<>`** vào `AppDbContext` (Nhóm 7: Chat).
+- Cấu hình đầy đủ **Fluent API**: FK cascade, self-referencing (ReplyToMessage → NoAction để tránh multiple cascade paths trên SQL Server), unique indexes.
+
+---
+
 ## [Unreleased] - 2026-03-10
 
 ### 🚀 Tính năng mới & Nâng cấp (Features & Enhancements)

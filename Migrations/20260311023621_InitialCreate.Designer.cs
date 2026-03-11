@@ -12,8 +12,8 @@ using TrungTamNgoaiNgu.Data;
 namespace TrungTamNgoaiNgu.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20260310034147_DongBoColumnConThieu_Va_TrangThaiEnums")]
-    partial class DongBoColumnConThieu_Va_TrangThaiEnums
+    [Migration("20260311023621_InitialCreate")]
+    partial class InitialCreate
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -607,38 +607,73 @@ namespace TrungTamNgoaiNgu.Migrations
 
             modelBuilder.Entity("TrungTamNgoaiNgu.Models.DiemDanh", b =>
                 {
-                    b.Property<string>("DiemDanhId")
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)")
+                    b.Property<long>("DiemDanhId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint")
                         .HasColumnName("diemDanhId");
 
-                    b.Property<int?>("BuoiHocId")
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("DiemDanhId"));
+
+                    b.Property<int>("BuoiHocId")
                         .HasColumnType("int")
                         .HasColumnName("buoiHocId");
 
-                    b.Property<DateTime>("CreatedAt")
+                    b.Property<byte>("CoMat")
+                        .HasColumnType("tinyint")
+                        .HasColumnName("coMat");
+
+                    b.Property<DateTime?>("CreatedAt")
                         .HasColumnType("datetime2")
                         .HasColumnName("created_at");
+
+                    b.Property<int?>("DangKyLopHocId")
+                        .HasColumnType("int")
+                        .HasColumnName("dangKyLopHocId");
 
                     b.Property<string>("GhiChu")
                         .HasColumnType("nvarchar(max)")
                         .HasColumnName("ghiChu");
 
-                    b.Property<int?>("TaiKhoanId")
+                    b.Property<byte>("HinhThuc")
+                        .HasColumnType("tinyint")
+                        .HasColumnName("hinhThuc");
+
+                    b.Property<string>("LyDo")
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)")
+                        .HasColumnName("lyDo");
+
+                    b.Property<int?>("NguoiDiemDanhId")
+                        .HasColumnType("int")
+                        .HasColumnName("nguoiDiemDanhId");
+
+                    b.Property<short?>("PhutDiTre")
+                        .HasColumnType("smallint")
+                        .HasColumnName("phutDiTre");
+
+                    b.Property<int>("TaiKhoanId")
                         .HasColumnType("int")
                         .HasColumnName("taiKhoanId");
 
-                    b.Property<byte?>("TrangThai")
+                    b.Property<DateTime?>("ThoiGianDiemDanh")
+                        .HasColumnType("datetime2")
+                        .HasColumnName("thoiGianDiemDanh");
+
+                    b.Property<byte>("TrangThai")
                         .HasColumnType("tinyint")
                         .HasColumnName("trangThai");
 
-                    b.Property<DateTime>("UpdatedAt")
+                    b.Property<DateTime?>("UpdatedAt")
                         .HasColumnType("datetime2")
                         .HasColumnName("updated_at");
 
                     b.HasKey("DiemDanhId");
 
                     b.HasIndex("BuoiHocId");
+
+                    b.HasIndex("DangKyLopHocId");
+
+                    b.HasIndex("NguoiDiemDanhId");
 
                     b.HasIndex("TaiKhoanId");
 
@@ -1706,6 +1741,23 @@ namespace TrungTamNgoaiNgu.Migrations
                         .HasColumnType("datetime2")
                         .HasColumnName("created_at");
 
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("datetime2")
+                        .HasColumnName("deleted_at");
+
+                    b.Property<string>("GhiChuBaoTri")
+                        .HasColumnType("nvarchar(max)")
+                        .HasColumnName("ghiChuBaoTri");
+
+                    b.Property<string>("MoTa")
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)")
+                        .HasColumnName("moTa");
+
+                    b.Property<DateTime?>("NgayBaoTri")
+                        .HasColumnType("datetime2")
+                        .HasColumnName("ngayBaoTri");
+
                     b.Property<int?>("SucChua")
                         .HasColumnType("int")
                         .HasColumnName("sucChua");
@@ -1850,6 +1902,15 @@ namespace TrungTamNgoaiNgu.Migrations
                         .HasColumnType("int")
                         .HasColumnName("nhomQuyenId");
 
+                    b.Property<byte>("PhaiDoiMatKhau")
+                        .HasColumnType("tinyint")
+                        .HasColumnName("phaiDoiMatKhau");
+
+                    b.Property<string>("RememberToken")
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)")
+                        .HasColumnName("remember_token");
+
                     b.Property<byte>("Role")
                         .HasColumnType("tinyint")
                         .HasColumnName("role");
@@ -1945,6 +2006,10 @@ namespace TrungTamNgoaiNgu.Migrations
                         .HasColumnType("datetime2")
                         .HasColumnName("created_at");
 
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("datetime2")
+                        .HasColumnName("deleted_at");
+
                     b.Property<byte?>("DoiTuongGui")
                         .HasColumnType("tinyint")
                         .HasColumnName("doiTuongGui");
@@ -1952,6 +2017,15 @@ namespace TrungTamNgoaiNgu.Migrations
                     b.Property<long?>("DoiTuongId")
                         .HasColumnType("bigint")
                         .HasColumnName("doiTuongId");
+
+                    b.Property<DateTime?>("FailedAt")
+                        .HasColumnType("datetime2")
+                        .HasColumnName("failed_at");
+
+                    b.Property<string>("FailureReason")
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)")
+                        .HasColumnName("failure_reason");
 
                     b.Property<bool>("Ghim")
                         .HasColumnType("bit")
@@ -1981,6 +2055,18 @@ namespace TrungTamNgoaiNgu.Migrations
                     b.Property<string>("NoiDung")
                         .HasColumnType("nvarchar(max)")
                         .HasColumnName("noiDung");
+
+                    b.Property<DateTime?>("ScheduledAt")
+                        .HasColumnType("datetime2")
+                        .HasColumnName("scheduled_at");
+
+                    b.Property<byte>("SendTrangThai")
+                        .HasColumnType("tinyint")
+                        .HasColumnName("sendTrangThai");
+
+                    b.Property<DateTime?>("SentAt")
+                        .HasColumnType("datetime2")
+                        .HasColumnName("sent_at");
 
                     b.Property<string>("TieuDe")
                         .HasMaxLength(255)
@@ -2288,13 +2374,29 @@ namespace TrungTamNgoaiNgu.Migrations
                 {
                     b.HasOne("TrungTamNgoaiNgu.Models.BuoiHoc", "BuoiHoc")
                         .WithMany("DiemDanhs")
-                        .HasForeignKey("BuoiHocId");
+                        .HasForeignKey("BuoiHocId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("TrungTamNgoaiNgu.Models.DangKyLopHoc", "DangKyLopHoc")
+                        .WithMany()
+                        .HasForeignKey("DangKyLopHocId");
+
+                    b.HasOne("TrungTamNgoaiNgu.Models.TaiKhoan", "NguoiDiemDanh")
+                        .WithMany()
+                        .HasForeignKey("NguoiDiemDanhId");
 
                     b.HasOne("TrungTamNgoaiNgu.Models.TaiKhoan", "TaiKhoan")
                         .WithMany()
-                        .HasForeignKey("TaiKhoanId");
+                        .HasForeignKey("TaiKhoanId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("BuoiHoc");
+
+                    b.Navigation("DangKyLopHoc");
+
+                    b.Navigation("NguoiDiemDanh");
 
                     b.Navigation("TaiKhoan");
                 });

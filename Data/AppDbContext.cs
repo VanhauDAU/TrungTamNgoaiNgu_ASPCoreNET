@@ -75,6 +75,17 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
     public DbSet<NhatKyHeThong> NhatKyHeThongs { get; set; }
 
     // =========================================================================
+    // NHÓM 7: CHAT
+    // =========================================================================
+    public DbSet<ChatRoom> ChatRooms { get; set; }
+    public DbSet<ChatMessage> ChatMessages { get; set; }
+    public DbSet<ChatRoomMember> ChatRoomMembers { get; set; }
+    public DbSet<ChatMessageReaction> ChatMessageReactions { get; set; }
+    public DbSet<ChatMessageAttachment> ChatMessageAttachments { get; set; }
+    public DbSet<ChatMessageDelete> ChatMessageDeletes { get; set; }
+    public DbSet<ChatAuditLog> ChatAuditLogs { get; set; }
+
+    // =========================================================================
     // CẤU HÌNH MỐI QUAN HỆ GIỮA CÁC BẢNG (Fluent API)
     // Dùng khi Data Annotation chưa đủ để mô tả quan hệ phức tạp
     // =========================================================================
@@ -163,5 +174,118 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
             .Property(x => x.DaGuiEmail)
             .HasDefaultValue(false);
         modelBuilder.Entity<ThongBaoTepDinh>().HasIndex(x => x.ThongBaoId);
+
+        // =========================================================================
+        // CHAT: Cấu hình mối quan hệ
+        // =========================================================================
+        // ChatRoom -> LopHoc (1-1)
+        modelBuilder.Entity<ChatRoom>()
+            .HasOne(r => r.LopHoc)
+            .WithMany()
+            .HasForeignKey(r => r.LopHocId)
+            .OnDelete(DeleteBehavior.SetNull);
+
+        // ChatRoom -> TaiKhoan (người tạo)
+        modelBuilder.Entity<ChatRoom>()
+            .HasOne(r => r.TaoBoiTaiKhoan)
+            .WithMany()
+            .HasForeignKey(r => r.TaoBoiId)
+            .OnDelete(DeleteBehavior.SetNull);
+
+        // ChatMessage -> ChatRoom
+        modelBuilder.Entity<ChatMessage>()
+            .HasOne(m => m.ChatRoom)
+            .WithMany(r => r.Messages)
+            .HasForeignKey(m => m.ChatRoomId)
+            .OnDelete(DeleteBehavior.Cascade);
+
+        // ChatMessage -> TaiKhoan (người gửi)
+        modelBuilder.Entity<ChatMessage>()
+            .HasOne(m => m.NguoiGui)
+            .WithMany()
+            .HasForeignKey(m => m.NguoiGuiId)
+            .OnDelete(DeleteBehavior.NoAction);
+
+        // ChatMessage -> ChatMessage (reply, self-ref)
+        modelBuilder.Entity<ChatMessage>()
+            .HasOne(m => m.ReplyToMessage)
+            .WithMany(m => m.Replies)
+            .HasForeignKey(m => m.ReplyToMessageId)
+            .OnDelete(DeleteBehavior.NoAction); // NoAction để tránh multiple cascade paths
+
+
+        // ChatRoomMember: Unique (chatRoomId, taiKhoanId)
+        modelBuilder.Entity<ChatRoomMember>()
+            .HasIndex(x => new { x.ChatRoomId, x.TaiKhoanId })
+            .IsUnique()
+            .HasDatabaseName("UQ_chat_room_members_room_user");
+
+        modelBuilder.Entity<ChatRoomMember>()
+            .HasOne(m => m.ChatRoom)
+            .WithMany(r => r.Members)
+            .HasForeignKey(m => m.ChatRoomId)
+            .OnDelete(DeleteBehavior.Cascade);
+
+        modelBuilder.Entity<ChatRoomMember>()
+            .HasOne(m => m.TaiKhoan)
+            .WithMany()
+            .HasForeignKey(m => m.TaiKhoanId)
+            .OnDelete(DeleteBehavior.Cascade);
+
+        // ChatMessageReaction: Unique (chatMessageId, taiKhoanId, emoji)
+        modelBuilder.Entity<ChatMessageReaction>()
+            .HasIndex(x => new { x.ChatMessageId, x.TaiKhoanId, x.Emoji })
+            .IsUnique()
+            .HasDatabaseName("UQ_chat_message_reactions_msg_user_emoji");
+
+        modelBuilder.Entity<ChatMessageReaction>()
+            .HasOne(r => r.ChatMessage)
+            .WithMany(m => m.Reactions)
+            .HasForeignKey(r => r.ChatMessageId)
+            .OnDelete(DeleteBehavior.Cascade);
+
+        modelBuilder.Entity<ChatMessageReaction>()
+            .HasOne(r => r.TaiKhoan)
+            .WithMany()
+            .HasForeignKey(r => r.TaiKhoanId)
+            .OnDelete(DeleteBehavior.Cascade);
+
+        // ChatMessageAttachment -> ChatMessage
+        modelBuilder.Entity<ChatMessageAttachment>()
+            .HasOne(a => a.ChatMessage)
+            .WithMany(m => m.Attachments)
+            .HasForeignKey(a => a.ChatMessageId)
+            .OnDelete(DeleteBehavior.Cascade);
+
+        // ChatMessageDelete: Unique (chatMessageId, taiKhoanId)
+        modelBuilder.Entity<ChatMessageDelete>()
+            .HasIndex(x => new { x.ChatMessageId, x.TaiKhoanId })
+            .IsUnique()
+            .HasDatabaseName("UQ_chat_message_deletes_msg_user");
+
+        modelBuilder.Entity<ChatMessageDelete>()
+            .HasOne(d => d.ChatMessage)
+            .WithMany(m => m.Deletes)
+            .HasForeignKey(d => d.ChatMessageId)
+            .OnDelete(DeleteBehavior.Cascade);
+
+        modelBuilder.Entity<ChatMessageDelete>()
+            .HasOne(d => d.TaiKhoan)
+            .WithMany()
+            .HasForeignKey(d => d.TaiKhoanId)
+            .OnDelete(DeleteBehavior.Cascade);
+
+        // ChatAuditLog
+        modelBuilder.Entity<ChatAuditLog>()
+            .HasOne(a => a.ChatRoom)
+            .WithMany(r => r.AuditLogs)
+            .HasForeignKey(a => a.ChatRoomId)
+            .OnDelete(DeleteBehavior.SetNull);
+
+        modelBuilder.Entity<ChatAuditLog>()
+            .HasOne(a => a.TaiKhoan)
+            .WithMany()
+            .HasForeignKey(a => a.TaiKhoanId)
+            .OnDelete(DeleteBehavior.SetNull);
     }
 }
