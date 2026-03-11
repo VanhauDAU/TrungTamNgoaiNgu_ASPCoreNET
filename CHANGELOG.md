@@ -4,6 +4,14 @@ Tất cả các thay đổi nổi bật của dự án sẽ được ghi nhận 
 
 ## [Unreleased] - 2026-03-11
 
+### 🧩 Feature — Thiết lập dữ liệu nền để tạo lớp học
+
+- **Branch**: `codex/class-prerequisites-crud`
+- Thêm module admin `ClassSetup` để quản lý nhanh `Ca học`, `Gói học phí`, `Cơ sở đào tạo`, `Phòng học` trên web.
+- Thêm service `IClassSetupService` / `ClassSetupService` để gom toàn bộ nghiệp vụ CRUD, kiểm tra ràng buộc xóa và ghi nhật ký hệ thống.
+- Thêm hub điều hướng “Thiết lập lớp học” trong sidebar admin và nút quay lại `Tạo lớp` từ mọi màn hình thiết lập.
+- Bổ sung link/empty-state trong form `Thêm lớp` và `Sửa lớp` để đi thẳng tới dữ liệu nền còn thiếu.
+
 ### 🩹 Hotfix — Quản lý lớp học (Create/Edit + địa chỉ + ràng buộc nghiệp vụ)
 
 - **`Controllers/Admin/ClassesController.cs`**

@@ -187,6 +187,48 @@ public interface IClassesService
 }
 
 // ---------------------------------------------------------------------------
+// CLASS SETUP SERVICE — Dữ liệu nền để tạo lớp học
+// ---------------------------------------------------------------------------
+public class ClassSetupThongKe
+{
+    public int TongCaHoc { get; set; }
+    public int TongCoSo { get; set; }
+    public int TongPhongHoc { get; set; }
+    public int TongHocPhi { get; set; }
+    public int KhoaHocChuaCoHocPhi { get; set; }
+    public int CoSoChuaCoPhong { get; set; }
+}
+
+public interface IClassSetupService
+{
+    Task<ClassSetupThongKe> LayThongKeAsync();
+
+    Task<List<CaHoc>> LayDanhSachCaHocAsync();
+    Task<CaHoc?> LayCaHocTheoIdAsync(int id);
+    Task<ServiceResult> LuuCaHocAsync(CaHoc caHoc, string? nguoiThucHien = null);
+    Task<ServiceResult> XoaCaHocAsync(int id, string? nguoiThucHien = null);
+
+    Task<List<HocPhi>> LayDanhSachHocPhiAsync();
+    Task<HocPhi?> LayHocPhiTheoIdAsync(long id);
+    Task<ServiceResult> LuuHocPhiAsync(HocPhi hocPhi, string? nguoiThucHien = null);
+    Task<ServiceResult> XoaHocPhiAsync(long id, string? nguoiThucHien = null);
+
+    Task<List<CoSoDaoTao>> LayDanhSachCoSoAsync();
+    Task<CoSoDaoTao?> LayCoSoTheoIdAsync(int id);
+    Task<ServiceResult> LuuCoSoAsync(CoSoDaoTao coSo, string? nguoiThucHien = null);
+    Task<ServiceResult> XoaCoSoAsync(int id, string? nguoiThucHien = null);
+
+    Task<List<PhongHoc>> LayDanhSachPhongHocAsync();
+    Task<PhongHoc?> LayPhongHocTheoIdAsync(int id);
+    Task<ServiceResult> LuuPhongHocAsync(PhongHoc phongHoc, string? nguoiThucHien = null);
+    Task<ServiceResult> XoaPhongHocAsync(int id, string? nguoiThucHien = null);
+
+    Task<List<KhoaHoc>> LayKhoaHocHoatDongAsync();
+    Task<List<TinhThanh>> LayTinhThanhAsync();
+    Task<List<CoSoDaoTao>> LayCoSoHoatDongAsync();
+}
+
+// ---------------------------------------------------------------------------
 // STUDENTS SERVICE — Quản lý học viên
 // ---------------------------------------------------------------------------
 public interface IStudentsService

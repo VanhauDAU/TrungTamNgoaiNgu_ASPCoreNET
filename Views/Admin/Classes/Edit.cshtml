@@ -62,6 +62,7 @@
         <div class="page-sub"><a asp-action="Index">Lớp học</a> / Chỉnh sửa / Không gian vận hành lớp</div>
     </div>
     <div class="lh-actions">
+        <a asp-controller="ClassSetup" asp-action="Index" class="btn btn-outline"><i class="bi bi-sliders"></i> Thiết lập dữ liệu nền</a>
         <a asp-action="Index" class="btn btn-outline"><i class="bi bi-list-ul"></i> Danh sách lớp</a>
         <a asp-action="Detail" asp-route-id="@Model.LopHocId" class="btn btn-outline"><i class="bi bi-eye"></i> Chi tiết</a>
     </div>
@@ -118,6 +119,7 @@
                             { <option value="@hp.HocPhiId">@hp.SoBuoi buổi · @hp.DonGia?.ToString("N0")đ/buổi</option> }
                         }
                     </select>
+                    <small class="text-muted">Thiếu gói học phí? <a asp-controller="ClassSetup" asp-action="HocPhi">Quản lý ngay</a></small>
                 </div>
             </div>
             </div>
@@ -138,6 +140,7 @@
                             { <option value="@cs.CoSoId">@cs.TenCoSo</option> }
                         }
                     </select>
+                    <small class="text-muted">Thiếu cơ sở? <a asp-controller="ClassSetup" asp-action="CoSo">Thêm cơ sở đào tạo</a></small>
                 </div>
                 <div class="form-group">
                     <label class="form-label">Phòng học</label>
@@ -152,6 +155,7 @@
                         }
                     </select>
                     <div class="meta-hint" id="phongCapacityInfo"></div>
+                    <small class="text-muted">Thiếu phòng học? <a asp-controller="ClassSetup" asp-action="PhongHoc">Quản lý phòng học</a></small>
                 </div>
             </div>
 
@@ -200,6 +204,7 @@
                             { <option value="@ca.CaHocId">@ca.TenCa (@ca.GioBatDau - @ca.GioKetThuc)</option> }
                         }
                     </select>
+                    <small class="text-muted">Thiếu ca học? <a asp-controller="ClassSetup" asp-action="CaHoc">Thiết lập ca học</a></small>
                 </div>
             </div>
             </div>
