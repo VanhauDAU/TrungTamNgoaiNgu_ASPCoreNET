@@ -175,6 +175,15 @@ public interface IClassesService
     // ── Chi tiết học viên & buổi học ─────────────────────────────────────
     Task<List<DangKyLopHoc>> LayHocVienTrongLopAsync(int lopHocId);
     Task<List<BuoiHoc>>      LayBuoiHocAsync(int lopHocId);
+
+    // ── Dropdown địa chỉ 3 tầng ──────────────────────────────────────────
+    Task<List<TinhThanh>>  LayTinhThanhDropdownAsync();
+    Task<List<CoSoDaoTao>> LayCoSoByTinhAsync(int? tinhThanhId);
+
+    // ── Mã lớp tự sinh ───────────────────────────────────────────────────
+    /// <summary>Format: K{maKH}-YYYYMM-NNN (VD: KIELTS-202603-001)</summary>
+    Task<string> SinhMaLopHocAsync(int? khoaHocId);
+
 }
 
 // ---------------------------------------------------------------------------

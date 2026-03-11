@@ -38,6 +38,8 @@ using (var scope = app.Services.CreateScope())
 {
     var dbContext = scope.ServiceProvider.GetRequiredService<AppDbContext>();
     dbContext.Database.Migrate();
+    // Seed dữ liệu tỉnh thành nếu chưa có
+    await TinhThanhSeeder.SeedAsync(dbContext);
 }
 
 // ===== BƯỚC 3: CẤU HÌNH PIPELINE HTTP =====
