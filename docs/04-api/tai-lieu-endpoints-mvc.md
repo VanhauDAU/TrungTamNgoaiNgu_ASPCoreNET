@@ -47,6 +47,39 @@ API:    /api/{resource}/{action}
 | GET      | `/admin/lop-hoc/{id}/diem-danh` | Trang điểm danh    |
 | POST     | `/admin/lop-hoc/{id}/diem-danh` | Lưu điểm danh      |
 
+### 4.1 Admin – `ClassesController` (route thực tế hiện tại)
+
+> Route runtime theo `Program.cs`: `/Admin/{controller}/{action}/{id?}`.
+
+| Method | URL | Mô tả |
+| ------ | --- | ----- |
+| GET | `/Admin/Classes/Index` | Danh sách lớp + filter + phân trang |
+| GET | `/Admin/Classes/Detail/{id}` | Chi tiết lớp |
+| GET | `/Admin/Classes/Create` | Form tạo lớp |
+| POST | `/Admin/Classes/Create` | Tạo lớp mới |
+| GET | `/Admin/Classes/Edit/{id}` | Form chỉnh sửa lớp |
+| POST | `/Admin/Classes/Edit` | Lưu chỉnh sửa lớp |
+| POST | `/Admin/Classes/changestatus` | Chuyển trạng thái theo state-machine |
+| POST | `/Admin/Classes/softdelete` | Xóa mềm lớp |
+| GET | `/Admin/Classes/Trash` | Danh sách lớp đã xóa mềm |
+| POST | `/Admin/Classes/restore` | Khôi phục lớp từ thùng rác |
+
+### 4.2 AJAX endpoints cho form Lớp học
+
+| Method | URL | Mô tả |
+| ------ | --- | ----- |
+| GET | `/Admin/Classes/SinhMaLop?khoaHocId={id}` | Sinh mã lớp tự động |
+| GET | `/Admin/Classes/HocPhiByKhoaHoc?khoaHocId={id}` | Danh sách gói học phí theo khóa |
+| GET | `/Admin/Classes/PhongHocByCoso?coSoId={id}` | Danh sách phòng theo cơ sở (kèm `sucChua`) |
+| GET | `/Admin/Classes/CoSoByTinh?tinhThanhId={id}&phuongXa={name}` | Danh sách cơ sở theo tỉnh/phường |
+| GET | `/Admin/Classes/PhuongXaByTinh?maApi={code}` | Danh sách phường/xã từ Open API |
+
+### 4.3 Ghi chú tích hợp địa bàn Open API
+
+- Ưu tiên endpoint v2: `https://provinces.open-api.vn/api/v2/p/{maApi}?depth=2`.
+- Fallback endpoint v1: `https://provinces.open-api.vn/api/p/{maApi}?depth=3`.
+- Dữ liệu trả về được normalize về danh sách `{ name, district }` cho frontend.
+
 ---
 
 ## 5. Admin – Tài Chính

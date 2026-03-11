@@ -27,17 +27,24 @@
 
 @section Styles {
     <style>
-        .lh-mini-stats { display:flex; gap:1rem; margin-bottom:1.5rem; flex-wrap:wrap; }
-        .lh-mini-card  { flex:1;min-width:130px;background:#fff;border:1px solid #e5e7eb;border-radius:10px;padding:1rem 1.2rem;text-align:center; }
-        .lh-mini-card.all    { border-top:3px solid #6366f1; }
-        .lh-mini-card.open   { border-top:3px solid #10b981; }
-        .lh-mini-card.active { border-top:3px solid #3b82f6; }
-        .lh-mini-card.done   { border-top:3px solid #8b5cf6; }
-        .lh-mini-card.cancel { border-top:3px solid #ef4444; }
-        .lh-mini-label { font-size:.75rem;color:#6b7280;margin-bottom:.25rem; }
-        .lh-mini-value { font-size:1.6rem;font-weight:700; }
+        .lh-mini-stats { display:grid; grid-template-columns:repeat(auto-fit,minmax(170px,1fr)); gap:1rem; margin-bottom:1.4rem; }
+        .lh-mini-card  { position:relative; overflow:hidden; background:#fff;border:1px solid #e2e8f0;border-radius:14px;padding:1rem 1.1rem;text-align:left;box-shadow:0 10px 30px rgba(15,23,42,.06); transition:transform .2s ease, box-shadow .2s ease; }
+        .lh-mini-card:hover { transform:translateY(-2px); box-shadow:0 14px 35px rgba(15,23,42,.11); }
+        .lh-mini-card::after { content:''; position:absolute; inset:auto 0 0 0; height:3px; opacity:.95; }
+        .lh-mini-card.all::after { background:#6366f1; }
+        .lh-mini-card.open::after { background:#10b981; }
+        .lh-mini-card.active::after { background:#3b82f6; }
+        .lh-mini-card.done::after { background:#8b5cf6; }
+        .lh-mini-card.cancel::after { background:#ef4444; }
+        .lh-mini-label { font-size:.75rem;color:#64748b;margin-bottom:.3rem;text-transform:uppercase;letter-spacing:.05em; }
+        .lh-mini-value { font-size:1.6rem;font-weight:800;color:#0f172a;line-height:1.1; }
         .lh-actions { display:flex;gap:.4rem;align-items:center; }
         .lh-inline-form { margin:0; }
+        .lh-table tr td { vertical-align:middle; }
+        .lh-table td .kh-name { font-weight:600; color:#0f172a; }
+        .lh-table td .kh-slug { font-size:.78rem; color:#64748b; }
+        .lh-meta { display:flex; align-items:center; gap:.35rem; color:#64748b; font-size:.8rem; }
+        .lh-meta i { color:#94a3b8; }
     </style>
 }
 
@@ -163,7 +170,7 @@
         }
         else
         {
-            <table>
+            <table class="lh-table">
                 <thead>
                     <tr>
                         <th>#</th>
@@ -194,7 +201,7 @@
                             </td>
                             <td>
                                 <div>@(lop.CoSo?.TenCoSo ?? "—")</div>
-                                <small class="text-muted">@(lop.CaHoc?.TenCa ?? "—")</small>
+                                <div class="lh-meta"><i class="bi bi-clock"></i> @(lop.CaHoc?.TenCa ?? "—")</div>
                             </td>
                             <td>
                                 <span class="badge badge-gray">

@@ -178,7 +178,7 @@ public interface IClassesService
 
     // ── Dropdown địa chỉ 3 tầng ──────────────────────────────────────────
     Task<List<TinhThanh>>  LayTinhThanhDropdownAsync();
-    Task<List<CoSoDaoTao>> LayCoSoByTinhAsync(int? tinhThanhId);
+    Task<List<CoSoDaoTao>> LayCoSoByTinhAsync(int? tinhThanhId, string? phuongXa = null);
 
     // ── Mã lớp tự sinh ───────────────────────────────────────────────────
     /// <summary>Format: K{maKH}-YYYYMM-NNN (VD: KIELTS-202603-001)</summary>

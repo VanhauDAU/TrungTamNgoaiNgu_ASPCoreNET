@@ -133,6 +133,11 @@ public class ClassesService(AppDbContext db) : IClassesService
 
     public async Task<ServiceResult> ThemAsync(LopHoc lopHoc, string? nguoiThucHien = null)
     {
+        lopHoc.MaLopHoc = await SinhMaLopHocAsync(lopHoc.KhoaHocId);
+
+        var loiSiSo = await KiemTraSiSoTheoPhongAsync(lopHoc);
+        if (loiSiSo != null) return loiSiSo;
+
         lopHoc.CreatedAt = DateTime.Now;
         lopHoc.UpdatedAt = DateTime.Now;
         lopHoc.TrangThai = LopHocTrangThai.SapMo; // Trạng thái mặc định khi tạo mới
@@ -164,6 +169,9 @@ public class ClassesService(AppDbContext db) : IClassesService
         if (existing.PhongHocId != lopHoc.PhongHocId) thayDoi.Add($"Phòng học ID: {existing.PhongHocId} → {lopHoc.PhongHocId}");
         if (existing.CaHocId    != lopHoc.CaHocId)   thayDoi.Add($"Ca học ID: {existing.CaHocId} → {lopHoc.CaHocId}");
         if (existing.TaiKhoanId != lopHoc.TaiKhoanId) thayDoi.Add($"Giáo viên ID: {existing.TaiKhoanId} → {lopHoc.TaiKhoanId}");
+
+        var loiSiSo = await KiemTraSiSoTheoPhongAsync(lopHoc);
+        if (loiSiSo != null) return loiSiSo;
 
         // Cập nhật field
         existing.TenLopHoc       = lopHoc.TenLopHoc;
@@ -334,6 +342,8 @@ public class ClassesService(AppDbContext db) : IClassesService
             .AsNoTracking()
             .Where(t => t.Role == 1 && t.TrangThai == 1 && t.DeletedAt == null) // role=1: giáo viên
             .Include(t => t.HoSo)
+            .Include(t => t.NhanSu)
+                .ThenInclude(ns => ns!.CoSo)
             .OrderBy(t => t.TenTaiKhoan)
             .ToListAsync();
 
@@ -376,7 +386,7 @@ public class ClassesService(AppDbContext db) : IClassesService
             .OrderBy(t => t.TenTinhThanh)
             .ToListAsync();
 
-    public async Task<List<CoSoDaoTao>> LayCoSoByTinhAsync(int? tinhThanhId)
+    public async Task<List<CoSoDaoTao>> LayCoSoByTinhAsync(int? tinhThanhId, string? phuongXa = null)
     {
         var query = db.CoSoDaoTaos
             .AsNoTracking()
@@ -384,6 +394,13 @@ public class ClassesService(AppDbContext db) : IClassesService
 
         if (tinhThanhId.HasValue && tinhThanhId > 0)
             query = query.Where(c => c.TinhThanhId == tinhThanhId);
+
+        if (!string.IsNullOrWhiteSpace(phuongXa))
+        {
+            var phuongXaFilter = phuongXa.Trim();
+            query = query.Where(c => c.TenPhuongXa != null &&
+                                     EF.Functions.Like(c.TenPhuongXa, $"%{phuongXaFilter}%"));
+        }
 
         return await query.OrderBy(c => c.TenCoSo).ToListAsync();
     }
@@ -460,6 +477,47 @@ public class ClassesService(AppDbContext db) : IClassesService
 
     private static string Nguoi(string? s) =>
         string.IsNullOrWhiteSpace(s) ? "Hệ thống" : s.Trim();
+
+    private async Task<ServiceResult?> KiemTraSiSoTheoPhongAsync(LopHoc lopHoc)
+    {
+        if (!lopHoc.PhongHocId.HasValue || !lopHoc.SoHocVienToiDa.HasValue)
+            return null;
+
+        var phong = await db.PhongHocs
+            .AsNoTracking()
+            .Where(p => p.PhongHocId == lopHoc.PhongHocId && p.DeletedAt == null)
+            .Select(p => new { p.TenPhong, p.SucChua })
+            .FirstOrDefaultAsync();
+
+        if (phong == null)
+        {
+            return new ServiceResult
+            {
+                ThanhCong = false,
+                ThongBao = "Phòng học không tồn tại hoặc đã bị xóa."
+            };
+        }
+
+        if (!phong.SucChua.HasValue || phong.SucChua.Value <= 0)
+        {
+            return new ServiceResult
+            {
+                ThanhCong = false,
+                ThongBao = $"Phòng \"{phong.TenPhong}\" chưa cấu hình sức chứa hợp lệ."
+            };
+        }
+
+        if (lopHoc.SoHocVienToiDa.Value >= phong.SucChua.Value)
+        {
+            return new ServiceResult
+            {
+                ThanhCong = false,
+                ThongBao = $"Sĩ số lớp ({lopHoc.SoHocVienToiDa}) phải nhỏ hơn sức chứa phòng \"{phong.TenPhong}\" ({phong.SucChua})."
+            };
+        }
+
+        return null;
+    }
 
     private async Task GhiNhatKyAsync(string tieuDe, string noiDung, string? nguoiThucHien)
     {

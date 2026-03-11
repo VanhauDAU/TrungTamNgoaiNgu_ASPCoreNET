@@ -29,6 +29,7 @@ builder.Services.AddScoped<ICoursesService,    CoursesService>();
 builder.Services.AddScoped<IFinanceService,  FinanceService>();
 builder.Services.AddScoped<IClassesService,  ClassesService>();
 builder.Services.AddScoped<IAuditLogsService, AuditLogsService>();
+builder.Services.AddHttpClient();
 
 // ===== BƯỚC 2: XÂY DỰNG APP =====
 var app = builder.Build();
