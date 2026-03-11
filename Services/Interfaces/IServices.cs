@@ -123,16 +123,58 @@ public interface ICoursesService
 // ---------------------------------------------------------------------------
 // CLASSES SERVICE — Quản lý lớp học
 // ---------------------------------------------------------------------------
+
+/// <summary>Thống kê mini-cards trang quản lý lớp học</summary>
+public class LopHocQuanLyThongKe
+{
+    public int TongLopHoc     { get; set; }
+    public int DangTuyenSinh  { get; set; }
+    public int DangHoc        { get; set; }
+    public int DaKetThuc      { get; set; }
+    public int DaHuy          { get; set; }
+}
+
 public interface IClassesService
 {
-    Task<List<LopHoc>> LayDanhSachAsync(int? khoaHocId = null, int? coSoId = null, byte? trangThai = null);
-    Task<LopHoc?> LayTheoIdAsync(int id);
-    Task<int> ThemAsync(LopHoc lopHoc);
-    Task<bool> CapNhatAsync(LopHoc lopHoc);
-    Task<bool> DoiTrangThaiAsync(int id, byte trangThai);
+    // ── Danh sách / phân trang / lọc ──────────────────────────────────────
+    Task<PagedResult<LopHoc>> LayDanhSachPhanTrangAsync(
+        int? khoaHocId    = null,
+        int? coSoId       = null,
+        int? trangThai    = null,
+        string? tuKhoa    = null,
+        int  page         = 1,
+        int  pageSize     = 10);
 
-    // Lấy danh sách học viên trong lớp
+    Task<LopHocQuanLyThongKe> LayThongKeAsync();
+
+    // ── Chi tiết ─────────────────────────────────────────────────────────
+    /// <summary>Load kèm KhoaHoc, CaHoc, PhongHoc, CoSo, GiaoVien</summary>
+    Task<LopHoc?> LayTheoIdAsync(int id);
+
+    // ── CRUD ──────────────────────────────────────────────────────────────
+    Task<string> TaoSlugLopHocAsync(string tenLopHoc, int? boQuaId = null);
+    Task<ServiceResult> ThemAsync(LopHoc lopHoc, string? nguoiThucHien = null);
+    Task<ServiceResult> CapNhatAsync(LopHoc lopHoc, string? nguoiThucHien = null);
+
+    // ── State-machine ─────────────────────────────────────────────────────
+    Task<ServiceResult> ChuyenTrangThaiAsync(int id, byte trangThaiMoi, string? nguoiThucHien = null);
+
+    // ── Soft delete / Trash ───────────────────────────────────────────────
+    Task<ServiceResult> XoaMemAsync(int id, string? nguoiThucHien = null);
+    Task<List<LopHoc>> LayThuRacAsync();
+    Task<ServiceResult> KhoiPhucAsync(int id, string? nguoiThucHien = null);
+
+    // ── Dropdowns (cho form Create/Edit) ─────────────────────────────────
+    Task<List<KhoaHoc>>    LayKhoaHocDropdownAsync();
+    Task<List<CaHoc>>      LayCaHocDropdownAsync();
+    Task<List<PhongHoc>>   LayPhongHocDropdownAsync(int? coSoId = null);
+    Task<List<CoSoDaoTao>> LayCoSoDropdownAsync();
+    Task<List<TaiKhoan>>   LayGiaoVienDropdownAsync();
+    Task<List<HocPhi>>     LayHocPhiDropdownAsync(int? khoaHocId = null);
+
+    // ── Chi tiết học viên & buổi học ─────────────────────────────────────
     Task<List<DangKyLopHoc>> LayHocVienTrongLopAsync(int lopHocId);
+    Task<List<BuoiHoc>>      LayBuoiHocAsync(int lopHocId);
 }
 
 // ---------------------------------------------------------------------------

@@ -1,0 +1,207 @@
+@model TrungTamNgoaiNgu.Models.LopHoc
+@using TrungTamNgoaiNgu.Enums
+@{
+    ViewData["Title"] = "Chi tiết lớp học";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+    var hocViens  = ViewBag.HocViens  as List<TrungTamNgoaiNgu.Models.DangKyLopHoc> ?? [];
+    var buoiHocs  = ViewBag.BuoiHocs  as List<TrungTamNgoaiNgu.Models.BuoiHoc>      ?? [];
+
+    var buocHopLe = Model.TrangThai switch
+    {
+        LopHocTrangThai.SapMo         => new[] { (1, "Mở tuyển sinh", "btn-success") , (3, "Hủy lớp", "btn-danger") },
+        LopHocTrangThai.DangTuyenSinh => new[] { (2, "Chốt danh sách", "btn-primary"), (3, "Hủy lớp", "btn-danger") },
+        LopHocTrangThai.ChotDanhSach  => new[] { (4, "Khai giảng",    "btn-primary"), (3, "Hủy lớp", "btn-danger") },
+        LopHocTrangThai.DangHoc       => new[] { (5, "Kết thúc lớp",  "btn-secondary") },
+        _                             => Array.Empty<(int, string, string)>()
+    };
+}
+
+@section Styles {
+    <style>
+        .detail-grid  { display:grid;grid-template-columns:1fr 1fr;gap:1.5rem;margin-bottom:1.5rem; }
+        .info-card    { background:#fff;border:1px solid #e5e7eb;border-radius:10px;padding:1.25rem; }
+        .info-card h6 { font-weight:600;margin-bottom:.75rem;color:#374151; }
+        .info-row     { display:flex;justify-content:space-between;padding:.35rem 0;border-bottom:1px solid #f3f4f6;font-size:.875rem; }
+        .info-row:last-child { border-bottom:none; }
+        .info-label   { color:#6b7280; }
+        .info-value   { font-weight:500;text-align:right; }
+        .tab-nav      { display:flex;gap:.5rem;border-bottom:2px solid #e5e7eb;margin-bottom:1.5rem; }
+        .tab-btn      { background:none;border:none;padding:.6rem 1.2rem;cursor:pointer;font-size:.875rem;font-weight:500;color:#6b7280;border-bottom:2px solid transparent;margin-bottom:-2px; }
+        .tab-btn.active { color:var(--primary,#6366f1);border-bottom-color:var(--primary,#6366f1); }
+        .tab-pane     { display:none; }
+        .tab-pane.active { display:block; }
+        .status-actions { display:flex;gap:.75rem;flex-wrap:wrap;margin-top:.5rem; }
+        @@media(max-width:640px){ .detail-grid{grid-template-columns:1fr;} }
+    </style>
+}
+
+<div class="page-header">
+    <div>
+        <div class="page-title">@Model.TenLopHoc</div>
+        <div class="page-sub">
+            <a asp-action="Index">Lớp học</a> / Chi tiết
+            &nbsp;<span class="badge @Model.TrangThaiBadgeClass">@Model.TrangThaiText</span>
+        </div>
+    </div>
+    <div class="kh-header-actions">
+        <a asp-action="Edit" asp-route-id="@Model.LopHocId" class="btn btn-outline">
+            <i class="bi bi-pencil"></i> Chỉnh sửa
+        </a>
+    </div>
+</div>
+
+@if (TempData["ThanhCong"] != null)
+{ <div class="alert alert-success"><i class="bi bi-check-circle-fill"></i> @TempData["ThanhCong"]</div> }
+@if (TempData["LoiXay"] != null)
+{ <div class="alert alert-danger"><i class="bi bi-exclamation-triangle-fill"></i> @TempData["LoiXay"]</div> }
+
+<!-- CHUYỂN TRẠNG THÁI NHANH -->
+@if (buocHopLe.Any())
+{
+    <div class="info-card" style="margin-bottom:1.5rem;">
+        <h6><i class="bi bi-arrow-repeat"></i> Chuyển trạng thái</h6>
+        <div class="status-actions">
+            @foreach (var (val, label, cls) in buocHopLe)
+            {
+                <form method="post" asp-action="changestatus"
+                      onsubmit="return confirm('Xác nhận: @label?')">
+                    @Html.AntiForgeryToken()
+                    <input type="hidden" name="id" value="@Model.LopHocId" />
+                    <input type="hidden" name="trangThaiMoi" value="@val" />
+                    <input type="hidden" name="returnUrl" value="/Admin/Classes/Detail/@Model.LopHocId" />
+                    <button type="submit" class="btn @cls btn-sm">@label</button>
+                </form>
+            }
+        </div>
+    </div>
+}
+
+<!-- THÔNG TIN LỚP -->
+<div class="detail-grid">
+    <div class="info-card">
+        <h6><i class="bi bi-book"></i> Thông tin cơ bản</h6>
+        <div class="info-row"><span class="info-label">Khóa học</span><span class="info-value">@(Model.KhoaHoc?.TenKhoaHoc ?? "—")</span></div>
+        <div class="info-row"><span class="info-label">Mã lớp</span><span class="info-value">@(Model.MaLopHoc ?? "—")</span></div>
+        <div class="info-row"><span class="info-label">Ca học</span><span class="info-value">@(Model.CaHoc?.TenCa ?? "—")</span></div>
+        <div class="info-row"><span class="info-label">Cơ sở</span><span class="info-value">@(Model.CoSo?.TenCoSo ?? "—")</span></div>
+        <div class="info-row"><span class="info-label">Phòng học</span><span class="info-value">@(Model.PhongHoc?.TenPhong ?? "—")</span></div>
+        <div class="info-row"><span class="info-label">Lịch học</span><span class="info-value">@(Model.LichHoc ?? "—")</span></div>
+    </div>
+    <div class="info-card">
+        <h6><i class="bi bi-calendar3"></i> Thời gian & Sĩ số</h6>
+        <div class="info-row"><span class="info-label">Ngày bắt đầu</span><span class="info-value">@(Model.NgayBatDau?.ToString("dd/MM/yyyy") ?? "—")</span></div>
+        <div class="info-row"><span class="info-label">Ngày kết thúc</span><span class="info-value">@(Model.NgayKetThuc?.ToString("dd/MM/yyyy") ?? "—")</span></div>
+        <div class="info-row"><span class="info-label">Số buổi dự kiến</span><span class="info-value">@(Model.SoBuoiDuKien?.ToString() ?? "—")</span></div>
+        <div class="info-row"><span class="info-label">Sĩ số tối đa</span><span class="info-value">@(Model.SoHocVienToiDa?.ToString() ?? "—")</span></div>
+        <div class="info-row"><span class="info-label">Học viên đã đăng ký</span><span class="info-value">@hocViens.Count</span></div>
+        <div class="info-row"><span class="info-label">Đơn giá dạy/buổi</span><span class="info-value">@(Model.DonGiaDay.HasValue ? Model.DonGiaDay.Value.ToString("N0") + "đ" : "—")</span></div>
+    </div>
+</div>
+
+<!-- TABS -->
+<div class="tab-nav">
+    <button class="tab-btn active" onclick="showTab('tab-hocvien', this)">
+        <i class="bi bi-person-check"></i> Học viên (@hocViens.Count)
+    </button>
+    <button class="tab-btn" onclick="showTab('tab-buoihoc', this)">
+        <i class="bi bi-calendar-event"></i> Buổi học (@buoiHocs.Count)
+    </button>
+</div>
+
+<!-- TAB: HỌC VIÊN -->
+<div id="tab-hocvien" class="tab-pane active">
+    <div class="card">
+        <div class="table-wrap">
+            @if (!hocViens.Any())
+            {
+                <div class="empty-state"><i class="bi bi-people"></i><p>Chưa có học viên đăng ký</p></div>
+            }
+            else
+            {
+                <table>
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>Học viên</th>
+                            <th>Ngày đăng ký</th>
+                            <th>Trạng thái</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @for (int i = 0; i < hocViens.Count; i++)
+                        {
+                            var dk = hocViens[i];
+                            var ten = dk.TaiKhoan?.HoSo?.HoTen ?? dk.TaiKhoan?.TenTaiKhoan ?? "—";
+                            <tr>
+                                <td>@(i + 1)</td>
+                                <td>@ten</td>
+                                <td>@dk.NgayDangKy?.ToString("dd/MM/yyyy")</td>
+                                <td>
+                                    @switch ((int)dk.TrangThai)
+                                    {
+                                        case 1: <span class="badge badge-success">Đang học</span> break;
+                                        case 2: <span class="badge badge-blue">Hoàn thành</span> break;
+                                        case 3: <span class="badge badge-danger">Đã hủy</span> break;
+                                        default: <span class="badge badge-gray">@dk.TrangThai</span> break;
+                                    }
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            }
+        </div>
+    </div>
+</div>
+
+<!-- TAB: BUỔI HỌC -->
+<div id="tab-buoihoc" class="tab-pane">
+    <div class="card">
+        <div class="table-wrap">
+            @if (!buoiHocs.Any())
+            {
+                <div class="empty-state"><i class="bi bi-calendar-x"></i><p>Chưa có buổi học nào</p></div>
+            }
+            else
+            {
+                <table>
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>Ngày học</th>
+                            <th>Ca học</th>
+                            <th>Phòng học</th>
+                            <th>Trạng thái</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @for (int i = 0; i < buoiHocs.Count; i++)
+                        {
+                            var bh = buoiHocs[i];
+                            <tr>
+                                <td>@(i + 1)</td>
+                                <td>@bh.NgayHoc?.ToString("dd/MM/yyyy")</td>
+                                <td>@(bh.CaHoc?.TenCa ?? "—")</td>
+                                <td>@(bh.PhongHoc?.TenPhong ?? "—")</td>
+                                <td>
+                                    <span class="badge @bh.TrangThaiBadgeClass">@bh.TrangThaiText</span>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            }
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        function showTab(tabId, btn) {
+            document.querySelectorAll('.tab-pane').forEach(p => p.classList.remove('active'));
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+            document.getElementById(tabId).classList.add('active');
+            btn.classList.add('active');
+        }
+    </script>
+}
