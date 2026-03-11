@@ -1,0 +1,265 @@
+@model List<TrungTamNgoaiNgu.Models.LopHoc>
+@using TrungTamNgoaiNgu.Enums
+@{
+    ViewData["Title"] = "Lớp học";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+    int pg         = ViewBag.Page ?? 1;
+    int pgSize     = ViewBag.PageSize ?? 10;
+    int total      = ViewBag.Total ?? Model.Count;
+    int totalPages = (int)Math.Ceiling(total / (double)pgSize);
+    string tuKhoa    = ViewBag.TuKhoa    ?? "";
+    string khoaHocQ  = ViewBag.KhoaHocId?.ToString() ?? "";
+    string coSoQ     = ViewBag.CoSoId?.ToString()    ?? "";
+    string trangThaiQ = ViewBag.TrangThai?.ToString() ?? "";
+    var stats = ViewBag.Stats as TrungTamNgoaiNgu.Services.Interfaces.LopHocQuanLyThongKe
+             ?? new TrungTamNgoaiNgu.Services.Interfaces.LopHocQuanLyThongKe();
+
+    var trangThaiOptions = new (int Val, string Label)[]
+    {
+        (0, "🕐 Sắp mở"),
+        (1, "📋 Đang tuyển sinh"),
+        (2, "✅ Chốt danh sách"),
+        (3, "❌ Đã hủy"),
+        (4, "🎓 Đang học"),
+        (5, "🏁 Đã kết thúc"),
+    };
+}
+
+@section Styles {
+    <style>
+        .lh-mini-stats { display:flex; gap:1rem; margin-bottom:1.5rem; flex-wrap:wrap; }
+        .lh-mini-card  { flex:1;min-width:130px;background:#fff;border:1px solid #e5e7eb;border-radius:10px;padding:1rem 1.2rem;text-align:center; }
+        .lh-mini-card.all    { border-top:3px solid #6366f1; }
+        .lh-mini-card.open   { border-top:3px solid #10b981; }
+        .lh-mini-card.active { border-top:3px solid #3b82f6; }
+        .lh-mini-card.done   { border-top:3px solid #8b5cf6; }
+        .lh-mini-card.cancel { border-top:3px solid #ef4444; }
+        .lh-mini-label { font-size:.75rem;color:#6b7280;margin-bottom:.25rem; }
+        .lh-mini-value { font-size:1.6rem;font-weight:700; }
+        .lh-actions { display:flex;gap:.4rem;align-items:center; }
+        .lh-inline-form { margin:0; }
+    </style>
+}
+
+<div class="page-header">
+    <div>
+        <div class="page-title">Quản lý lớp học</div>
+        <div class="page-sub">Tổng: <strong>@total</strong> lớp học</div>
+    </div>
+    <div class="kh-header-actions">
+        <a asp-action="Trash" class="btn btn-outline">
+            <i class="bi bi-trash3"></i> Thùng rác
+        </a>
+        <a asp-action="Create" class="btn btn-primary">
+            <i class="bi bi-plus-lg"></i> Thêm lớp học
+        </a>
+    </div>
+</div>
+
+@if (TempData["ThanhCong"] != null)
+{
+    <div class="alert alert-success"><i class="bi bi-check-circle-fill"></i> @TempData["ThanhCong"]</div>
+}
+@if (TempData["LoiXay"] != null)
+{
+    <div class="alert alert-danger"><i class="bi bi-exclamation-triangle-fill"></i> @TempData["LoiXay"]</div>
+}
+
+<!-- STATS CARDS -->
+<div class="lh-mini-stats">
+    <div class="lh-mini-card all">
+        <div class="lh-mini-label">Tổng lớp học</div>
+        <div class="lh-mini-value">@stats.TongLopHoc</div>
+    </div>
+    <div class="lh-mini-card open">
+        <div class="lh-mini-label">Đang tuyển sinh</div>
+        <div class="lh-mini-value">@stats.DangTuyenSinh</div>
+    </div>
+    <div class="lh-mini-card active">
+        <div class="lh-mini-label">Đang học</div>
+        <div class="lh-mini-value">@stats.DangHoc</div>
+    </div>
+    <div class="lh-mini-card done">
+        <div class="lh-mini-label">Đã kết thúc</div>
+        <div class="lh-mini-value">@stats.DaKetThuc</div>
+    </div>
+    <div class="lh-mini-card cancel">
+        <div class="lh-mini-label">Đã hủy</div>
+        <div class="lh-mini-value">@stats.DaHuy</div>
+    </div>
+</div>
+
+<!-- BỘ LỌC -->
+<div class="card kh-filter-card">
+    <div class="card-body kh-filter-body">
+        <form method="get" class="kh-filter-form">
+            <div class="search-wrap kh-search-wrap">
+                <i class="bi bi-search"></i>
+                <input type="text" name="tuKhoa" value="@tuKhoa" class="form-control"
+                       placeholder="Tìm tên / mã lớp học..." />
+            </div>
+
+            <select name="khoaHocId" class="form-control">
+                <option value="">Tất cả khóa học</option>
+                @foreach (var kh in (List<TrungTamNgoaiNgu.Models.KhoaHoc>)ViewBag.KhoaHocs)
+                {
+                    if (khoaHocQ == kh.KhoaHocId.ToString())
+                    { <option value="@kh.KhoaHocId" selected>@kh.TenKhoaHoc</option> }
+                    else
+                    { <option value="@kh.KhoaHocId">@kh.TenKhoaHoc</option> }
+                }
+            </select>
+
+            <select name="coSoId" class="form-control">
+                <option value="">Tất cả cơ sở</option>
+                @foreach (var cs in (List<TrungTamNgoaiNgu.Models.CoSoDaoTao>)ViewBag.CoSos)
+                {
+                    if (coSoQ == cs.CoSoId.ToString())
+                    { <option value="@cs.CoSoId" selected>@cs.TenCoSo</option> }
+                    else
+                    { <option value="@cs.CoSoId">@cs.TenCoSo</option> }
+                }
+            </select>
+
+            <select name="trangThai" class="form-control">
+                <option value="">Tất cả trạng thái</option>
+                @foreach (var opt in trangThaiOptions)
+                {
+                    if (trangThaiQ == opt.Val.ToString())
+                    { <option value="@opt.Val" selected>@opt.Label</option> }
+                    else
+                    { <option value="@opt.Val">@opt.Label</option> }
+                }
+            </select>
+
+            <select name="pageSize" class="form-control">
+                @foreach (var s in new[] { 10, 20, 50 })
+                {
+                    if (pgSize == s)
+                    { <option value="@s" selected>@s dòng/trang</option> }
+                    else
+                    { <option value="@s">@s dòng/trang</option> }
+                }
+            </select>
+
+            <button type="submit" class="btn btn-primary"><i class="bi bi-funnel-fill"></i> Lọc</button>
+            @if (!string.IsNullOrEmpty(tuKhoa) || !string.IsNullOrEmpty(khoaHocQ) || !string.IsNullOrEmpty(coSoQ) || !string.IsNullOrEmpty(trangThaiQ))
+            {
+                <a asp-action="Index" class="btn btn-outline"><i class="bi bi-x-circle"></i> Xóa lọc</a>
+            }
+        </form>
+    </div>
+</div>
+
+<!-- BẢNG -->
+<div class="card">
+    <div class="table-wrap">
+        @if (!Model.Any())
+        {
+            <div class="empty-state">
+                <i class="bi bi-people"></i>
+                <p>Không tìm thấy lớp học nào</p>
+            </div>
+        }
+        else
+        {
+            <table>
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Tên lớp học</th>
+                        <th>Khóa học</th>
+                        <th>Cơ sở / Ca</th>
+                        <th>Học viên</th>
+                        <th>Thời gian</th>
+                        <th>Trạng thái</th>
+                        <th>Thao tác</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @for (int i = 0; i < Model.Count; i++)
+                    {
+                        var lop = Model[i];
+                        <tr>
+                            <td class="kh-col-index">@((pg - 1) * pgSize + i + 1)</td>
+                            <td>
+                                <div class="kh-name">@lop.TenLopHoc</div>
+                                @if (!string.IsNullOrEmpty(lop.MaLopHoc))
+                                { <div class="kh-slug">@lop.MaLopHoc</div> }
+                            </td>
+                            <td>
+                                @if (lop.KhoaHoc != null)
+                                { <span class="badge badge-indigo">@lop.KhoaHoc.TenKhoaHoc</span> }
+                                else { <span class="kh-muted">—</span> }
+                            </td>
+                            <td>
+                                <div>@(lop.CoSo?.TenCoSo ?? "—")</div>
+                                <small class="text-muted">@(lop.CaHoc?.TenCa ?? "—")</small>
+                            </td>
+                            <td>
+                                <span class="badge badge-gray">
+                                    @(lop.DangKys?.Count ?? 0) / @(lop.SoHocVienToiDa ?? 0)
+                                </span>
+                            </td>
+                            <td>
+                                @if (lop.NgayBatDau.HasValue)
+                                { <div>@lop.NgayBatDau.Value.ToString("dd/MM/yyyy")</div> }
+                                @if (lop.NgayKetThuc.HasValue)
+                                { <small class="text-muted">→ @lop.NgayKetThuc.Value.ToString("dd/MM/yyyy")</small> }
+                            </td>
+                            <td>
+                                <span class="badge @lop.TrangThaiBadgeClass">@lop.TrangThaiText</span>
+                            </td>
+                            <td>
+                                <div class="lh-actions">
+                                    <a asp-action="Detail" asp-route-id="@lop.LopHocId"
+                                       class="btn btn-outline btn-sm" title="Chi tiết">
+                                        <i class="bi bi-eye"></i>
+                                    </a>
+                                    <a asp-action="Edit" asp-route-id="@lop.LopHocId"
+                                       class="btn btn-outline btn-sm" title="Chỉnh sửa">
+                                        <i class="bi bi-pencil"></i>
+                                    </a>
+                                    <form method="post" asp-action="softdelete" asp-route-id="@lop.LopHocId"
+                                          onsubmit="return confirm('Chuyển «@lop.TenLopHoc» vào thùng rác?')"
+                                          class="lh-inline-form">
+                                        @Html.AntiForgeryToken()
+                                        <button type="submit" class="btn btn-danger btn-sm" title="Xóa mềm">
+                                            <i class="bi bi-trash"></i>
+                                        </button>
+                                    </form>
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+
+            @if (totalPages > 1)
+            {
+                <div class="kh-pagination-wrap">
+                    <div class="kh-pagination-info">
+                        Trang <strong>@pg</strong> / @totalPages &nbsp;·&nbsp; @total mục
+                    </div>
+                    <div class="kh-pagination-actions">
+                        @if (pg > 1)
+                        {
+                            <a href="?page=@(pg-1)&tuKhoa=@tuKhoa&khoaHocId=@khoaHocQ&coSoId=@coSoQ&trangThai=@trangThaiQ&pageSize=@pgSize"
+                               class="btn btn-outline btn-sm"><i class="bi bi-chevron-left"></i></a>
+                        }
+                        @for (int p = Math.Max(1, pg - 2); p <= Math.Min(totalPages, pg + 2); p++)
+                        {
+                            <a href="?page=@p&tuKhoa=@tuKhoa&khoaHocId=@khoaHocQ&coSoId=@coSoQ&trangThai=@trangThaiQ&pageSize=@pgSize"
+                               class="btn btn-sm @(p == pg ? "btn-primary" : "btn-outline")">@p</a>
+                        }
+                        @if (pg < totalPages)
+                        {
+                            <a href="?page=@(pg+1)&tuKhoa=@tuKhoa&khoaHocId=@khoaHocQ&coSoId=@coSoQ&trangThai=@trangThaiQ&pageSize=@pgSize"
+                               class="btn btn-outline btn-sm"><i class="bi bi-chevron-right"></i></a>
+                        }
+                    </div>
+                </div>
+            }
+        }
+    </div>
+</div>
