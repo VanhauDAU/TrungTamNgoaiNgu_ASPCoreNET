@@ -184,7 +184,6 @@ public class ClassesController(IClassesService classesService) : Controller
         var hocPhis = await classesService.LayHocPhiDropdownAsync(khoaHocId);
         return Json(hocPhis.Select(h => new { id = h.HocPhiId, name = $"{h.SoBuoi} buổi - {h.DonGia?.ToString("N0") ?? "?"}đ/buổi" }));
     }
-
     /// <summary>GET /Admin/Classes/CoSoByTinh?tinhThanhId=1 — AJAX: cơ sở theo tỉnh</summary>
     [HttpGet]
     public async Task<IActionResult> CoSoByTinh(int? tinhThanhId)
@@ -200,7 +199,6 @@ public class ClassesController(IClassesService classesService) : Controller
         var ma = await classesService.SinhMaLopHocAsync(khoaHocId);
         return Json(new { ma });
     }
-
     // =========================================================================
     // PRIVATE HELPERS
     // =========================================================================
@@ -208,6 +206,7 @@ public class ClassesController(IClassesService classesService) : Controller
     private async Task NapDropdowns(int? khoaHocId = null, int? coSoId = null)
     {
         ViewBag.TinhThanhs = await classesService.LayTinhThanhDropdownAsync();
+
         ViewBag.KhoaHocs   = await classesService.LayKhoaHocDropdownAsync();
         ViewBag.CaHocs     = await classesService.LayCaHocDropdownAsync();
         ViewBag.CoSos      = await classesService.LayCoSoDropdownAsync();

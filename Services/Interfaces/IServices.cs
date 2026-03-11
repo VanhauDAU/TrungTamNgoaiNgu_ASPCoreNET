@@ -183,6 +183,7 @@ public interface IClassesService
     // ── Mã lớp tự sinh ───────────────────────────────────────────────────
     /// <summary>Format: K{maKH}-YYYYMM-NNN (VD: KIELTS-202603-001)</summary>
     Task<string> SinhMaLopHocAsync(int? khoaHocId);
+
 }
 
 // ---------------------------------------------------------------------------

@@ -41,6 +41,7 @@
         .dow-btn:hover:not(.active) { border-color:#6366f1;color:#6366f1; }
 
         @@media(max-width:700px){ .form-row-2,.form-row-3,.addr-flow{grid-template-columns:1fr;} }
+
     </style>
 }
 
@@ -77,6 +78,7 @@
                            placeholder="VD: Lớp IELTS 6.5 Sáng T2-T4-T6" required />
                     <span asp-validation-for="TenLopHoc" class="text-danger"></span>
                 </div>
+
             </div>
 
             <div class="form-row-2">
@@ -102,6 +104,7 @@
             </div>
 
             <hr class="my-3" />
+
 
             <!-- ═══ 2. ĐỊA ĐIỂM 3 TẦNG ════════════════════════════════════════ -->
             <h5 class="form-section-title"><i class="bi bi-geo-alt-fill"></i> Địa điểm & Cơ sở</h5>
@@ -145,6 +148,7 @@
                     <label class="form-label">Phòng học</label>
                     <select asp-for="PhongHocId" id="phongHocSelect" class="form-control" disabled>
                         <option value="">-- Chọn cơ sở trước --</option>
+
                     </select>
                 </div>
             </div>
@@ -153,6 +157,7 @@
 
             <!-- ═══ 3. PHÂN CÔNG ══════════════════════════════════════════════ -->
             <h5 class="form-section-title"><i class="bi bi-people-fill"></i> Phân công Giáo viên & Ca học</h5>
+
             <div class="form-row-2">
                 <div class="form-group">
                     <label class="form-label">Giáo viên phụ trách</label>
@@ -172,6 +177,7 @@
                         @foreach (var ca in (List<TrungTamNgoaiNgu.Models.CaHoc>)ViewBag.CaHocs)
                         {
                             <option value="@ca.CaHocId">@ca.TenCa (@ca.GioBatDau – @ca.GioKetThuc)</option>
+
                         }
                     </select>
                     <span asp-validation-for="CaHocId" class="text-danger"></span>
@@ -179,6 +185,7 @@
             </div>
 
             <hr class="my-3" />
+
 
             <!-- ═══ 4. LỊCH HỌC & THỜI GIAN ══════════════════════════════════ -->
             <h5 class="form-section-title"><i class="bi bi-calendar3"></i> Lịch học & Thời gian</h5>
