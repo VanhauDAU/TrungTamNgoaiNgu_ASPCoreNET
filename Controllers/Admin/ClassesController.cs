@@ -185,12 +185,29 @@ public class ClassesController(IClassesService classesService) : Controller
         return Json(hocPhis.Select(h => new { id = h.HocPhiId, name = $"{h.SoBuoi} buổi - {h.DonGia?.ToString("N0") ?? "?"}đ/buổi" }));
     }
 
+    /// <summary>GET /Admin/Classes/CoSoByTinh?tinhThanhId=1 — AJAX: cơ sở theo tỉnh</summary>
+    [HttpGet]
+    public async Task<IActionResult> CoSoByTinh(int? tinhThanhId)
+    {
+        var coSos = await classesService.LayCoSoByTinhAsync(tinhThanhId);
+        return Json(coSos.Select(c => new { id = c.CoSoId, name = c.TenCoSo, diaChi = c.DiaChi ?? "" }));
+    }
+
+    /// <summary>GET /Admin/Classes/SinhMaLop?khoaHocId=1 — AJAX: sinh mã lớp tự động</summary>
+    [HttpGet]
+    public async Task<IActionResult> SinhMaLop(int? khoaHocId)
+    {
+        var ma = await classesService.SinhMaLopHocAsync(khoaHocId);
+        return Json(new { ma });
+    }
+
     // =========================================================================
     // PRIVATE HELPERS
     // =========================================================================
 
     private async Task NapDropdowns(int? khoaHocId = null, int? coSoId = null)
     {
+        ViewBag.TinhThanhs = await classesService.LayTinhThanhDropdownAsync();
         ViewBag.KhoaHocs   = await classesService.LayKhoaHocDropdownAsync();
         ViewBag.CaHocs     = await classesService.LayCaHocDropdownAsync();
         ViewBag.CoSos      = await classesService.LayCoSoDropdownAsync();

@@ -7,13 +7,40 @@
 
 @section Styles {
     <style>
-        .form-section-title { font-weight:600;color:#374151;margin:1rem 0 .75rem; }
+        .form-section-title { font-weight:600;color:#374151;margin:1.25rem 0 .75rem;display:flex;align-items:center;gap:.5rem; }
+        .form-section-title i { color:var(--primary,#6366f1); }
         .form-row-2 { display:grid;grid-template-columns:1fr 1fr;gap:1rem; }
         .form-row-3 { display:grid;grid-template-columns:1fr 1fr 1fr;gap:1rem; }
-        .form-group  { display:flex;flex-direction:column;gap:.25rem;margin-bottom:.5rem; }
-        .form-label  { font-weight:500;font-size:.875rem; }
+        .form-group  { display:flex;flex-direction:column;gap:.3rem;margin-bottom:.5rem; }
+        .form-label  { font-weight:500;font-size:.875rem;color:#374151; }
         .form-actions { display:flex;gap:1rem;margin-top:1.5rem;padding-top:1rem;border-top:1px solid #e5e7eb; }
-        @@media(max-width:600px){ .form-row-2,.form-row-3{grid-template-columns:1fr;} }
+
+        /* Địa chỉ 3 tầng */
+        .addr-flow   { display:grid;grid-template-columns:1fr 1fr 1fr;gap:1rem;align-items:start; }
+        .addr-step   { position:relative; }
+        .addr-arrow  { display:flex;align-items:center;justify-content:center;color:#9ca3af;font-size:1.2rem;padding-top:1.9rem; }
+        .addr-loading { display:none;position:absolute;right:.75rem;top:50%;transform:translateY(-50%);
+                        width:16px;height:16px;border:2px solid #e5e7eb;border-top-color:#6366f1;
+                        border-radius:50%;animation:spin .6s linear infinite; }
+        @@keyframes spin { to { transform:translateY(-50%) rotate(360deg); } }
+
+        /* Mã lớp auto-badge */
+        .ma-lop-wrap { position:relative; }
+        .ma-lop-badge { position:absolute;right:.6rem;top:50%;transform:translateY(-50%);
+                        font-size:.7rem;background:#ede9fe;color:#7c3aed;padding:.1rem .4rem;border-radius:4px;pointer-events:none; }
+
+        /* Số buổi tự tính */
+        .sbd-info { font-size:.75rem;color:#6366f1;margin-top:.2rem;min-height:1.1em; }
+
+        /* Ngày học checkboxes */
+        .dow-group { display:flex;gap:.5rem;flex-wrap:wrap; }
+        .dow-btn   { display:inline-flex;align-items:center;justify-content:center;width:2.5rem;height:2.5rem;
+                     border:1px solid #d1d5db;border-radius:8px;cursor:pointer;font-size:.8rem;font-weight:600;
+                     color:#6b7280;transition:.15s; user-select:none; }
+        .dow-btn.active { background:#6366f1;color:#fff;border-color:#6366f1; }
+        .dow-btn:hover:not(.active) { border-color:#6366f1;color:#6366f1; }
+
+        @@media(max-width:700px){ .form-row-2,.form-row-3,.addr-flow{grid-template-columns:1fr;} }
     </style>
 }
 
@@ -24,36 +51,43 @@
     </div>
 </div>
 
-<div class="card" style="max-width:900px;">
+<div class="card" style="max-width:960px;">
     <div class="card-body" style="padding:2rem;">
-        <form method="post" asp-action="Create">
+        <form method="post" asp-action="Create" id="createForm">
             @Html.AntiForgeryToken()
             <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
 
-            <!-- NHÓM 1: THÔNG TIN CƠ BẢN -->
-            <h5 class="form-section-title"><i class="bi bi-info-circle"></i> Thông tin cơ bản</h5>
-            <div class="form-row-2">
-                <div class="form-group">
-                    <label class="form-label">Tên lớp học <span class="text-danger">*</span></label>
-                    <input asp-for="TenLopHoc" class="form-control" placeholder="VD: Lớp IELTS 6.5+ Thứ 2-4-6" />
-                    <span asp-validation-for="TenLopHoc" class="text-danger"></span>
-                </div>
-                <div class="form-group">
-                    <label class="form-label">Mã lớp</label>
-                    <input asp-for="MaLopHoc" class="form-control" placeholder="VD: IELTS-001 (tùy chọn)" />
-                </div>
-            </div>
-
+            <!-- ═══ 1. THÔNG TIN CƠ BẢN ═══════════════════════════════════════ -->
+            <h5 class="form-section-title"><i class="bi bi-info-circle-fill"></i> Thông tin cơ bản</h5>
             <div class="form-row-2">
                 <div class="form-group">
                     <label class="form-label">Khóa học <span class="text-danger">*</span></label>
-                    <select asp-for="KhoaHocId" id="khoaHocSelect" class="form-control">
+                    <select asp-for="KhoaHocId" id="khoaHocSelect" class="form-control" required>
                         <option value="">-- Chọn khóa học --</option>
                         @foreach (var kh in (List<TrungTamNgoaiNgu.Models.KhoaHoc>)ViewBag.KhoaHocs)
                         {
                             <option value="@kh.KhoaHocId">@kh.TenKhoaHoc</option>
                         }
                     </select>
+                    <span asp-validation-for="KhoaHocId" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Tên lớp học <span class="text-danger">*</span></label>
+                    <input asp-for="TenLopHoc" id="tenLopInput" class="form-control"
+                           placeholder="VD: Lớp IELTS 6.5 Sáng T2-T4-T6" required />
+                    <span asp-validation-for="TenLopHoc" class="text-danger"></span>
+                </div>
+            </div>
+
+            <div class="form-row-2">
+                <div class="form-group">
+                    <label class="form-label">Mã lớp <small class="text-muted">(tự động)</small></label>
+                    <div class="ma-lop-wrap">
+                        <input asp-for="MaLopHoc" id="maLopInput" class="form-control"
+                               placeholder="Chọn khóa học để tự sinh..." />
+                        <span class="ma-lop-badge" id="maLopBadge" style="display:none">✨ Tự sinh</span>
+                    </div>
+                    <small class="text-muted">Format: K{mã KH}-YYYYMM-NNN. Bạn có thể sửa tay.</small>
                 </div>
                 <div class="form-group">
                     <label class="form-label">Gói học phí</label>
@@ -69,31 +103,56 @@
 
             <hr class="my-3" />
 
-            <!-- NHÓM 2: PHÂN CÔNG -->
-            <h5 class="form-section-title"><i class="bi bi-people"></i> Phân công & Địa điểm</h5>
-            <div class="form-row-2">
-                <div class="form-group">
-                    <label class="form-label">Cơ sở</label>
-                    <select asp-for="CoSoId" id="coSoSelect" class="form-control">
-                        <option value="">-- Chọn cơ sở --</option>
-                        @foreach (var cs in (List<TrungTamNgoaiNgu.Models.CoSoDaoTao>)ViewBag.CoSos)
+            <!-- ═══ 2. ĐỊA ĐIỂM 3 TẦNG ════════════════════════════════════════ -->
+            <h5 class="form-section-title"><i class="bi bi-geo-alt-fill"></i> Địa điểm & Cơ sở</h5>
+
+            <!-- Tầng 1: Tỉnh/Thành -->
+            <div class="form-group" style="margin-bottom:1rem;">
+                <label class="form-label">Bước 1 — Chọn Tỉnh/Thành phố</label>
+                <div style="position:relative">
+                    <select id="tinhThanhSelect" class="form-control">
+                        <option value="">-- Chọn tỉnh/thành phố --</option>
+                        @foreach (var tt in (List<TrungTamNgoaiNgu.Models.TinhThanh>)ViewBag.TinhThanhs)
                         {
-                            <option value="@cs.CoSoId">@cs.TenCoSo</option>
+                            <option value="@tt.TinhThanhId" data-code="@tt.MaAPI">@tt.TenTinhThanh</option>
                         }
                     </select>
+                    <span class="addr-loading" id="loadingPhuong"></span>
+                </div>
+            </div>
+
+            <!-- Tầng 2: Phường/Xã từ API -->
+            <div class="form-group" style="margin-bottom:1rem;" id="phuongXaGroup">
+                <label class="form-label">Bước 2 — Chọn Phường/Xã <small class="text-muted">(lọc cơ sở)</small></label>
+                <div style="position:relative">
+                    <select id="phuongXaSelect" class="form-control" disabled>
+                        <option value="">-- Chọn tỉnh/thành trước --</option>
+                    </select>
+                    <span class="addr-loading" id="loadingCoSo"></span>
+                </div>
+            </div>
+
+            <!-- Tầng 3: Cơ sở theo tỉnh -->
+            <div class="form-row-2">
+                <div class="form-group">
+                    <label class="form-label">Bước 3 — Cơ sở đào tạo</label>
+                    <select asp-for="CoSoId" id="coSoSelect" class="form-control" disabled>
+                        <option value="">-- Chọn tỉnh/thành trước --</option>
+                    </select>
+                    <span id="coSoDiaChi" class="text-muted" style="font-size:.75rem;margin-top:.2rem;"></span>
                 </div>
                 <div class="form-group">
                     <label class="form-label">Phòng học</label>
-                    <select asp-for="PhongHocId" id="phongHocSelect" class="form-control">
+                    <select asp-for="PhongHocId" id="phongHocSelect" class="form-control" disabled>
                         <option value="">-- Chọn cơ sở trước --</option>
-                        @foreach (var ph in (List<TrungTamNgoaiNgu.Models.PhongHoc>)ViewBag.PhongHocs)
-                        {
-                            <option value="@ph.PhongHocId">@ph.TenPhong</option>
-                        }
                     </select>
                 </div>
             </div>
 
+            <hr class="my-3" />
+
+            <!-- ═══ 3. PHÂN CÔNG ══════════════════════════════════════════════ -->
+            <h5 class="form-section-title"><i class="bi bi-people-fill"></i> Phân công Giáo viên & Ca học</h5>
             <div class="form-row-2">
                 <div class="form-group">
                     <label class="form-label">Giáo viên phụ trách</label>
@@ -108,11 +167,11 @@
                 </div>
                 <div class="form-group">
                     <label class="form-label">Ca học <span class="text-danger">*</span></label>
-                    <select asp-for="CaHocId" class="form-control">
+                    <select asp-for="CaHocId" class="form-control" required>
                         <option value="">-- Chọn ca học --</option>
                         @foreach (var ca in (List<TrungTamNgoaiNgu.Models.CaHoc>)ViewBag.CaHocs)
                         {
-                            <option value="@ca.CaHocId">@ca.TenCa (@ca.GioBatDau - @ca.GioKetThuc)</option>
+                            <option value="@ca.CaHocId">@ca.TenCa (@ca.GioBatDau – @ca.GioKetThuc)</option>
                         }
                     </select>
                     <span asp-validation-for="CaHocId" class="text-danger"></span>
@@ -121,35 +180,35 @@
 
             <hr class="my-3" />
 
-            <!-- NHÓM 3: LỊCH HỌC -->
+            <!-- ═══ 4. LỊCH HỌC & THỜI GIAN ══════════════════════════════════ -->
             <h5 class="form-section-title"><i class="bi bi-calendar3"></i> Lịch học & Thời gian</h5>
-            <div class="form-group">
+
+            <!-- Ngày học (DoW buttons) -->
+            <div class="form-group" style="margin-bottom:1rem;">
                 <label class="form-label">Ngày học trong tuần</label>
-                <div style="display:flex;gap:1rem;flex-wrap:wrap;">
+                <div class="dow-group" id="dowGroup">
                     @foreach (var item in new[] { ("2","T2"), ("3","T3"), ("4","T4"), ("5","T5"), ("6","T6"), ("7","T7"), ("CN","CN") })
                     {
-                        <label style="display:flex;align-items:center;gap:.4rem;cursor:pointer;">
-                            <input type="checkbox" class="lich-hoc-check" value="@item.Item1" />
-                            <span>@item.Item2</span>
-                        </label>
+                        <div class="dow-btn" data-val="@item.Item1" onclick="toggleDow(this)">@item.Item2</div>
                     }
                 </div>
                 <input asp-for="LichHoc" id="lichHocInput" type="hidden" />
-                <small class="text-muted">Tích chọn các ngày học trong tuần</small>
             </div>
 
             <div class="form-row-3">
                 <div class="form-group">
                     <label class="form-label">Ngày bắt đầu</label>
-                    <input asp-for="NgayBatDau" type="date" class="form-control" />
+                    <input asp-for="NgayBatDau" id="ngayBDInput" type="date" class="form-control" />
                 </div>
                 <div class="form-group">
                     <label class="form-label">Ngày kết thúc</label>
-                    <input asp-for="NgayKetThuc" type="date" class="form-control" />
+                    <input asp-for="NgayKetThuc" id="ngayKTInput" type="date" class="form-control" />
                 </div>
                 <div class="form-group">
-                    <label class="form-label">Số buổi dự kiến</label>
-                    <input asp-for="SoBuoiDuKien" type="number" class="form-control" min="1" />
+                    <label class="form-label">Số buổi dự kiến <small class="text-muted">(tự tính)</small></label>
+                    <input asp-for="SoBuoiDuKien" id="soBuoiInput" type="number" class="form-control" min="1"
+                           placeholder="Tự tính hoặc nhập tay" />
+                    <div class="sbd-info" id="sbdInfo"></div>
                 </div>
             </div>
 
@@ -177,36 +236,179 @@
 @section Scripts {
     @await Html.PartialAsync("_ValidationScriptsPartial")
     <script>
-        // Lịch học checkbox → input hidden
-        const checks = document.querySelectorAll('.lich-hoc-check');
-        const lichHocInput = document.getElementById('lichHocInput');
-        function updateLichHoc() {
-            lichHocInput.value = [...checks].filter(c => c.checked).map(c => c.value).join(',');
-        }
-        checks.forEach(c => c.addEventListener('change', updateLichHoc));
+    // ═══════════════════════════════════════════════════════════════════
+    // NGÀY HỌC — Bộ chọn thứ
+    // ═══════════════════════════════════════════════════════════════════
+    const lichHocInput = document.getElementById('lichHocInput');
 
-        // AJAX: Cơ sở → Phòng học
-        const coSoSelect     = document.getElementById('coSoSelect');
-        const phongHocSelect = document.getElementById('phongHocSelect');
-        if (coSoSelect) {
-            coSoSelect.addEventListener('change', async () => {
-                const res  = await fetch(`/Admin/Classes/PhongHocByCoso?coSoId=${coSoSelect.value}`);
-                const data = await res.json();
-                phongHocSelect.innerHTML = '<option value="">-- Chọn phòng học --</option>';
-                data.forEach(p => phongHocSelect.innerHTML += `<option value="${p.id}">${p.name}</option>`);
-            });
+    function toggleDow(el) {
+        el.classList.toggle('active');
+        updateLichHoc();
+        tinhSoBuoi();
+    }
+
+    function updateLichHoc() {
+        const selected = [...document.querySelectorAll('.dow-btn.active')].map(e => e.dataset.val);
+        lichHocInput.value = selected.join(',');
+    }
+
+    // ═══════════════════════════════════════════════════════════════════
+    // SỐ BUỔI TỰ TÍNH
+    // ═══════════════════════════════════════════════════════════════════
+    const ngayBDInput  = document.getElementById('ngayBDInput');
+    const ngayKTInput  = document.getElementById('ngayKTInput');
+    const soBuoiInput  = document.getElementById('soBuoiInput');
+    const sbdInfo      = document.getElementById('sbdInfo');
+
+    // Map: giá trị dow-btn → getDay() (CN=0, T2=1,...)
+    const DOW_MAP = { '2':1, '3':2, '4':3, '5':4, '6':5, '7':6, 'CN':0 };
+
+    function tinhSoBuoi() {
+        const bd = ngayBDInput.value;
+        const kt = ngayKTInput.value;
+        const sel = [...document.querySelectorAll('.dow-btn.active')].map(e => e.dataset.val);
+        if (!bd || !kt || sel.length === 0) { sbdInfo.textContent = ''; return; }
+
+        const start = new Date(bd);
+        const end   = new Date(kt);
+        if (end < start) { sbdInfo.textContent = '⚠️ Ngày kết thúc phải sau ngày bắt đầu'; return; }
+
+        const days = new Set(sel.map(v => DOW_MAP[v]));
+        let count = 0;
+        const cur = new Date(start);
+        while (cur <= end) {
+            if (days.has(cur.getDay())) count++;
+            cur.setDate(cur.getDate() + 1);
         }
 
-        // AJAX: Khóa học → Học phí
-        const khoaHocSelect = document.getElementById('khoaHocSelect');
-        const hocPhiSelect  = document.getElementById('hocPhiSelect');
-        if (khoaHocSelect) {
-            khoaHocSelect.addEventListener('change', async () => {
-                const res  = await fetch(`/Admin/Classes/HocPhiByKhoaHoc?khoaHocId=${khoaHocSelect.value}`);
-                const data = await res.json();
-                hocPhiSelect.innerHTML = '<option value="">-- Chọn gói học phí --</option>';
-                data.forEach(h => hocPhiSelect.innerHTML += `<option value="${h.id}">${h.name}</option>`);
-            });
+        soBuoiInput.value = count;
+        sbdInfo.textContent = `✅ Tự tính: ${count} buổi (${sel.length} buổi/tuần × ${Math.ceil((end-start)/604800000+1)} tuần ≈)`;
+    }
+
+    ngayBDInput.addEventListener('change', tinhSoBuoi);
+    ngayKTInput.addEventListener('change', tinhSoBuoi);
+
+    // ═══════════════════════════════════════════════════════════════════
+    // MÃ LỚP TỰ SINH
+    // ═══════════════════════════════════════════════════════════════════
+    const khoaHocSelect = document.getElementById('khoaHocSelect');
+    const maLopInput    = document.getElementById('maLopInput');
+    const maLopBadge    = document.getElementById('maLopBadge');
+    let   maLopAutoFilled = false;
+
+    khoaHocSelect.addEventListener('change', async () => {
+        const khoaHocId = khoaHocSelect.value;
+
+        // Sinh mã lớp
+        if (khoaHocId) {
+            const res  = await fetch(`/Admin/Classes/SinhMaLop?khoaHocId=${khoaHocId}`);
+            const data = await res.json();
+            maLopInput.value    = data.ma;
+            maLopBadge.style.display = 'block';
+            maLopAutoFilled = true;
+        } else {
+            maLopInput.value = '';
+            maLopBadge.style.display = 'none';
         }
+
+        // Học phí theo khóa
+        const hpRes  = await fetch(`/Admin/Classes/HocPhiByKhoaHoc?khoaHocId=${khoaHocId}`);
+        const hpData = await hpRes.json();
+        const hocPhiSel = document.getElementById('hocPhiSelect');
+        hocPhiSel.innerHTML = '<option value="">-- Chọn gói học phí --</option>';
+        hpData.forEach(h => hocPhiSel.innerHTML += `<option value="${h.id}">${h.name}</option>`);
+    });
+
+    // Nếu người dùng tự sửa mã → ẩn badge
+    maLopInput.addEventListener('input', () => {
+        if (maLopAutoFilled) { maLopBadge.style.display = 'none'; maLopAutoFilled = false; }
+    });
+
+    // ═══════════════════════════════════════════════════════════════════
+    // ĐỊA CHỈ 3 TẦNG: Tỉnh → Phường/Xã (API) → Cơ sở → Phòng
+    // ═══════════════════════════════════════════════════════════════════
+    const tinhThanhSel  = document.getElementById('tinhThanhSelect');
+    const phuongXaSel   = document.getElementById('phuongXaSelect');
+    const coSoSel       = document.getElementById('coSoSelect');
+    const phongHocSel   = document.getElementById('phongHocSelect');
+    const coSoDiaChi    = document.getElementById('coSoDiaChi');
+    const loadingPhuong = document.getElementById('loadingPhuong');
+    const loadingCoSo   = document.getElementById('loadingCoSo');
+
+    // Bước 1: Chọn tỉnh → load phường/xã từ API open-api.vn
+    tinhThanhSel.addEventListener('change', async () => {
+        const tinhId   = tinhThanhSel.value;
+        const maAPI    = tinhThanhSel.selectedOptions[0]?.dataset.code;
+
+        // Reset downstream
+        phuongXaSel.innerHTML  = '<option value="">-- Đang tải phường/xã... --</option>';
+        phuongXaSel.disabled   = true;
+        coSoSel.innerHTML      = '<option value="">-- Chọn địa bàn trước --</option>';
+        coSoSel.disabled       = true;
+        phongHocSel.innerHTML  = '<option value="">-- Chọn cơ sở trước --</option>';
+        phongHocSel.disabled   = true;
+        coSoDiaChi.textContent = '';
+
+        if (!tinhId || !maAPI) {
+            phuongXaSel.innerHTML = '<option value="">-- Chọn tỉnh/thành trước --</option>';
+            return;
+        }
+
+        // Load phường/xã từ API
+        loadingPhuong.style.display = 'block';
+        try {
+            const res  = await fetch(`https://provinces.open-api.vn/api/p/${maAPI}?depth=2`);
+            const data = await res.json();
+            const wards = data.districts?.flatMap(d => d.wards ?? []) ?? [];
+
+            phuongXaSel.innerHTML = '<option value="">-- Tất cả địa bàn --</option>';
+            wards.forEach(w => phuongXaSel.innerHTML += `<option value="${w.name}">${w.name}</option>`);
+            phuongXaSel.disabled = false;
+        } catch {
+            phuongXaSel.innerHTML = '<option value="">⚠️ Không tải được phường/xã</option>';
+        } finally {
+            loadingPhuong.style.display = 'none';
+        }
+
+        // Load cơ sở theo tỉnh ngay luôn
+        await loadCoSo(tinhId);
+    });
+
+    // Bước 2: Chọn phường/xã → không cần gọi API mới (đã load cơ sở theo tỉnh)
+    // Chỉ dùng để filter cơ sở khi cần mở rộng sau
+
+    // Load cơ sở theo tỉnh
+    async function loadCoSo(tinhThanhId) {
+        loadingCoSo.style.display = 'block';
+        coSoSel.disabled = true;
+        try {
+            const res  = await fetch(`/Admin/Classes/CoSoByTinh?tinhThanhId=${tinhThanhId}`);
+            const data = await res.json();
+            coSoSel.innerHTML = '<option value="">-- Chọn cơ sở đào tạo --</option>';
+            data.forEach(c => coSoSel.innerHTML += `<option value="${c.id}" data-diachi="${c.diaChi}">${c.name}</option>`);
+            coSoSel.disabled = data.length === 0;
+            if (data.length === 0) coSoSel.innerHTML = '<option value="">Chưa có cơ sở nào trong tỉnh này</option>';
+        } finally {
+            loadingCoSo.style.display = 'none';
+        }
+    }
+
+    // Bước 3: Chọn cơ sở → hiển thị địa chỉ + load phòng học
+    coSoSel.addEventListener('change', async () => {
+        const coSoId  = coSoSel.value;
+        const diaChi  = coSoSel.selectedOptions[0]?.dataset.diachi ?? '';
+        coSoDiaChi.textContent = diaChi ? `📍 ${diaChi}` : '';
+
+        phongHocSel.innerHTML  = '<option value="">Đang tải...</option>';
+        phongHocSel.disabled   = true;
+
+        if (!coSoId) { phongHocSel.innerHTML = '<option value="">-- Chọn cơ sở trước --</option>'; return; }
+
+        const res  = await fetch(`/Admin/Classes/PhongHocByCoso?coSoId=${coSoId}`);
+        const data = await res.json();
+        phongHocSel.innerHTML = '<option value="">-- Chọn phòng học --</option>';
+        data.forEach(p => phongHocSel.innerHTML += `<option value="${p.id}">${p.name}</option>`);
+        phongHocSel.disabled = false;
+    });
     </script>
 }

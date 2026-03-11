@@ -4,6 +4,30 @@ Tất cả các thay đổi nổi bật của dự án sẽ được ghi nhận 
 
 ## [Unreleased] - 2026-03-11
 
+### 🏫 Tính năng mới — Quản lý Lớp Học (`feature/admin-classes-management`)
+
+**Branch**: `feature/admin-classes-management`
+
+- **`Services/Interfaces/IServices.cs`** — Mở rộng `IClassesService` với đầy đủ methods:
+  phân trang, thống kê (stats cards), CRUD, state-machine `ChuyenTrangThaiAsync`, soft delete, dropdowns động.
+  Thêm DTO `LopHocQuanLyThongKe`.
+- **`Services/ClassesService.cs`** _(mới)_ — Implementation đầy đủ: EF Core `Include()`, slug chống trùng,
+  state-machine validation (`SapMo → DangTuyenSinh → ChotDanhSach → DangHoc → DaKetThuc`), ghi `NhatKyHeThong`.
+- **`Controllers/Admin/ClassesController.cs`** _(mới)_ — CRUD + changestatus + softdelete + Trash + restore
+  - 2 AJAX endpoints (`/PhongHocByCoso`, `/HocPhiByKhoaHoc`) cho dropdowns động.
+- **`Views/Admin/Classes/`** _(5 views mới)_:
+  - `Index.cshtml` — Danh sách + 5 stats cards + bộ lọc đa chiều + phân trang
+  - `Create.cshtml` — Form tạo lớp; chọn Cơ sở → Phòng học tự load AJAX; chọn Khóa học → Học phí tự load
+  - `Edit.cshtml` — Form sửa + panel chuyển trạng thái state-machine tích hợp
+  - `Detail.cshtml` — Chi tiết lớp + 2 tabs (Học viên / Buổi học) + nút chuyển trạng thái nhanh
+  - `Trash.cshtml` — Thùng rác + khôi phục
+- **`Program.cs`** — Đăng ký `IClassesService → ClassesService` vào DI container.
+- **`Views/Shared/_AdminLayout.cshtml`** — Cập nhật sidebar: controller `Classes` (thay `LopHoc` cũ).
+
+---
+
+## [Unreleased] - 2026-03-11 (trước đó)
+
 ### ⚙️ Database & Migrations (Rebuild từ đầu)
 
 - **Xóa toàn bộ migrations cũ** và tạo lại từ đầu theo chuẩn EF Core để đảm bảo migration history sạch, nhất quán.

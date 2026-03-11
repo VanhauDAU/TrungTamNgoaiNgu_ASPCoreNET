@@ -367,6 +367,71 @@ public class ClassesService(AppDbContext db) : IClassesService
             .ToListAsync();
 
     // =========================================================================
+    // DROPDOWN ĐỊA CHỈ 3 TẦNG
+    // =========================================================================
+
+    public async Task<List<TinhThanh>> LayTinhThanhDropdownAsync()
+        => await db.TinhThanhs
+            .AsNoTracking()
+            .OrderBy(t => t.TenTinhThanh)
+            .ToListAsync();
+
+    public async Task<List<CoSoDaoTao>> LayCoSoByTinhAsync(int? tinhThanhId)
+    {
+        var query = db.CoSoDaoTaos
+            .AsNoTracking()
+            .Where(c => c.TrangThai == 1);
+
+        if (tinhThanhId.HasValue && tinhThanhId > 0)
+            query = query.Where(c => c.TinhThanhId == tinhThanhId);
+
+        return await query.OrderBy(c => c.TenCoSo).ToListAsync();
+    }
+
+    // =========================================================================
+    // MÃ LỚP TỰ SINH
+    // Format: K{prefix khoaHoc}-YYYYMM-NNN
+    // VD: KIELTS-202603-001 | KEN-202603-012 | KLH-202603-001
+    // =========================================================================
+
+    public async Task<string> SinhMaLopHocAsync(int? khoaHocId)
+    {
+        // Lấy prefix từ mã khóa học (hoặc dùng KH nếu không có)
+        string prefix = "KLH";
+        if (khoaHocId.HasValue)
+        {
+            var kh = await db.KhoaHocs.AsNoTracking()
+                .FirstOrDefaultAsync(k => k.KhoaHocId == khoaHocId);
+            if (kh != null)
+            {
+                // Dùng MaKhoaHoc nếu có, fallback sang 3 ký tự đầu tên
+                prefix = !string.IsNullOrEmpty(kh.MaKhoaHoc)
+                    ? $"K{kh.MaKhoaHoc.ToUpperInvariant().Replace("-","").Replace(" ","")}"
+                    : $"K{NormPrefix(kh.TenKhoaHoc)}";
+            }
+        }
+
+        var thang = DateTime.Now.ToString("yyyyMM");
+        var pattern = $"{prefix}-{thang}-";
+
+        // Đếm số lớp đã có trong tháng để tạo số thứ tự
+        var count = await db.LopHocs
+            .Where(l => l.MaLopHoc != null && l.MaLopHoc.StartsWith(pattern))
+            .CountAsync();
+
+        return $"{pattern}{(count + 1):D3}";
+    }
+
+    private static string NormPrefix(string? input)
+    {
+        if (string.IsNullOrWhiteSpace(input)) return "LH";
+        // Lấy chữ cái đầu của từng từ, tối đa 4 ký tự
+        var words = input.Trim().Split(' ', StringSplitOptions.RemoveEmptyEntries);
+        var initials = string.Concat(words.Select(w => char.ToUpperInvariant(w[0])));
+        return initials.Length > 4 ? initials[..4] : initials;
+    }
+
+    // =========================================================================
     // PRIVATE HELPERS
     // =========================================================================
 
