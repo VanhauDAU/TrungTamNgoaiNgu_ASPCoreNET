@@ -17,8 +17,22 @@
 
 @section Styles {
     <style>
-        .class-edit-card { max-width:960px; margin:0 auto; border:1px solid #e2e8f0; border-radius:16px; overflow:hidden; box-shadow:0 16px 40px rgba(15,23,42,.08); }
-        .class-edit-card .card-body { padding:2rem; background:linear-gradient(180deg,#ffffff 0%,#f8fbff 100%); }
+        .class-page-header { margin-bottom:.75rem; }
+        .class-page-header .page-title { font-size:1.65rem; letter-spacing:-.02em; }
+        .class-workspace { display:grid; grid-template-columns:minmax(0,1fr) 340px; gap:1rem; align-items:start; width:100%; }
+        .class-main { min-width:0; }
+        .class-side { position:sticky; top:calc(var(--th,64px) + 14px); display:flex; flex-direction:column; gap:.85rem; }
+        .class-edit-card { max-width:none; width:100%; border:1px solid #dbe5f4; border-radius:18px; overflow:hidden; box-shadow:0 16px 40px rgba(15,23,42,.08); }
+        .class-edit-card .card-body { padding:1.15rem 1.15rem 1rem; background:linear-gradient(180deg,#ffffff 0%,#f8fbff 100%); }
+        .class-hero { padding:1rem; border:1px solid #dbe6ff; border-radius:16px; background:linear-gradient(135deg,#e9f2ff 0%,#fbfdff 60%,#eef6ff 100%); box-shadow:0 18px 40px rgba(59,130,246,.12); }
+        .class-hero.sticky { position:sticky; top:calc(var(--th,64px) + 14px); }
+        .hero-grid { display:grid; grid-template-columns:1fr; gap:.65rem; }
+        .hero-item { background:rgba(255,255,255,.82); border:1px solid #dbe5f7; border-radius:12px; padding:.7rem .8rem; min-height:68px; }
+        .hero-label { font-size:.7rem; color:#64748b; text-transform:uppercase; letter-spacing:.05em; margin-bottom:.2rem; }
+        .hero-value { font-size:.84rem; color:#0f172a; font-weight:700; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+        .hero-actions { display:grid; grid-template-columns:1fr; gap:.55rem; margin-top:.85rem; }
+        .lh-panel { border:1px solid #e6edf9; border-radius:14px; padding:1rem 1rem .9rem; background:#fff; box-shadow:0 8px 25px rgba(15,23,42,.05); margin-bottom:.85rem; }
+        .panel-sub { margin:-.35rem 0 .85rem 0; color:#64748b; font-size:.8rem; }
         .form-section-title { font-weight:700;color:#0f172a;margin:1rem 0 .75rem;display:flex;align-items:center;gap:.55rem; }
         .form-section-title i { width:30px;height:30px;border-radius:9px;display:grid;place-items:center;background:#eef2ff;color:#4f46e5; }
         .form-row-2 { display:grid;grid-template-columns:1fr 1fr;gap:1rem; }
@@ -27,59 +41,44 @@
         .form-label  { font-weight:600;font-size:.84rem;color:#334155; }
         .form-control { border-radius:10px; border-color:#dbe3f0; }
         .form-control:focus { border-color:#6366f1; box-shadow:0 0 0 3px rgba(99,102,241,.15); }
-        .form-actions { display:flex;gap:1rem;margin-top:1.5rem;padding-top:1.1rem;border-top:1px dashed #d8e0ee; }
-        .status-panel { background:linear-gradient(145deg,#f8fafc,#eff6ff);border:1px solid #dbe6ff;border-radius:12px;padding:1rem 1.25rem;margin-bottom:1.5rem; }
+        .form-actions { display:flex;gap:.75rem;justify-content:flex-end;flex-wrap:wrap;margin-top:.4rem;padding:.85rem;border:1px solid #dbe6ff;border-radius:14px;background:linear-gradient(180deg,#ffffff,#f8fbff); position:sticky; bottom:.35rem; z-index:6; box-shadow:0 10px 28px rgba(15,23,42,.08); }
+        .status-panel { background:linear-gradient(145deg,#f8fafc,#eff6ff);border:1px solid #dbe6ff;border-radius:14px;padding:1rem 1.05rem;margin:0; box-shadow:0 14px 30px rgba(15,23,42,.08); }
         .status-panel h6 { margin:0 0 .75rem;font-weight:600; }
         .status-actions { display:flex;gap:.75rem;flex-wrap:wrap; }
         .meta-hint { font-size:.75rem;color:#64748b;min-height:1rem; }
         .section-divider { margin:1rem 0; border-color:#e7edf7; }
-        @@media(max-width:600px){ .form-row-2,.form-row-3{grid-template-columns:1fr;} }
+        @@media(max-width:1120px){ .class-workspace{grid-template-columns:1fr;} .class-side{position:static;} .class-hero.sticky{position:static;} .hero-grid{grid-template-columns:repeat(2,minmax(0,1fr));} }
+        @@media(max-width:700px){
+            .form-row-2,.form-row-3,.hero-grid{grid-template-columns:1fr;}
+            .class-edit-card .card-body{padding:1.2rem;}
+            .form-actions{position:static;}
+        }
     </style>
 }
 
-<div class="page-header">
+<div class="page-header class-page-header">
     <div>
         <div class="page-title">Chỉnh sửa lớp học</div>
-        <div class="page-sub"><a asp-action="Index">Lớp học</a> / Chỉnh sửa</div>
+        <div class="page-sub"><a asp-action="Index">Lớp học</a> / Chỉnh sửa / Không gian vận hành lớp</div>
+    </div>
+    <div class="lh-actions">
+        <a asp-action="Index" class="btn btn-outline"><i class="bi bi-list-ul"></i> Danh sách lớp</a>
+        <a asp-action="Detail" asp-route-id="@Model.LopHocId" class="btn btn-outline"><i class="bi bi-eye"></i> Chi tiết</a>
     </div>
 </div>
 
-<!-- PANEL TRẠNG THÁI -->
-<div class="status-panel">
-    <h6>Trạng thái hiện tại:
-        <span class="badge @Model.TrangThaiBadgeClass">@Model.TrangThaiText</span>
-    </h6>
-    @if (buocHopLe.Any())
-    {
-        <div class="status-actions">
-            <span style="font-size:.875rem;color:#6b7280;align-self:center;">Chuyển sang:</span>
-            @foreach (var step in buocHopLe)
-            {
-                <form method="post" asp-action="changestatus"
-                      onsubmit="return confirm('Xác nhận chuyển sang «@step.Item2»?')">
-                    @Html.AntiForgeryToken()
-                    <input type="hidden" name="id" value="@Model.LopHocId" />
-                    <input type="hidden" name="trangThaiMoi" value="@step.Item1" />
-                    <input type="hidden" name="returnUrl" value="/Admin/Classes/Edit/@Model.LopHocId" />
-                    <button type="submit" class="btn @step.Item3 btn-sm">@step.Item2</button>
-                </form>
-            }
-        </div>
-    }
-    else
-    {
-        <p class="text-muted mb-0" style="font-size:.875rem;">Không thể chuyển trạng thái từ trạng thái này.</p>
-    }
-</div>
-
-<div class="card class-edit-card">
-    <div class="card-body">
+<div class="class-workspace">
+    <div class="class-main">
+    <div class="card class-edit-card">
+        <div class="card-body">
         <form method="post" asp-action="Edit" id="editForm">
             @Html.AntiForgeryToken()
             <input type="hidden" asp-for="LopHocId" />
             <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
 
+            <div class="lh-panel">
             <h5 class="form-section-title"><i class="bi bi-info-circle"></i> Thông tin cơ bản</h5>
+            <p class="panel-sub">Cập nhật tên lớp, khóa học và gói học phí cho lớp hiện tại.</p>
             <div class="form-row-2">
                 <div class="form-group">
                     <label class="form-label">Tên lớp học <span class="text-danger">*</span></label>
@@ -121,10 +120,11 @@
                     </select>
                 </div>
             </div>
+            </div>
 
-            <hr class="section-divider" />
-
+            <div class="lh-panel">
             <h5 class="form-section-title"><i class="bi bi-people"></i> Phân công & Địa điểm</h5>
+            <p class="panel-sub">Điều chỉnh cơ sở, phòng học, giáo viên và ca học.</p>
             <div class="form-row-2">
                 <div class="form-group">
                     <label class="form-label">Cơ sở</label>
@@ -202,10 +202,11 @@
                     </select>
                 </div>
             </div>
+            </div>
 
-            <hr class="section-divider" />
-
+            <div class="lh-panel">
             <h5 class="form-section-title"><i class="bi bi-calendar3"></i> Lịch học & Thời gian</h5>
+            <p class="panel-sub">Cập nhật lịch học, số buổi và giới hạn sĩ số theo sức chứa phòng.</p>
             <div class="form-group">
                 <label class="form-label">Ngày học trong tuần</label>
                 <div style="display:flex;gap:1rem;flex-wrap:wrap;">
@@ -249,7 +250,7 @@
             </div>
 
             <div class="form-actions">
-                <a asp-action="Index" class="btn btn-outline">Hủy</a>
+                <a asp-action="Index" class="btn btn-outline"><i class="bi bi-arrow-left"></i> Quay lại</a>
                 <a asp-action="Detail" asp-route-id="@Model.LopHocId" class="btn btn-outline">
                     <i class="bi bi-eye"></i> Xem chi tiết
                 </a>
@@ -257,8 +258,65 @@
                     <i class="bi bi-floppy2"></i> Lưu thay đổi
                 </button>
             </div>
+            </div>
         </form>
+        </div>
     </div>
+    </div>
+
+    <aside class="class-side">
+        <div class="class-hero sticky">
+            <div class="hero-grid">
+                <div class="hero-item">
+                    <div class="hero-label">Mã lớp</div>
+                    <div class="hero-value">@(!string.IsNullOrWhiteSpace(Model.MaLopHoc) ? Model.MaLopHoc : "Chưa có mã")</div>
+                </div>
+                <div class="hero-item">
+                    <div class="hero-label">Trạng thái</div>
+                    <div class="hero-value">@Model.TrangThaiText</div>
+                </div>
+                <div class="hero-item">
+                    <div class="hero-label">Thời gian</div>
+                    <div class="hero-value">@(Model.NgayBatDau?.ToString("dd/MM/yyyy") ?? "--") → @(Model.NgayKetThuc?.ToString("dd/MM/yyyy") ?? "--")</div>
+                </div>
+                <div class="hero-item">
+                    <div class="hero-label">Sĩ số thiết kế</div>
+                    <div class="hero-value" id="previewSiSoEdit">@(Model.SoHocVienToiDa?.ToString() ?? "Chưa nhập")</div>
+                </div>
+            </div>
+            <div class="hero-actions">
+                <button type="submit" form="editForm" class="btn btn-primary"><i class="bi bi-floppy2"></i> Lưu thay đổi</button>
+                <a asp-action="Detail" asp-route-id="@Model.LopHocId" class="btn btn-outline"><i class="bi bi-binoculars"></i> Theo dõi lớp</a>
+            </div>
+        </div>
+
+        <div class="status-panel">
+            <h6>Trạng thái hiện tại:
+                <span class="badge @Model.TrangThaiBadgeClass">@Model.TrangThaiText</span>
+            </h6>
+            @if (buocHopLe.Any())
+            {
+                <div class="status-actions">
+                    <span style="font-size:.875rem;color:#6b7280;align-self:center;">Chuyển sang:</span>
+                    @foreach (var step in buocHopLe)
+                    {
+                        <form method="post" asp-action="changestatus"
+                              onsubmit="return confirm('Xác nhận chuyển sang «@step.Item2»?')">
+                            @Html.AntiForgeryToken()
+                            <input type="hidden" name="id" value="@Model.LopHocId" />
+                            <input type="hidden" name="trangThaiMoi" value="@step.Item1" />
+                            <input type="hidden" name="returnUrl" value="/Admin/Classes/Edit/@Model.LopHocId" />
+                            <button type="submit" class="btn @step.Item3 btn-sm">@step.Item2</button>
+                        </form>
+                    }
+                </div>
+            }
+            else
+            {
+                <p class="text-muted mb-0" style="font-size:.875rem;">Không thể chuyển trạng thái từ trạng thái này.</p>
+            }
+        </div>
+    </aside>
 </div>
 
 @section Scripts {
@@ -273,6 +331,7 @@
         const soHocInput = document.getElementById('soHocInput');
         const giaoVienSelect = document.getElementById('giaoVienSelect');
         const giaoVienScopeInfo = document.getElementById('giaoVienScopeInfo');
+        const previewSiSoEdit = document.getElementById('previewSiSoEdit');
 
         function updateLichHoc() {
             lichHocInput.value = [...checks].filter(c => c.checked).map(c => c.value).join(',');
@@ -324,6 +383,11 @@
 
         checks.forEach(c => c.addEventListener('change', updateLichHoc));
         updateLichHoc();
+        soHocInput.addEventListener('input', () => {
+            previewSiSoEdit.textContent = soHocInput.value?.trim()
+                ? `${soHocInput.value.trim()} học viên`
+                : 'Chưa nhập';
+        });
 
         if (coSoSelect) {
             coSoSelect.addEventListener('change', async () => {
@@ -343,6 +407,9 @@
         giaoVienSelect.addEventListener('change', refreshGiaoVienLabels);
         updatePhongCapacityInfo();
         refreshGiaoVienLabels();
+        previewSiSoEdit.textContent = soHocInput.value?.trim()
+            ? `${soHocInput.value.trim()} học viên`
+            : 'Chưa nhập';
 
         editForm.addEventListener('submit', (event) => {
             const selectedPhong = phongHocSelect.selectedOptions[0];
