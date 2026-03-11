@@ -156,3 +156,38 @@ doiTuongGui:
 
 Mỗi thay đổi trạng thái ghi 1 bản ghi lienhe_lichsu
 ```
+
+---
+
+## 8. Quy Trình Tạo/Sửa Lớp Học (Cập nhật 2026-03-11)
+
+```
+[Admin mở form Create/Edit lớp]
+    ↓
+Chọn Khóa học
+    → Hệ thống sinh mã lớp (backend là nguồn chân lý)
+    → UI chỉ hiển thị mã lớp readonly, không cho sửa tay
+
+Chọn Tỉnh/Thành (maApi)
+    → Load phường/xã từ Open API
+    → Có thể lọc cơ sở theo phường/xã
+
+Chọn Cơ sở
+    → Load danh sách phòng học + sức chứa
+    → Dropdown giáo viên hiển thị rõ:
+        "Cùng cơ sở" / "Khác cơ sở" / "Chưa xác định"
+        (cho phép phân công cả cùng và khác cơ sở)
+
+Nhập sĩ số tối đa
+    IF soHocVienToiDa >= phongHoc.sucChua:
+        → Chặn lưu (client + server)
+        → Thông báo lỗi nghiệp vụ
+    ELSE:
+        → Cho phép lưu
+```
+
+### Rule bắt buộc
+
+1. `maLopHoc` phải do hệ thống sinh khi tạo mới.
+2. `soHocVienToiDa < sucChua` của phòng học đã chọn.
+3. Giáo viên được phép dạy liên cơ sở, nhưng UI phải thể hiện rõ phạm vi cơ sở để người dùng quyết định.

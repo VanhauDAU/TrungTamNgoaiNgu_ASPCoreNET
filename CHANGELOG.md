@@ -4,6 +4,32 @@ Tất cả các thay đổi nổi bật của dự án sẽ được ghi nhận 
 
 ## [Unreleased] - 2026-03-11
 
+### 🩹 Hotfix — Quản lý lớp học (Create/Edit + địa chỉ + ràng buộc nghiệp vụ)
+
+- **`Controllers/Admin/ClassesController.cs`**
+  - Thêm endpoint `GET /Admin/Classes/PhuongXaByTinh?maApi=...` làm proxy server-side tới Open API.
+  - Sửa `Create` để hiển thị lỗi nghiệp vụ ngay trên form (không redirect mất context).
+  - Mở rộng JSON của `PhongHocByCoso` trả thêm `sucChua` để validate ở UI.
+  - Mở rộng `CoSoByTinh` nhận thêm `phuongXa` để lọc cơ sở theo địa bàn.
+- **`Services/ClassesService.cs`**
+  - Bắt buộc **mã lớp tự sinh ở backend** khi tạo mới (`SinhMaLopHocAsync`), không tin dữ liệu nhập tay.
+  - Thêm rule nghiệp vụ: `SoHocVienToiDa` phải **nhỏ hơn** `PhongHoc.SucChua` khi tạo/sửa.
+  - Nạp dữ liệu giáo viên kèm `NhanSu.CoSo` để UI hiển thị cùng/khác cơ sở.
+  - Hỗ trợ lọc `LayCoSoByTinhAsync(..., phuongXa)` theo tên phường/xã.
+- **`Views/Admin/Classes/Create.cshtml`**
+  - Khóa ô `MaLopHoc` (readonly), nâng cấp giao diện form.
+  - Sửa luồng load phường/xã qua endpoint nội bộ để tránh lệch schema API v2.
+  - Hiển thị rõ giáo viên cùng cơ sở/khác cơ sở trong dropdown.
+  - Validate client-side sĩ số < sức chứa phòng trước khi submit.
+- **`Views/Admin/Classes/Edit.cshtml`**
+  - Khóa chỉnh sửa mã lớp.
+  - Hiển thị sức chứa phòng học và chặn submit nếu sĩ số không hợp lệ.
+  - Hiển thị scope cơ sở của giáo viên tương tự trang Create.
+- **`Views/Admin/Classes/Index.cshtml`**
+  - Nâng cấp style danh sách/stats cards theo hướng hiện đại, rõ hierarchy thông tin.
+- **`Program.cs`**
+  - Đăng ký `AddHttpClient()` phục vụ gọi Open API từ server.
+
 ### 🏫 Tính năng mới — Quản lý Lớp Học (`feature/admin-classes-management`)
 
 **Branch**: `feature/admin-classes-management`

@@ -1,6 +1,6 @@
 # Progress
 
-Cap nhat: 2026-03-06
+Cap nhat: 2026-03-11
 
 ## 1. Trang thai tong quan
 
@@ -26,21 +26,28 @@ Cap nhat: 2026-03-06
   - list hoa don
   - thu tien nhieu dot
   - cap nhat trang thai hoa don
+- Quan ly lop hoc (dot 1):
+  - man hinh Index/Create/Edit/Detail/Trash
+  - state machine trang thai lop
+  - ajax dropdown dong (co so, phong hoc, hoc phi, phuong/xa)
+  - validate nghiep vu si so < suc chua phong hoc
+  - ma lop tu sinh, khong cho sua tay
+  - hien thi giao vien cung/khac co so de phan cong
 
 ## 3. Dang trien khai / Chua hoan thanh
 
 - Auth/Authorization day du cho admin.
-- Quan ly lop hoc, buoi hoc, diem danh man hinh day du.
+- Buoi hoc, diem danh, va dang ky hoc vien theo lop chua day du man hinh.
 - Quan ly hoc vien/nhan su giao dien day du.
 - API JSON cho frontend/mobile.
 - Tu dong test (unit/integration).
 
 ## 4. Backlog uu tien cao
 
-1. Hoan thien module LopHoc tach nghiep vu khoi KhoaHoc.
+1. Hoan thien module BuoiHoc + DiemDanh theo ngay hoc thuc te.
 2. Hoan thien module DangKyLopHoc + HoaDon + PhieuThu tren UI.
 3. Bo sung role-based authorization theo `NhomQuyen/PhanQuyen`.
-4. Viet changelog theo tung PR va lien ket docs.
+4. Tu dong test cho rule nghiep vu LopHoc (si so/phong, state machine).
 5. Chuan hoa migration strategy khi dong bo voi SQL nguon.
 
 ## 5. Dinh huong mo rong

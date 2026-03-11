@@ -7,41 +7,36 @@
 
 @section Styles {
     <style>
-        .form-section-title { font-weight:600;color:#374151;margin:1.25rem 0 .75rem;display:flex;align-items:center;gap:.5rem; }
-        .form-section-title i { color:var(--primary,#6366f1); }
+        .class-create-card { max-width:1020px; margin:0 auto; border:1px solid #e2e8f0; border-radius:16px; overflow:hidden; box-shadow:0 16px 40px rgba(15,23,42,.08); }
+        .class-create-card .card-body { padding:2.1rem; background:linear-gradient(180deg,#ffffff 0%,#f8fbff 100%); }
+        .form-section-title { font-weight:700;color:#0f172a;margin:1.1rem 0 .9rem;display:flex;align-items:center;gap:.55rem; }
+        .form-section-title i { width:30px;height:30px;border-radius:9px;display:grid;place-items:center;background:#eef2ff;color:#4f46e5; }
         .form-row-2 { display:grid;grid-template-columns:1fr 1fr;gap:1rem; }
         .form-row-3 { display:grid;grid-template-columns:1fr 1fr 1fr;gap:1rem; }
-        .form-group  { display:flex;flex-direction:column;gap:.3rem;margin-bottom:.5rem; }
-        .form-label  { font-weight:500;font-size:.875rem;color:#374151; }
-        .form-actions { display:flex;gap:1rem;margin-top:1.5rem;padding-top:1rem;border-top:1px solid #e5e7eb; }
+        .form-group  { display:flex;flex-direction:column;gap:.35rem;margin-bottom:.6rem; }
+        .form-label  { font-weight:600;font-size:.84rem;color:#334155; }
+        .form-control { border-radius:10px; border-color:#dbe3f0; }
+        .form-control:focus { border-color:#6366f1; box-shadow:0 0 0 3px rgba(99,102,241,.15); }
+        .form-actions { display:flex;gap:1rem;margin-top:1.7rem;padding-top:1.2rem;border-top:1px dashed #d8e0ee; }
+        .section-divider { margin:1.1rem 0; border-color:#e7edf7; }
 
-        /* Địa chỉ 3 tầng */
-        .addr-flow   { display:grid;grid-template-columns:1fr 1fr 1fr;gap:1rem;align-items:start; }
-        .addr-step   { position:relative; }
-        .addr-arrow  { display:flex;align-items:center;justify-content:center;color:#9ca3af;font-size:1.2rem;padding-top:1.9rem; }
         .addr-loading { display:none;position:absolute;right:.75rem;top:50%;transform:translateY(-50%);
                         width:16px;height:16px;border:2px solid #e5e7eb;border-top-color:#6366f1;
                         border-radius:50%;animation:spin .6s linear infinite; }
         @@keyframes spin { to { transform:translateY(-50%) rotate(360deg); } }
 
-        /* Mã lớp auto-badge */
         .ma-lop-wrap { position:relative; }
         .ma-lop-badge { position:absolute;right:.6rem;top:50%;transform:translateY(-50%);
-                        font-size:.7rem;background:#ede9fe;color:#7c3aed;padding:.1rem .4rem;border-radius:4px;pointer-events:none; }
-
-        /* Số buổi tự tính */
-        .sbd-info { font-size:.75rem;color:#6366f1;margin-top:.2rem;min-height:1.1em; }
-
-        /* Ngày học checkboxes */
+                        font-size:.68rem;background:#ede9fe;color:#6d28d9;padding:.15rem .45rem;border-radius:999px;pointer-events:none;font-weight:700; }
+        .meta-hint { font-size:.75rem; color:#64748b; min-height:1.1rem; }
+        .sbd-info { font-size:.75rem;color:#4f46e5;margin-top:.2rem;min-height:1.1em; }
         .dow-group { display:flex;gap:.5rem;flex-wrap:wrap; }
         .dow-btn   { display:inline-flex;align-items:center;justify-content:center;width:2.5rem;height:2.5rem;
-                     border:1px solid #d1d5db;border-radius:8px;cursor:pointer;font-size:.8rem;font-weight:600;
-                     color:#6b7280;transition:.15s; user-select:none; }
-        .dow-btn.active { background:#6366f1;color:#fff;border-color:#6366f1; }
-        .dow-btn:hover:not(.active) { border-color:#6366f1;color:#6366f1; }
-
-        @@media(max-width:700px){ .form-row-2,.form-row-3,.addr-flow{grid-template-columns:1fr;} }
-
+                     border:1px solid #cbd5e1;border-radius:10px;cursor:pointer;font-size:.8rem;font-weight:700;
+                     color:#475569;transition:.16s; user-select:none;background:#fff; }
+        .dow-btn.active { background:#4f46e5;color:#fff;border-color:#4f46e5; box-shadow:0 6px 16px rgba(79,70,229,.24); }
+        .dow-btn:hover:not(.active) { border-color:#4f46e5;color:#4f46e5;background:#eff6ff; }
+        @@media(max-width:700px){ .form-row-2,.form-row-3{grid-template-columns:1fr;} .class-create-card .card-body{padding:1.2rem;} }
     </style>
 }
 
@@ -52,8 +47,8 @@
     </div>
 </div>
 
-<div class="card" style="max-width:960px;">
-    <div class="card-body" style="padding:2rem;">
+<div class="card class-create-card">
+    <div class="card-body">
         <form method="post" asp-action="Create" id="createForm">
             @Html.AntiForgeryToken()
             <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
@@ -86,10 +81,10 @@
                     <label class="form-label">Mã lớp <small class="text-muted">(tự động)</small></label>
                     <div class="ma-lop-wrap">
                         <input asp-for="MaLopHoc" id="maLopInput" class="form-control"
-                               placeholder="Chọn khóa học để tự sinh..." />
+                               placeholder="Chọn khóa học để tự sinh..." readonly />
                         <span class="ma-lop-badge" id="maLopBadge" style="display:none">✨ Tự sinh</span>
                     </div>
-                    <small class="text-muted">Format: K{mã KH}-YYYYMM-NNN. Bạn có thể sửa tay.</small>
+                    <small class="text-muted">Mã lớp được hệ thống tạo và không cho sửa thủ công.</small>
                 </div>
                 <div class="form-group">
                     <label class="form-label">Gói học phí</label>
@@ -103,7 +98,7 @@
                 </div>
             </div>
 
-            <hr class="my-3" />
+            <hr class="section-divider" />
 
 
             <!-- ═══ 2. ĐỊA ĐIỂM 3 TẦNG ════════════════════════════════════════ -->
@@ -150,10 +145,11 @@
                         <option value="">-- Chọn cơ sở trước --</option>
 
                     </select>
+                    <div class="meta-hint" id="phongCapacityInfo"></div>
                 </div>
             </div>
 
-            <hr class="my-3" />
+            <hr class="section-divider" />
 
             <!-- ═══ 3. PHÂN CÔNG ══════════════════════════════════════════════ -->
             <h5 class="form-section-title"><i class="bi bi-people-fill"></i> Phân công Giáo viên & Ca học</h5>
@@ -161,14 +157,22 @@
             <div class="form-row-2">
                 <div class="form-group">
                     <label class="form-label">Giáo viên phụ trách</label>
-                    <select asp-for="TaiKhoanId" class="form-control">
+                    <select asp-for="TaiKhoanId" id="giaoVienSelect" class="form-control">
                         <option value="">-- Chưa phân công --</option>
                         @foreach (var gv in (List<TrungTamNgoaiNgu.Models.TaiKhoan>)ViewBag.GiaoViens)
                         {
                             var ten = gv.HoSo?.HoTen ?? gv.TenTaiKhoan;
-                            <option value="@gv.TaiKhoanId">@ten</option>
+                            var coSoId = gv.NhanSu?.CoSoId?.ToString() ?? "";
+                            var tenCoSo = gv.NhanSu?.CoSo?.TenCoSo ?? "Chưa gán cơ sở";
+                            <option value="@gv.TaiKhoanId"
+                                    data-base-label="@ten"
+                                    data-coso-id="@coSoId"
+                                    data-coso-name="@tenCoSo">
+                                @ten - @tenCoSo
+                            </option>
                         }
                     </select>
+                    <div class="meta-hint" id="giaoVienScopeInfo"></div>
                 </div>
                 <div class="form-group">
                     <label class="form-label">Ca học <span class="text-danger">*</span></label>
@@ -184,7 +188,7 @@
                 </div>
             </div>
 
-            <hr class="my-3" />
+            <hr class="section-divider" />
 
 
             <!-- ═══ 4. LỊCH HỌC & THỜI GIAN ══════════════════════════════════ -->
@@ -222,7 +226,8 @@
             <div class="form-row-2">
                 <div class="form-group">
                     <label class="form-label">Sĩ số tối đa</label>
-                    <input asp-for="SoHocVienToiDa" type="number" class="form-control" min="1" placeholder="VD: 25" />
+                    <input asp-for="SoHocVienToiDa" id="soHocInput" type="number" class="form-control" min="1" placeholder="VD: 25" />
+                    <div class="meta-hint" id="siSoRuleInfo">Sĩ số phải nhỏ hơn sức chứa phòng học đã chọn.</div>
                 </div>
                 <div class="form-group">
                     <label class="form-label">Đơn giá dạy / buổi (đ)</label>
@@ -243,10 +248,29 @@
 @section Scripts {
     @await Html.PartialAsync("_ValidationScriptsPartial")
     <script>
-    // ═══════════════════════════════════════════════════════════════════
-    // NGÀY HỌC — Bộ chọn thứ
-    // ═══════════════════════════════════════════════════════════════════
-    const lichHocInput = document.getElementById('lichHocInput');
+    const createForm       = document.getElementById('createForm');
+    const lichHocInput     = document.getElementById('lichHocInput');
+    const ngayBDInput      = document.getElementById('ngayBDInput');
+    const ngayKTInput      = document.getElementById('ngayKTInput');
+    const soBuoiInput      = document.getElementById('soBuoiInput');
+    const sbdInfo          = document.getElementById('sbdInfo');
+    const khoaHocSelect    = document.getElementById('khoaHocSelect');
+    const maLopInput       = document.getElementById('maLopInput');
+    const maLopBadge       = document.getElementById('maLopBadge');
+    const hocPhiSel        = document.getElementById('hocPhiSelect');
+    const tinhThanhSel     = document.getElementById('tinhThanhSelect');
+    const phuongXaSel      = document.getElementById('phuongXaSelect');
+    const coSoSel          = document.getElementById('coSoSelect');
+    const phongHocSel      = document.getElementById('phongHocSelect');
+    const coSoDiaChi       = document.getElementById('coSoDiaChi');
+    const loadingPhuong    = document.getElementById('loadingPhuong');
+    const loadingCoSo      = document.getElementById('loadingCoSo');
+    const phongCapacityInfo = document.getElementById('phongCapacityInfo');
+    const soHocInput       = document.getElementById('soHocInput');
+    const giaoVienSelect   = document.getElementById('giaoVienSelect');
+    const giaoVienScopeInfo = document.getElementById('giaoVienScopeInfo');
+
+    const DOW_MAP = { '2':1, '3':2, '4':3, '5':4, '6':5, '7':6, 'CN':0 };
 
     function toggleDow(el) {
         el.classList.toggle('active');
@@ -259,26 +283,21 @@
         lichHocInput.value = selected.join(',');
     }
 
-    // ═══════════════════════════════════════════════════════════════════
-    // SỐ BUỔI TỰ TÍNH
-    // ═══════════════════════════════════════════════════════════════════
-    const ngayBDInput  = document.getElementById('ngayBDInput');
-    const ngayKTInput  = document.getElementById('ngayKTInput');
-    const soBuoiInput  = document.getElementById('soBuoiInput');
-    const sbdInfo      = document.getElementById('sbdInfo');
-
-    // Map: giá trị dow-btn → getDay() (CN=0, T2=1,...)
-    const DOW_MAP = { '2':1, '3':2, '4':3, '5':4, '6':5, '7':6, 'CN':0 };
-
     function tinhSoBuoi() {
         const bd = ngayBDInput.value;
         const kt = ngayKTInput.value;
         const sel = [...document.querySelectorAll('.dow-btn.active')].map(e => e.dataset.val);
-        if (!bd || !kt || sel.length === 0) { sbdInfo.textContent = ''; return; }
+        if (!bd || !kt || sel.length === 0) {
+            sbdInfo.textContent = '';
+            return;
+        }
 
         const start = new Date(bd);
-        const end   = new Date(kt);
-        if (end < start) { sbdInfo.textContent = '⚠️ Ngày kết thúc phải sau ngày bắt đầu'; return; }
+        const end = new Date(kt);
+        if (end < start) {
+            sbdInfo.textContent = 'Ngày kết thúc phải sau ngày bắt đầu.';
+            return;
+        }
 
         const days = new Set(sel.map(v => DOW_MAP[v]));
         let count = 0;
@@ -289,133 +308,218 @@
         }
 
         soBuoiInput.value = count;
-        sbdInfo.textContent = `✅ Tự tính: ${count} buổi (${sel.length} buổi/tuần × ${Math.ceil((end-start)/604800000+1)} tuần ≈)`;
+        sbdInfo.textContent = `Tự tính: ${count} buổi.`;
+    }
+
+    async function loadMaLop(khoaHocId) {
+        if (!khoaHocId) {
+            maLopInput.value = '';
+            maLopBadge.style.display = 'none';
+            return;
+        }
+
+        const res = await fetch(`/Admin/Classes/SinhMaLop?khoaHocId=${khoaHocId}`);
+        const data = await res.json();
+        maLopInput.value = data.ma ?? '';
+        maLopBadge.style.display = data.ma ? 'block' : 'none';
+    }
+
+    async function loadHocPhi(khoaHocId) {
+        const hpRes = await fetch(`/Admin/Classes/HocPhiByKhoaHoc?khoaHocId=${khoaHocId || ''}`);
+        const hpData = await hpRes.json();
+        hocPhiSel.innerHTML = '<option value="">-- Chọn gói học phí --</option>';
+        hpData.forEach(h => {
+            hocPhiSel.innerHTML += `<option value="${h.id}">${h.name}</option>`;
+        });
+    }
+
+    async function loadPhuongXa(maApi) {
+        phuongXaSel.innerHTML = '<option value="">-- Đang tải phường/xã... --</option>';
+        phuongXaSel.disabled = true;
+
+        try {
+            const res = await fetch(`/Admin/Classes/PhuongXaByTinh?maApi=${maApi}`);
+            if (!res.ok) throw new Error();
+
+            const data = await res.json();
+            phuongXaSel.innerHTML = '<option value="">-- Tất cả địa bàn --</option>';
+            data.forEach(w => {
+                const suffix = w.district ? ` (${w.district})` : '';
+                phuongXaSel.innerHTML += `<option value="${w.name}">${w.name}${suffix}</option>`;
+            });
+
+            if (data.length === 0) {
+                phuongXaSel.innerHTML = '<option value="">Chưa có dữ liệu phường/xã</option>';
+            } else {
+                phuongXaSel.disabled = false;
+            }
+        } catch {
+            phuongXaSel.innerHTML = '<option value="">Không tải được phường/xã từ API</option>';
+        }
+    }
+
+    async function loadCoSo(tinhThanhId, phuongXa) {
+        loadingCoSo.style.display = 'block';
+        coSoSel.disabled = true;
+        try {
+            const query = new URLSearchParams({
+                tinhThanhId: tinhThanhId || '',
+                phuongXa: phuongXa || ''
+            });
+            const res = await fetch(`/Admin/Classes/CoSoByTinh?${query.toString()}`);
+            const data = await res.json();
+            coSoSel.innerHTML = '<option value="">-- Chọn cơ sở đào tạo --</option>';
+            data.forEach(c => {
+                const px = c.phuongXa ? ` - ${c.phuongXa}` : '';
+                coSoSel.innerHTML += `<option value="${c.id}" data-diachi="${c.diaChi}">${c.name}${px}</option>`;
+            });
+
+            coSoSel.disabled = data.length === 0;
+            if (data.length === 0) {
+                coSoSel.innerHTML = '<option value="">Không có cơ sở phù hợp</option>';
+            }
+        } finally {
+            loadingCoSo.style.display = 'none';
+            refreshGiaoVienLabels();
+        }
+    }
+
+    async function loadPhongHoc(coSoId) {
+        phongHocSel.innerHTML = '<option value="">Đang tải phòng học...</option>';
+        phongHocSel.disabled = true;
+        phongCapacityInfo.textContent = '';
+
+        if (!coSoId) {
+            phongHocSel.innerHTML = '<option value="">-- Chọn cơ sở trước --</option>';
+            return;
+        }
+
+        const res = await fetch(`/Admin/Classes/PhongHocByCoso?coSoId=${coSoId}`);
+        const data = await res.json();
+
+        phongHocSel.innerHTML = '<option value="">-- Chọn phòng học --</option>';
+        data.forEach(p => {
+            const sucChuaText = p.sucChua ? ` (Sức chứa ${p.sucChua})` : '';
+            phongHocSel.innerHTML += `<option value="${p.id}" data-succhua="${p.sucChua ?? ''}">${p.name}${sucChuaText}</option>`;
+        });
+
+        phongHocSel.disabled = false;
+        updatePhongCapacityInfo();
+    }
+
+    function updatePhongCapacityInfo() {
+        const selected = phongHocSel.selectedOptions[0];
+        const sucChua = Number(selected?.dataset?.succhua || 0);
+
+        if (!sucChua) {
+            phongCapacityInfo.textContent = '';
+            soHocInput.removeAttribute('max');
+            return;
+        }
+
+        const maxSiSo = Math.max(sucChua - 1, 0);
+        phongCapacityInfo.textContent = `Phòng tối đa ${sucChua} học viên. Sĩ số lớp phải nhỏ hơn ${sucChua}.`;
+        if (maxSiSo > 0) soHocInput.max = String(maxSiSo);
+    }
+
+    function refreshGiaoVienLabels() {
+        const coSoDangChon = coSoSel.value;
+        [...giaoVienSelect.options].forEach(opt => {
+            if (!opt.value) return;
+            const baseLabel = opt.dataset.baseLabel || opt.text;
+            const coSoId = opt.dataset.cosoId || '';
+            const coSoName = opt.dataset.cosoName || 'Chưa gán cơ sở';
+            const scope = !coSoDangChon || !coSoId
+                ? 'Chưa xác định'
+                : (coSoId === coSoDangChon ? 'Cùng cơ sở' : 'Khác cơ sở');
+            opt.text = `${baseLabel} - ${coSoName} (${scope})`;
+        });
+
+        const selected = giaoVienSelect.selectedOptions[0];
+        if (!selected || !selected.value) {
+            giaoVienScopeInfo.textContent = '';
+            return;
+        }
+
+        const coSoId = selected.dataset.cosoId || '';
+        const coSoName = selected.dataset.cosoName || 'Chưa gán cơ sở';
+        if (!coSoSel.value || !coSoId) {
+            giaoVienScopeInfo.textContent = `Giáo viên thuộc: ${coSoName}.`;
+            return;
+        }
+        giaoVienScopeInfo.textContent = coSoId === coSoSel.value
+            ? `Giáo viên cùng cơ sở: ${coSoName}.`
+            : `Giáo viên khác cơ sở: ${coSoName} (vẫn được phân công).`;
     }
 
     ngayBDInput.addEventListener('change', tinhSoBuoi);
     ngayKTInput.addEventListener('change', tinhSoBuoi);
-
-    // ═══════════════════════════════════════════════════════════════════
-    // MÃ LỚP TỰ SINH
-    // ═══════════════════════════════════════════════════════════════════
-    const khoaHocSelect = document.getElementById('khoaHocSelect');
-    const maLopInput    = document.getElementById('maLopInput');
-    const maLopBadge    = document.getElementById('maLopBadge');
-    let   maLopAutoFilled = false;
+    phongHocSel.addEventListener('change', updatePhongCapacityInfo);
+    giaoVienSelect.addEventListener('change', refreshGiaoVienLabels);
 
     khoaHocSelect.addEventListener('change', async () => {
         const khoaHocId = khoaHocSelect.value;
-
-        // Sinh mã lớp
-        if (khoaHocId) {
-            const res  = await fetch(`/Admin/Classes/SinhMaLop?khoaHocId=${khoaHocId}`);
-            const data = await res.json();
-            maLopInput.value    = data.ma;
-            maLopBadge.style.display = 'block';
-            maLopAutoFilled = true;
-        } else {
-            maLopInput.value = '';
-            maLopBadge.style.display = 'none';
-        }
-
-        // Học phí theo khóa
-        const hpRes  = await fetch(`/Admin/Classes/HocPhiByKhoaHoc?khoaHocId=${khoaHocId}`);
-        const hpData = await hpRes.json();
-        const hocPhiSel = document.getElementById('hocPhiSelect');
-        hocPhiSel.innerHTML = '<option value="">-- Chọn gói học phí --</option>';
-        hpData.forEach(h => hocPhiSel.innerHTML += `<option value="${h.id}">${h.name}</option>`);
+        await Promise.all([loadMaLop(khoaHocId), loadHocPhi(khoaHocId)]);
     });
 
-    // Nếu người dùng tự sửa mã → ẩn badge
-    maLopInput.addEventListener('input', () => {
-        if (maLopAutoFilled) { maLopBadge.style.display = 'none'; maLopAutoFilled = false; }
-    });
-
-    // ═══════════════════════════════════════════════════════════════════
-    // ĐỊA CHỈ 3 TẦNG: Tỉnh → Phường/Xã (API) → Cơ sở → Phòng
-    // ═══════════════════════════════════════════════════════════════════
-    const tinhThanhSel  = document.getElementById('tinhThanhSelect');
-    const phuongXaSel   = document.getElementById('phuongXaSelect');
-    const coSoSel       = document.getElementById('coSoSelect');
-    const phongHocSel   = document.getElementById('phongHocSelect');
-    const coSoDiaChi    = document.getElementById('coSoDiaChi');
-    const loadingPhuong = document.getElementById('loadingPhuong');
-    const loadingCoSo   = document.getElementById('loadingCoSo');
-
-    // Bước 1: Chọn tỉnh → load phường/xã từ API open-api.vn
     tinhThanhSel.addEventListener('change', async () => {
-        const tinhId   = tinhThanhSel.value;
-        const maAPI    = tinhThanhSel.selectedOptions[0]?.dataset.code;
+        const tinhId = tinhThanhSel.value;
+        const maApi = tinhThanhSel.selectedOptions[0]?.dataset.code;
 
-        // Reset downstream
-        phuongXaSel.innerHTML  = '<option value="">-- Đang tải phường/xã... --</option>';
-        phuongXaSel.disabled   = true;
-        coSoSel.innerHTML      = '<option value="">-- Chọn địa bàn trước --</option>';
-        coSoSel.disabled       = true;
-        phongHocSel.innerHTML  = '<option value="">-- Chọn cơ sở trước --</option>';
-        phongHocSel.disabled   = true;
+        phuongXaSel.innerHTML = '<option value="">-- Chọn tỉnh/thành trước --</option>';
+        phuongXaSel.disabled = true;
+        coSoSel.innerHTML = '<option value="">-- Chọn địa bàn trước --</option>';
+        coSoSel.disabled = true;
+        phongHocSel.innerHTML = '<option value="">-- Chọn cơ sở trước --</option>';
+        phongHocSel.disabled = true;
         coSoDiaChi.textContent = '';
+        phongCapacityInfo.textContent = '';
 
-        if (!tinhId || !maAPI) {
-            phuongXaSel.innerHTML = '<option value="">-- Chọn tỉnh/thành trước --</option>';
-            return;
-        }
+        if (!tinhId || !maApi) return;
 
-        // Load phường/xã từ API
         loadingPhuong.style.display = 'block';
         try {
-            const res  = await fetch(`https://provinces.open-api.vn/api/p/${maAPI}?depth=2`);
-            const data = await res.json();
-            const wards = data.districts?.flatMap(d => d.wards ?? []) ?? [];
-
-            phuongXaSel.innerHTML = '<option value="">-- Tất cả địa bàn --</option>';
-            wards.forEach(w => phuongXaSel.innerHTML += `<option value="${w.name}">${w.name}</option>`);
-            phuongXaSel.disabled = false;
-        } catch {
-            phuongXaSel.innerHTML = '<option value="">⚠️ Không tải được phường/xã</option>';
+            await loadPhuongXa(maApi);
         } finally {
             loadingPhuong.style.display = 'none';
         }
 
-        // Load cơ sở theo tỉnh ngay luôn
-        await loadCoSo(tinhId);
+        await loadCoSo(tinhId, '');
     });
 
-    // Bước 2: Chọn phường/xã → không cần gọi API mới (đã load cơ sở theo tỉnh)
-    // Chỉ dùng để filter cơ sở khi cần mở rộng sau
+    phuongXaSel.addEventListener('change', async () => {
+        const tinhId = tinhThanhSel.value;
+        if (!tinhId) return;
+        await loadCoSo(tinhId, phuongXaSel.value);
+    });
 
-    // Load cơ sở theo tỉnh
-    async function loadCoSo(tinhThanhId) {
-        loadingCoSo.style.display = 'block';
-        coSoSel.disabled = true;
-        try {
-            const res  = await fetch(`/Admin/Classes/CoSoByTinh?tinhThanhId=${tinhThanhId}`);
-            const data = await res.json();
-            coSoSel.innerHTML = '<option value="">-- Chọn cơ sở đào tạo --</option>';
-            data.forEach(c => coSoSel.innerHTML += `<option value="${c.id}" data-diachi="${c.diaChi}">${c.name}</option>`);
-            coSoSel.disabled = data.length === 0;
-            if (data.length === 0) coSoSel.innerHTML = '<option value="">Chưa có cơ sở nào trong tỉnh này</option>';
-        } finally {
-            loadingCoSo.style.display = 'none';
-        }
-    }
-
-    // Bước 3: Chọn cơ sở → hiển thị địa chỉ + load phòng học
     coSoSel.addEventListener('change', async () => {
-        const coSoId  = coSoSel.value;
-        const diaChi  = coSoSel.selectedOptions[0]?.dataset.diachi ?? '';
-        coSoDiaChi.textContent = diaChi ? `📍 ${diaChi}` : '';
-
-        phongHocSel.innerHTML  = '<option value="">Đang tải...</option>';
-        phongHocSel.disabled   = true;
-
-        if (!coSoId) { phongHocSel.innerHTML = '<option value="">-- Chọn cơ sở trước --</option>'; return; }
-
-        const res  = await fetch(`/Admin/Classes/PhongHocByCoso?coSoId=${coSoId}`);
-        const data = await res.json();
-        phongHocSel.innerHTML = '<option value="">-- Chọn phòng học --</option>';
-        data.forEach(p => phongHocSel.innerHTML += `<option value="${p.id}">${p.name}</option>`);
-        phongHocSel.disabled = false;
+        const coSoId = coSoSel.value;
+        const diaChi = coSoSel.selectedOptions[0]?.dataset.diachi ?? '';
+        coSoDiaChi.textContent = diaChi ? `Địa chỉ: ${diaChi}` : '';
+        refreshGiaoVienLabels();
+        await loadPhongHoc(coSoId);
     });
+
+    createForm.addEventListener('submit', (event) => {
+        const selectedPhong = phongHocSel.selectedOptions[0];
+        const sucChua = Number(selectedPhong?.dataset?.succhua || 0);
+        const siSo = Number(soHocInput.value || 0);
+
+        if (sucChua > 0 && siSo > 0 && siSo >= sucChua) {
+            event.preventDefault();
+            phongCapacityInfo.textContent = `Sĩ số ${siSo} không hợp lệ. Phải nhỏ hơn sức chứa ${sucChua}.`;
+            soHocInput.focus();
+        }
+    });
+
+    if (khoaHocSelect.value && !maLopInput.value) {
+        loadMaLop(khoaHocSelect.value);
+    }
+    if (khoaHocSelect.value && hocPhiSel.options.length <= 1) {
+        loadHocPhi(khoaHocSelect.value);
+    }
+    refreshGiaoVienLabels();
+    updateLichHoc();
     </script>
 }

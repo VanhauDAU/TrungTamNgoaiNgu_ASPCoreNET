@@ -17,15 +17,22 @@
 
 @section Styles {
     <style>
-        .form-section-title { font-weight:600;color:#374151;margin:1rem 0 .75rem; }
+        .class-edit-card { max-width:960px; margin:0 auto; border:1px solid #e2e8f0; border-radius:16px; overflow:hidden; box-shadow:0 16px 40px rgba(15,23,42,.08); }
+        .class-edit-card .card-body { padding:2rem; background:linear-gradient(180deg,#ffffff 0%,#f8fbff 100%); }
+        .form-section-title { font-weight:700;color:#0f172a;margin:1rem 0 .75rem;display:flex;align-items:center;gap:.55rem; }
+        .form-section-title i { width:30px;height:30px;border-radius:9px;display:grid;place-items:center;background:#eef2ff;color:#4f46e5; }
         .form-row-2 { display:grid;grid-template-columns:1fr 1fr;gap:1rem; }
         .form-row-3 { display:grid;grid-template-columns:1fr 1fr 1fr;gap:1rem; }
-        .form-group  { display:flex;flex-direction:column;gap:.25rem;margin-bottom:.5rem; }
-        .form-label  { font-weight:500;font-size:.875rem; }
-        .form-actions { display:flex;gap:1rem;margin-top:1.5rem;padding-top:1rem;border-top:1px solid #e5e7eb; }
-        .status-panel { background:#f9fafb;border:1px solid #e5e7eb;border-radius:10px;padding:1rem 1.25rem;margin-bottom:1.5rem; }
+        .form-group  { display:flex;flex-direction:column;gap:.35rem;margin-bottom:.55rem; }
+        .form-label  { font-weight:600;font-size:.84rem;color:#334155; }
+        .form-control { border-radius:10px; border-color:#dbe3f0; }
+        .form-control:focus { border-color:#6366f1; box-shadow:0 0 0 3px rgba(99,102,241,.15); }
+        .form-actions { display:flex;gap:1rem;margin-top:1.5rem;padding-top:1.1rem;border-top:1px dashed #d8e0ee; }
+        .status-panel { background:linear-gradient(145deg,#f8fafc,#eff6ff);border:1px solid #dbe6ff;border-radius:12px;padding:1rem 1.25rem;margin-bottom:1.5rem; }
         .status-panel h6 { margin:0 0 .75rem;font-weight:600; }
         .status-actions { display:flex;gap:.75rem;flex-wrap:wrap; }
+        .meta-hint { font-size:.75rem;color:#64748b;min-height:1rem; }
+        .section-divider { margin:1rem 0; border-color:#e7edf7; }
         @@media(max-width:600px){ .form-row-2,.form-row-3{grid-template-columns:1fr;} }
     </style>
 }
@@ -65,9 +72,9 @@
     }
 </div>
 
-<div class="card" style="max-width:900px;">
-    <div class="card-body" style="padding:2rem;">
-        <form method="post" asp-action="Edit">
+<div class="card class-edit-card">
+    <div class="card-body">
+        <form method="post" asp-action="Edit" id="editForm">
             @Html.AntiForgeryToken()
             <input type="hidden" asp-for="LopHocId" />
             <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
@@ -81,7 +88,8 @@
                 </div>
                 <div class="form-group">
                     <label class="form-label">Mã lớp</label>
-                    <input asp-for="MaLopHoc" class="form-control" />
+                    <input asp-for="MaLopHoc" class="form-control" readonly />
+                    <small class="text-muted">Mã lớp được tạo tự động và không cho chỉnh sửa.</small>
                 </div>
             </div>
 
@@ -114,7 +122,7 @@
                 </div>
             </div>
 
-            <hr class="my-3" />
+            <hr class="section-divider" />
 
             <h5 class="form-section-title"><i class="bi bi-people"></i> Phân công & Địa điểm</h5>
             <div class="form-row-2">
@@ -138,28 +146,47 @@
                         @foreach (var ph in (List<TrungTamNgoaiNgu.Models.PhongHoc>)ViewBag.PhongHocs)
                         {
                             if (Model.PhongHocId == ph.PhongHocId)
-                            { <option value="@ph.PhongHocId" selected>@ph.TenPhong</option> }
+                            { <option value="@ph.PhongHocId" data-succhua="@ph.SucChua" selected>@ph.TenPhong (Sức chứa @(ph.SucChua?.ToString() ?? "?"))</option> }
                             else
-                            { <option value="@ph.PhongHocId">@ph.TenPhong</option> }
+                            { <option value="@ph.PhongHocId" data-succhua="@ph.SucChua">@ph.TenPhong (Sức chứa @(ph.SucChua?.ToString() ?? "?"))</option> }
                         }
                     </select>
+                    <div class="meta-hint" id="phongCapacityInfo"></div>
                 </div>
             </div>
 
             <div class="form-row-2">
                 <div class="form-group">
                     <label class="form-label">Giáo viên phụ trách</label>
-                    <select asp-for="TaiKhoanId" class="form-control">
+                    <select asp-for="TaiKhoanId" id="giaoVienSelect" class="form-control">
                         <option value="">-- Chưa phân công --</option>
                         @foreach (var gv in (List<TrungTamNgoaiNgu.Models.TaiKhoan>)ViewBag.GiaoViens)
                         {
                             var ten = gv.HoSo?.HoTen ?? gv.TenTaiKhoan;
+                            var coSoId = gv.NhanSu?.CoSoId?.ToString() ?? "";
+                            var tenCoSo = gv.NhanSu?.CoSo?.TenCoSo ?? "Chưa gán cơ sở";
                             if (Model.TaiKhoanId == gv.TaiKhoanId)
-                            { <option value="@gv.TaiKhoanId" selected>@ten</option> }
+                            {
+                                <option value="@gv.TaiKhoanId"
+                                        data-base-label="@ten"
+                                        data-coso-id="@coSoId"
+                                        data-coso-name="@tenCoSo"
+                                        selected>
+                                    @ten - @tenCoSo
+                                </option>
+                            }
                             else
-                            { <option value="@gv.TaiKhoanId">@ten</option> }
+                            {
+                                <option value="@gv.TaiKhoanId"
+                                        data-base-label="@ten"
+                                        data-coso-id="@coSoId"
+                                        data-coso-name="@tenCoSo">
+                                    @ten - @tenCoSo
+                                </option>
+                            }
                         }
                     </select>
+                    <div class="meta-hint" id="giaoVienScopeInfo"></div>
                 </div>
                 <div class="form-group">
                     <label class="form-label">Ca học</label>
@@ -176,7 +203,7 @@
                 </div>
             </div>
 
-            <hr class="my-3" />
+            <hr class="section-divider" />
 
             <h5 class="form-section-title"><i class="bi bi-calendar3"></i> Lịch học & Thời gian</h5>
             <div class="form-group">
@@ -212,7 +239,8 @@
             <div class="form-row-2">
                 <div class="form-group">
                     <label class="form-label">Sĩ số tối đa</label>
-                    <input asp-for="SoHocVienToiDa" type="number" class="form-control" min="1" />
+                    <input asp-for="SoHocVienToiDa" id="soHocInput" type="number" class="form-control" min="1" />
+                    <div class="meta-hint" id="siSoRuleInfo">Sĩ số phải nhỏ hơn sức chứa phòng học.</div>
                 </div>
                 <div class="form-group">
                     <label class="form-label">Đơn giá dạy / buổi (đ)</label>
@@ -236,22 +264,95 @@
 @section Scripts {
     @await Html.PartialAsync("_ValidationScriptsPartial")
     <script>
+        const editForm = document.getElementById('editForm');
         const checks = document.querySelectorAll('.lich-hoc-check');
         const lichHocInput = document.getElementById('lichHocInput');
+        const coSoSelect = document.getElementById('coSoSelect');
+        const phongHocSelect = document.getElementById('phongHocSelect');
+        const phongCapacityInfo = document.getElementById('phongCapacityInfo');
+        const soHocInput = document.getElementById('soHocInput');
+        const giaoVienSelect = document.getElementById('giaoVienSelect');
+        const giaoVienScopeInfo = document.getElementById('giaoVienScopeInfo');
+
         function updateLichHoc() {
             lichHocInput.value = [...checks].filter(c => c.checked).map(c => c.value).join(',');
         }
-        checks.forEach(c => c.addEventListener('change', updateLichHoc));
 
-        const coSoSelect     = document.getElementById('coSoSelect');
-        const phongHocSelect = document.getElementById('phongHocSelect');
+        function updatePhongCapacityInfo() {
+            const selected = phongHocSelect.selectedOptions[0];
+            const sucChua = Number(selected?.dataset?.succhua || 0);
+            if (!sucChua) {
+                phongCapacityInfo.textContent = '';
+                soHocInput.removeAttribute('max');
+                return;
+            }
+
+            phongCapacityInfo.textContent = `Phòng tối đa ${sucChua} học viên. Sĩ số lớp phải nhỏ hơn ${sucChua}.`;
+            if (sucChua > 1) soHocInput.max = String(sucChua - 1);
+        }
+
+        function refreshGiaoVienLabels() {
+            const coSoDangChon = coSoSelect.value;
+            [...giaoVienSelect.options].forEach(opt => {
+                if (!opt.value) return;
+                const baseLabel = opt.dataset.baseLabel || opt.text;
+                const coSoId = opt.dataset.cosoId || '';
+                const coSoName = opt.dataset.cosoName || 'Chưa gán cơ sở';
+                const scope = !coSoDangChon || !coSoId
+                    ? 'Chưa xác định'
+                    : (coSoId === coSoDangChon ? 'Cùng cơ sở' : 'Khác cơ sở');
+                opt.text = `${baseLabel} - ${coSoName} (${scope})`;
+            });
+
+            const selected = giaoVienSelect.selectedOptions[0];
+            if (!selected || !selected.value) {
+                giaoVienScopeInfo.textContent = '';
+                return;
+            }
+
+            const coSoId = selected.dataset.cosoId || '';
+            const coSoName = selected.dataset.cosoName || 'Chưa gán cơ sở';
+            if (!coSoSelect.value || !coSoId) {
+                giaoVienScopeInfo.textContent = `Giáo viên thuộc: ${coSoName}.`;
+                return;
+            }
+
+            giaoVienScopeInfo.textContent = coSoId === coSoSelect.value
+                ? `Giáo viên cùng cơ sở: ${coSoName}.`
+                : `Giáo viên khác cơ sở: ${coSoName} (vẫn được phân công).`;
+        }
+
+        checks.forEach(c => c.addEventListener('change', updateLichHoc));
+        updateLichHoc();
+
         if (coSoSelect) {
             coSoSelect.addEventListener('change', async () => {
-                const res  = await fetch(`/Admin/Classes/PhongHocByCoso?coSoId=${coSoSelect.value}`);
+                const res = await fetch(`/Admin/Classes/PhongHocByCoso?coSoId=${coSoSelect.value}`);
                 const data = await res.json();
                 phongHocSelect.innerHTML = '<option value="">-- Chọn phòng học --</option>';
-                data.forEach(p => phongHocSelect.innerHTML += `<option value="${p.id}">${p.name}</option>`);
+                data.forEach(p => {
+                    const sucChuaText = p.sucChua ? ` (Sức chứa ${p.sucChua})` : '';
+                    phongHocSelect.innerHTML += `<option value="${p.id}" data-succhua="${p.sucChua ?? ''}">${p.name}${sucChuaText}</option>`;
+                });
+                refreshGiaoVienLabels();
+                updatePhongCapacityInfo();
             });
         }
+
+        phongHocSelect.addEventListener('change', updatePhongCapacityInfo);
+        giaoVienSelect.addEventListener('change', refreshGiaoVienLabels);
+        updatePhongCapacityInfo();
+        refreshGiaoVienLabels();
+
+        editForm.addEventListener('submit', (event) => {
+            const selectedPhong = phongHocSelect.selectedOptions[0];
+            const sucChua = Number(selectedPhong?.dataset?.succhua || 0);
+            const siSo = Number(soHocInput.value || 0);
+            if (sucChua > 0 && siSo > 0 && siSo >= sucChua) {
+                event.preventDefault();
+                phongCapacityInfo.textContent = `Sĩ số ${siSo} không hợp lệ. Phải nhỏ hơn sức chứa ${sucChua}.`;
+                soHocInput.focus();
+            }
+        });
     </script>
 }
