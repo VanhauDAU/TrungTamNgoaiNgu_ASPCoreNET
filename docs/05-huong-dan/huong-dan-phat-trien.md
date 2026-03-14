@@ -118,6 +118,15 @@ Sau khi merge PR, cập nhật các file sau:
 2. **`docs/04-api/tai-lieu-endpoints-mvc.md`** – nếu có thêm/sửa route/controller
 3. **`docs/07-algorithms/quy-trinh-nghiep-vu.md`** – nếu thay đổi quy tắc nghiệp vụ
 4. **`docs/progress.md`** – cập nhật tiến độ module
+5. **`CHANGELOG.md`** – ghi lại thay đổi nổi bật ở mức tính năng/hotfix
+
+### Lưu ý riêng cho module admin lớp học
+
+- Nếu thay đổi rule của `Create/Edit lớp học`, luôn cập nhật đồng thời:
+  - `docs/04-api/tai-lieu-endpoints-mvc.md`
+  - `docs/07-algorithms/quy-trinh-nghiep-vu.md`
+  - `CHANGELOG.md`
+- Các rule như `mã tự sinh`, `ngày kết thúc tự tính`, `lọc địa bàn nội bộ` phải được mô tả ở docs, vì đây là nhóm logic người dùng admin nhìn thấy rõ nhất.
 
 ---
 

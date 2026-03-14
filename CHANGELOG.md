@@ -2,6 +2,55 @@
 
 Tất cả các thay đổi nổi bật của dự án sẽ được ghi nhận trong file này.
 
+## [Unreleased] - 2026-03-14
+
+### ✨ Nâng cấp — Admin quản lý lớp học, khóa học và danh mục
+
+- **Branch**: `codex/admin-core-polish`
+- Nâng cấp mạnh luồng quản trị `Lớp học`, `Danh mục khóa học`, `Khóa học` theo hướng chuẩn nghiệp vụ hơn và đồng bộ UI hơn.
+
+### 🏫 Lớp học — Create/Edit/Index
+
+- **`Services/ClassesService.cs`**
+  - Không load gói học phí khi chưa chọn khóa học.
+  - Chỉ load `Tỉnh/Thành` và `Phường/Xã` đang thực sự có cơ sở hoạt động.
+  - Bổ sung `LayPhuongXaByTinhAsync(...)` lấy địa bàn từ dữ liệu nội bộ thay vì phụ thuộc Open API.
+  - Tự tính `NgayKetThuc` từ `NgayBatDau + LichHoc + SoBuoiDuKien`.
+  - Nếu đã chọn gói học phí thì bắt buộc phải có `Ngày bắt đầu` và `Lịch học` để hệ thống tính lịch kết thúc.
+  - Chặn lệch `SoBuoiDuKien` so với lịch học thực tế sau khi hệ thống tự tính ngày kết thúc.
+- **`Controllers/Admin/ClassesController.cs`**
+  - Bỏ phụ thuộc `IHttpClientFactory` trong `ClassesController`.
+  - Đổi endpoint `GET /Admin/Classes/PhuongXaByTinh` sang dùng `tinhThanhId` và dữ liệu nội bộ.
+  - Dropdown tỉnh/thành khi Create/Edit chỉ lấy những nơi đang có cơ sở, nhưng vẫn giữ được tỉnh hiện tại khi sửa dữ liệu cũ.
+- **`Views/Admin/Classes/Create.cshtml`**
+  - Ô `Ngày kết thúc` chuyển sang readonly và tự cập nhật theo thao tác người dùng.
+  - Chọn gói học phí sau khi chọn ngày bắt đầu vẫn tự tính lại `Ngày kết thúc`.
+  - Không preload gói học phí trước khi chọn khóa học.
+  - UI địa bàn chỉ hiển thị tỉnh/phường/xã đang có cơ sở thật.
+- **`Views/Admin/Classes/Edit.cshtml`**
+  - Đồng bộ trải nghiệm với trang Create: `Ngày kết thúc` tự tính, `Số buổi` đồng bộ theo gói học phí, địa bàn lấy từ dữ liệu nội bộ.
+- **`Views/Admin/Classes/Index.cshtml`**
+  - Làm lại hàng hiển thị danh sách lớp: rõ mã lớp, khóa học, cơ sở vận hành, mức lấp đầy, lịch học và trạng thái.
+  - Gỡ bỏ block `lh-command` sau khi thử nghiệm UI để giữ giao diện gọn hơn.
+  - Làm lại khu vực lọc theo dạng card gọn, có label rõ ràng, không còn kéo dọc thiếu cân đối.
+
+### 🏷 Khóa học & Danh mục — Mã tự sinh
+
+- **`Services/CoursesService.cs`**
+  - Thêm cơ chế tự sinh `MaDanhMuc` và `MaKhoaHoc` ở backend, chống trùng và chuẩn hóa format.
+  - Khi sửa dữ liệu cũ mà chưa có mã, hệ thống tự bổ sung mã khi lưu.
+  - Giữ mã ổn định trên dữ liệu đã có để tránh ảnh hưởng các luồng tra cứu và sinh mã lớp.
+- **`Views/Admin/CourseCategories/Create.cshtml`** / **`Edit.cshtml`**
+  - Bỏ nhập tay `Mã danh mục`, chuyển sang preview mã dự kiến/mã hiện tại.
+- **`Views/Admin/Courses/Create.cshtml`** / **`Edit.cshtml`**
+  - Thêm preview `Mã khóa học` trong form thay vì để người dùng tự suy format.
+
+### 🧭 Thiết lập cơ sở
+
+- **`Views/Admin/ClassSetup/CoSo.cshtml`**
+  - Đồng bộ màn `Thiết lập cơ sở` sang endpoint địa bàn mới.
+  - Datalist phường/xã giờ chỉ gợi ý các địa bàn đang có cơ sở trong hệ thống.
+
 ## [Unreleased] - 2026-03-11
 
 ### 🧩 Feature — Thiết lập dữ liệu nền để tạo lớp học

@@ -69,16 +69,16 @@ API:    /api/{resource}/{action}
 | Method | URL | Mô tả |
 | ------ | --- | ----- |
 | GET | `/Admin/Classes/SinhMaLop?khoaHocId={id}` | Sinh mã lớp tự động |
-| GET | `/Admin/Classes/HocPhiByKhoaHoc?khoaHocId={id}` | Danh sách gói học phí theo khóa |
+| GET | `/Admin/Classes/HocPhiByKhoaHoc?khoaHocId={id}` | Danh sách gói học phí theo khóa. Chỉ gọi sau khi người dùng đã chọn khóa học |
 | GET | `/Admin/Classes/PhongHocByCoso?coSoId={id}` | Danh sách phòng theo cơ sở (kèm `sucChua`) |
 | GET | `/Admin/Classes/CoSoByTinh?tinhThanhId={id}&phuongXa={name}` | Danh sách cơ sở theo tỉnh/phường |
-| GET | `/Admin/Classes/PhuongXaByTinh?maApi={code}` | Danh sách phường/xã từ Open API |
+| GET | `/Admin/Classes/PhuongXaByTinh?tinhThanhId={id}&baoGomPhuongXa={name}` | Danh sách phường/xã có cơ sở trong hệ thống |
 
-### 4.3 Ghi chú tích hợp địa bàn Open API
+### 4.3 Ghi chú nghiệp vụ form Lớp học
 
-- Ưu tiên endpoint v2: `https://provinces.open-api.vn/api/v2/p/{maApi}?depth=2`.
-- Fallback endpoint v1: `https://provinces.open-api.vn/api/p/{maApi}?depth=3`.
-- Dữ liệu trả về được normalize về danh sách `{ name, district }` cho frontend.
+- `Ngày kết thúc` không nhập tay ở Create/Edit lớp học; backend là nguồn chân lý để tự tính từ `Ngày bắt đầu + Lịch học + Số buổi`.
+- Nếu lớp có gắn `HocPhiId`, frontend và backend đều yêu cầu đủ `Ngày bắt đầu` và `Lịch học` để tính lịch kết thúc.
+- Dropdown địa bàn chỉ hiển thị `Tỉnh/Thành` và `Phường/Xã` có cơ sở đang hoạt động để giảm nhiễu dữ liệu.
 
 ---
 
