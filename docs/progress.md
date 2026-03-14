@@ -38,6 +38,11 @@ Cap nhat: 2026-03-14
   - khong load goi hoc phi truoc khi chon khoa hoc
   - dropdown tinh/phuong xa chi hien thi noi dang co co so
   - index lop hoc duoc polish lai theo huong dashboard van hanh gon hon
+- Quan ly co so dao tao:
+  - tach khoi `ClassSetup` thanh module rieng `Campuses`
+  - co man danh sach, create/edit va detail theo tabs
+  - quan ly phong hoc trong ngu canh co so
+  - xem duoc danh sach nhan su va lop hoc theo tung co so
 - Quan ly danh muc khoa hoc:
   - ma danh muc tu sinh o backend, preview tren form
 - Quan ly khoa hoc:
@@ -57,7 +62,8 @@ Cap nhat: 2026-03-14
 2. Hoan thien module DangKyLopHoc + HoaDon + PhieuThu tren UI.
 3. Bo sung role-based authorization theo `NhomQuyen/PhanQuyen`.
 4. Tu dong test cho rule nghiep vu LopHoc (si so/phong, state machine, ngay ket thuc tu tinh).
-5. Chuan hoa migration strategy khi dong bo voi SQL nguon.
+5. Ket noi CRUD/module chi tiet nhan su vao tab `Nhan su` cua `Campuses`.
+6. Chuan hoa migration strategy khi dong bo voi SQL nguon.
 
 ## 5. Dinh huong mo rong
 

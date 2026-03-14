@@ -51,6 +51,41 @@ Tất cả các thay đổi nổi bật của dự án sẽ được ghi nhận 
   - Đồng bộ màn `Thiết lập cơ sở` sang endpoint địa bàn mới.
   - Datalist phường/xã giờ chỉ gợi ý các địa bàn đang có cơ sở trong hệ thống.
 
+### 🏢 Tái cấu trúc — Module Cơ sở đào tạo tách khỏi ClassSetup
+
+- **`Services/Interfaces/IServices.cs`**
+  - Tách nghiệp vụ `Cơ sở` và `Phòng học` khỏi `IClassSetupService`.
+  - Thêm `ICampusService` cùng các DTO thống kê/chi tiết dành riêng cho module `Cơ sở đào tạo`.
+- **`Services/CampusService.cs`**
+  - Thêm service mới quản lý danh sách cơ sở, form tạo/sửa, detail theo tab, CRUD phòng học trong ngữ cảnh cơ sở, danh sách nhân sự và lớp học theo cơ sở.
+  - Giữ rule tự sinh `MaCoSo`, `Slug`, chặn xóa cơ sở nếu còn phòng học, lớp học, nhân sự hoặc hóa đơn liên quan.
+  - Giữ rule phòng học: unique tên phòng trong cùng cơ sở, chặn xóa phòng đang được lớp học sử dụng, chuẩn hóa trạng thái phòng theo enum.
+- **`Controllers/Admin/CampusesController.cs`**
+  - Thêm module admin mới `Campuses` với các màn `Index`, `Create`, `Edit`, `Detail`.
+  - `Detail` dùng mô hình một trang tabs gồm `Tổng quan`, `Phòng học`, `Nhân sự`, `Lớp học`.
+- **`Controllers/Admin/ClassSetupController.cs`**
+  - Route cũ `CoSo` và `PhongHoc` chuyển sang chế độ redirect để không gãy link cũ trong admin.
+  - `ClassSetup` chỉ còn vai trò quản lý `Ca học` và `Gói học phí`.
+- **`Views/Admin/Campuses/Index.cshtml`**
+  - Thêm màn danh sách cơ sở độc lập với filter theo từ khóa, tỉnh/thành, trạng thái.
+  - Hiển thị số phòng, số lớp, số nhân sự/giao viên theo từng cơ sở.
+- **`Views/Admin/Campuses/Form.cshtml`**
+  - Thêm form riêng cho `Create/Edit` cơ sở, không còn nằm trong layout setup item.
+  - `Mã cơ sở` và `Slug` chỉ preview, không cho nhập tay.
+- **`Views/Admin/Campuses/Detail.cshtml`**
+  - Thêm trang detail cơ sở theo tabs.
+  - Quản lý phòng học ngay trong tab `Phòng học`.
+  - Tab `Nhân sự` hiển thị danh sách đọc-only các tài khoản gắn `NhanSu.CoSoId`.
+  - Tab `Lớp học` hiển thị danh sách lớp theo `CoSoId` và link sang chi tiết lớp.
+- **`Views/Shared/_AdminLayout.cshtml`**
+  - Thêm mục sidebar `Cơ sở đào tạo` riêng trong nhóm `Đào tạo`.
+- **`Views/Admin/ClassSetup/_SetupTabs.cshtml`** / **`Views/Admin/ClassSetup/Index.cshtml`**
+  - Gỡ `Cơ sở` và `Phòng học` khỏi `Thiết lập lớp học`, giữ dashboard nhẹ chỉ cho dữ liệu nền mở lớp.
+- **`Views/Admin/Classes/Create.cshtml`** / **`Edit.cshtml`**
+  - Các link “Thiếu cơ sở?” và “Thiếu phòng học?” chuyển sang module `Campuses`.
+- **`Program.cs`**
+  - Đăng ký DI `ICampusService -> CampusService`.
+
 ## [Unreleased] - 2026-03-11
 
 ### 🧩 Feature — Thiết lập dữ liệu nền để tạo lớp học
