@@ -1,4 +1,5 @@
 @model TrungTamNgoaiNgu.Models.PhongHocManagementViewModel
+@using TrungTamNgoaiNgu.Enums
 @{
     ViewData["Title"] = "Thiết lập phòng học";
     ViewData["SetupSection"] = "PhongHoc";
@@ -45,6 +46,7 @@
                                 <th>Cơ sở</th>
                                 <th>Sức chứa</th>
                                 <th>Ghi chú</th>
+                                <th>Đang dùng</th>
                                 <th>Trạng thái</th>
                                 <th>Thao tác</th>
                             </tr>
@@ -52,6 +54,10 @@
                         <tbody>
                             @foreach (var item in Model.Items)
                             {
+                                var trangThai = Enum.IsDefined(typeof(PhongHocTrangThai), item.TrangThai)
+                                    ? (PhongHocTrangThai)item.TrangThai
+                                    : PhongHocTrangThai.HoatDong;
+                                var soLopDangDung = Model.SuDung.LopTheoPhongHoc.GetValueOrDefault(item.PhongHocId);
                                 <tr>
                                     <td>
                                         <strong>@item.TenPhong</strong>
@@ -61,10 +67,18 @@
                                     <td>@item.SucChua học viên</td>
                                     <td>
                                         <div>@(string.IsNullOrWhiteSpace(item.TrangThietBi) ? "—" : item.TrangThietBi)</div>
-                                        <div class="meta">@(string.IsNullOrWhiteSpace(item.GhiChuBaoTri) ? "Không có ghi chú bảo trì" : item.GhiChuBaoTri)</div>
+                                        <div class="meta">
+                                            @(string.IsNullOrWhiteSpace(item.GhiChuBaoTri)
+                                                ? "Không có ghi chú bảo trì"
+                                                : item.GhiChuBaoTri)
+                                        </div>
                                     </td>
                                     <td>
-                                        <span class="setup-badge @(item.TrangThai == 0 ? "inactive" : "active")">@(item.TrangThai == 0 ? "Tạm ngưng" : "Hoạt động")</span>
+                                        <div>@soLopDangDung lớp đang gắn</div>
+                                        <div class="meta">Sức chứa @item.SucChua học viên</div>
+                                    </td>
+                                    <td>
+                                        <span class="@trangThai.GetBadgeClass()">@trangThai.GetLabel()</span>
                                     </td>
                                     <td>
                                         <div class="setup-actions">
@@ -139,7 +153,9 @@
                         <label asp-for="Form.TrangThai">Trạng thái</label>
                         <select asp-for="Form.TrangThai" class="form-control">
                             <option value="1">Hoạt động</option>
-                            <option value="0">Tạm ngưng</option>
+                            <option value="0">Đang bảo trì</option>
+                            <option value="2">Tạm ngưng</option>
+                            <option value="3">Ngưng hẳn</option>
                         </select>
                     </div>
                     <div class="setup-form-actions">
@@ -155,6 +171,7 @@
         <section class="setup-help-card">
             <div class="body">
                 <ul class="setup-help-list">
+                    <li><i class="bi bi-check2-circle"></i><span>Chỉ phòng ở trạng thái `Hoạt động` mới xuất hiện trong form tạo và chỉnh sửa lớp.</span></li>
                     <li><i class="bi bi-check2-circle"></i><span>Phòng học cần có sức chứa chính xác vì form lớp chặn sĩ số lớn hơn hoặc bằng sức chứa.</span></li>
                     <li><i class="bi bi-check2-circle"></i><span>Xóa phòng học là xóa mềm; hệ thống chặn nếu phòng đang được lớp sử dụng.</span></li>
                 </ul>

@@ -159,7 +159,7 @@ Mỗi thay đổi trạng thái ghi 1 bản ghi lienhe_lichsu
 
 ---
 
-## 8. Quy Trình Tạo/Sửa Lớp Học (Cập nhật 2026-03-11)
+## 8. Quy Trình Tạo/Sửa Lớp Học (Cập nhật 2026-03-14)
 
 ```
 [Admin mở form Create/Edit lớp]
@@ -167,9 +167,11 @@ Mỗi thay đổi trạng thái ghi 1 bản ghi lienhe_lichsu
 Chọn Khóa học
     → Hệ thống sinh mã lớp (backend là nguồn chân lý)
     → UI chỉ hiển thị mã lớp readonly, không cho sửa tay
+    → Chỉ sau bước này mới load danh sách gói học phí phù hợp
 
-Chọn Tỉnh/Thành (maApi)
-    → Load phường/xã từ Open API
+Chọn Tỉnh/Thành
+    → Chỉ hiển thị tỉnh/thành đang có cơ sở hoạt động
+    → Load danh sách phường/xã nội bộ (không phụ thuộc Open API)
     → Có thể lọc cơ sở theo phường/xã
 
 Chọn Cơ sở
@@ -177,6 +179,15 @@ Chọn Cơ sở
     → Dropdown giáo viên hiển thị rõ:
         "Cùng cơ sở" / "Khác cơ sở" / "Chưa xác định"
         (cho phép phân công cả cùng và khác cơ sở)
+
+Chọn Gói học phí
+    → Đồng bộ `soBuoiDuKien`
+    → Nếu đã có `ngayBatDau` + `lichHoc`
+        → Hệ thống tự tính lại `ngayKetThuc`
+
+Chọn/đổi Ngày bắt đầu hoặc Lịch học
+    → Nếu đã có `soBuoiDuKien`
+        → Hệ thống tự tính lại `ngayKetThuc`
 
 Nhập sĩ số tối đa
     IF soHocVienToiDa >= phongHoc.sucChua:
@@ -190,4 +201,6 @@ Nhập sĩ số tối đa
 
 1. `maLopHoc` phải do hệ thống sinh khi tạo mới.
 2. `soHocVienToiDa < sucChua` của phòng học đã chọn.
-3. Giáo viên được phép dạy liên cơ sở, nhưng UI phải thể hiện rõ phạm vi cơ sở để người dùng quyết định.
+3. Nếu có `hocPhiId` thì bắt buộc phải có `ngayBatDau` và `lichHoc` để tính `ngayKetThuc`.
+4. `ngayKetThuc` không nhập tay ở UI; backend là nguồn chân lý để tự tính.
+5. Giáo viên được phép dạy liên cơ sở, nhưng UI phải thể hiện rõ phạm vi cơ sở để người dùng quyết định.

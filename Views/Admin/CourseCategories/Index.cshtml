@@ -1,21 +1,26 @@
-@model List<TrungTamNgoaiNgu.Models.DanhMucKhoaHoc>
+@model TrungTamNgoaiNgu.Models.CourseCategoryIndexViewModel
 @{
     ViewData["Title"] = "Danh mục khóa học";
     Layout = "~/Views/Shared/_AdminLayout.cshtml";
-    int pg         = ViewBag.Page ?? 1;
-    int pgSize     = ViewBag.PageSize ?? 10;
-    int total      = ViewBag.Total ?? Model.Count;
+    int pg = ViewBag.Page ?? 1;
+    int pgSize = ViewBag.PageSize ?? 10;
+    int total = ViewBag.Total ?? Model.Items.Count;
     int totalPages = (int)Math.Ceiling(total / (double)pgSize);
-    string tuKhoa     = ViewBag.TuKhoa ?? "";
+    string tuKhoa = ViewBag.TuKhoa ?? "";
     string trangThaiQ = ViewBag.TrangThai?.ToString() ?? "";
+    var stats = Model.ThongKe ?? new TrungTamNgoaiNgu.Services.Interfaces.DanhMucKhoaHocQuanLyThongKe();
+}
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/admin-courses.css" asp-append-version="true" />
 }
 
 <div class="page-header">
     <div>
-        <div class="page-title">Quản lý danh mục</div>
-        <div class="page-sub">Tổng: <strong>@total</strong> danh mục</div>
+        <div class="page-title">Quản lý danh mục khóa học</div>
+        <div class="page-sub">Tổng: <strong>@total</strong> danh mục trong cây phân loại</div>
     </div>
-    <div style="display:flex; gap:8px">
+    <div class="kh-header-actions">
         <a asp-action="Trash" class="btn btn-outline">
             <i class="bi bi-trash3"></i> Thùng rác
         </a>
@@ -25,25 +30,47 @@
     </div>
 </div>
 
-<!-- BỘ LỌC -->
-<div class="card" style="margin-bottom:16px">
-    <div class="card-body" style="padding:14px 20px">
-        <form method="get" style="display:flex; gap:10px; flex-wrap:wrap; align-items:center">
-            <div class="search-wrap" style="min-width:240px; flex:2">
+<div class="kh-mini-stats">
+    <div class="kh-mini-card all">
+        <div class="kh-mini-label">Tổng danh mục</div>
+        <div class="kh-mini-value">@stats.TongDanhMuc</div>
+    </div>
+    <div class="kh-mini-card open">
+        <div class="kh-mini-label">Danh mục gốc</div>
+        <div class="kh-mini-value">@stats.DanhMucGoc</div>
+    </div>
+    <div class="kh-mini-card soon">
+        <div class="kh-mini-label">Danh mục con</div>
+        <div class="kh-mini-value">@stats.DanhMucCon</div>
+    </div>
+    <div class="kh-mini-card open">
+        <div class="kh-mini-label">Đang hoạt động</div>
+        <div class="kh-mini-value">@stats.DangHoatDong</div>
+    </div>
+    <div class="kh-mini-card closed">
+        <div class="kh-mini-label">Tạm ngưng</div>
+        <div class="kh-mini-value">@stats.TamNgung</div>
+    </div>
+</div>
+
+<div class="card kh-filter-card">
+    <div class="card-body kh-filter-body">
+        <form method="get" class="kh-filter-form">
+            <div class="search-wrap kh-search-wrap">
                 <i class="bi bi-search"></i>
                 <input type="text" name="tuKhoa" value="@tuKhoa" class="form-control"
-                       placeholder="Tìm tên danh mục..." />
+                       placeholder="Tìm theo tên, mã hoặc slug..." />
             </div>
 
-            <select name="trangThai" class="form-control" style="width:170px">
+            <select name="trangThai" class="form-control kh-select-trangthai">
                 <option value="">Tất cả trạng thái</option>
-                @if (trangThaiQ == "1") { <option value="1" selected>✅ Đang sử dụng</option> }
-                else { <option value="1">✅ Đang sử dụng</option> }
-                @if (trangThaiQ == "0") { <option value="0" selected>⏸ Tạm ngưng</option> }
-                else { <option value="0">⏸ Tạm ngưng</option> }
+                @if (trangThaiQ == "1") { <option value="1" selected>Đang hoạt động</option> }
+                else { <option value="1">Đang hoạt động</option> }
+                @if (trangThaiQ == "0") { <option value="0" selected>Tạm ngưng</option> }
+                else { <option value="0">Tạm ngưng</option> }
             </select>
 
-            <select name="pageSize" class="form-control" style="width:130px">
+            <select name="pageSize" class="form-control kh-select-pagesize">
                 @if (pgSize == 10) { <option value="10" selected>10 dòng/trang</option> }
                 else { <option value="10">10 dòng/trang</option> }
                 @if (pgSize == 20) { <option value="20" selected>20 dòng/trang</option> }
@@ -52,23 +79,26 @@
                 else { <option value="50">50 dòng/trang</option> }
             </select>
 
-            <button type="submit" class="btn btn-primary"><i class="bi bi-funnel-fill"></i> Lọc</button>
+            <button type="submit" class="btn btn-primary">
+                <i class="bi bi-funnel-fill"></i> Lọc
+            </button>
             @if (!string.IsNullOrEmpty(tuKhoa) || !string.IsNullOrEmpty(trangThaiQ))
             {
-                <a asp-action="Index" class="btn btn-outline"><i class="bi bi-x-circle"></i> Xóa lọc</a>
+                <a asp-action="Index" class="btn btn-outline">
+                    <i class="bi bi-x-circle"></i> Xóa lọc
+                </a>
             }
         </form>
     </div>
 </div>
 
-<!-- BẢNG -->
 <div class="card">
     <div class="table-wrap">
-        @if (!Model.Any())
+        @if (!Model.Items.Any())
         {
             <div class="empty-state">
-                <i class="bi bi-tags"></i>
-                <p>Không tìm thấy danh mục nào</p>
+                <i class="bi bi-diagram-3"></i>
+                <p>Không tìm thấy danh mục phù hợp.</p>
             </div>
         }
         else
@@ -77,56 +107,81 @@
                 <thead>
                     <tr>
                         <th>#</th>
-                        <th>Tên danh mục</th>
+                        <th>Danh mục</th>
+                        <th>Cấu trúc</th>
                         <th>Slug</th>
-                        <th>Mô tả</th>
-                        <th>Số khóa học</th>
+                        <th>Sắp xếp</th>
+                        <th>Vận hành</th>
                         <th>Trạng thái</th>
                         <th>Ngày tạo</th>
                         <th>Thao tác</th>
                     </tr>
                 </thead>
                 <tbody>
-                    @for (int i = 0; i < Model.Count; i++)
+                    @for (int i = 0; i < Model.Items.Count; i++)
                     {
-                        var dm = Model[i];
+                        var item = Model.Items[i];
+                        var dm = item.DanhMuc;
                         <tr>
-                            <td style="color:var(--muted); font-size:.8rem">@((pg-1)*pgSize + i + 1)</td>
-                            <td style="font-weight:600">@dm.TenDanhMuc</td>
+                            <td class="kh-col-index">@((pg - 1) * pgSize + i + 1)</td>
                             <td>
-                                <code style="font-size:.75rem; background:#f3f4f6; padding:2px 7px;
-                                             border-radius:5px; color:#6366f1">@dm.Slug</code>
-                            </td>
-                            <td>
-                                <div style="font-size:.82rem; color:var(--muted); max-width:180px;
-                                            overflow:hidden; white-space:nowrap; text-overflow:ellipsis"
-                                     title="@dm.MoTa">
-                                    @(string.IsNullOrEmpty(dm.MoTa) ? "—" : dm.MoTa)
+                                <div class="dm-name-stack">
+                                    <div class="dm-tree-line" style="--level:@item.CapDo">
+                                        @if (!string.IsNullOrWhiteSpace(dm.MaDanhMuc))
+                                        {
+                                            <span class="dm-code">@dm.MaDanhMuc</span>
+                                        }
+                                        <span class="dm-name">@dm.TenDanhMuc</span>
+                                    </div>
+                                    <div class="kh-slug">@(!string.IsNullOrWhiteSpace(dm.MoTa) ? dm.MoTa : "Chưa có mô tả ngắn")</div>
                                 </div>
                             </td>
                             <td>
-                                <span class="badge badge-gray">@(dm.KhoaHocs?.Count ?? 0) khóa</span>
+                                @if (string.IsNullOrWhiteSpace(item.DuongDanCha))
+                                {
+                                    <span class="badge badge-gray">Danh mục gốc</span>
+                                }
+                                else
+                                {
+                                    <div class="dm-parent-path">@item.DuongDanCha</div>
+                                }
+                            </td>
+                            <td>
+                                <code class="dm-slug">@dm.Slug</code>
+                            </td>
+                            <td>
+                                <div class="dm-order">#@dm.SortOrder</div>
+                                <div class="kh-muted">@(item.CapDo == 0 ? "Cấp gốc" : $"Cấp {item.CapDo + 1}")</div>
+                            </td>
+                            <td>
+                                <div class="dm-usage-stack">
+                                    <span class="badge badge-gray">@item.SoDanhMucCon danh mục con</span>
+                                    <span class="badge badge-indigo">@item.SoKhoaHocTong khóa học</span>
+                                    <span class="badge badge-success">@item.SoKhoaHocDangHoatDong đang hoạt động</span>
+                                </div>
                             </td>
                             <td>
                                 @if (dm.TrangThai == 1)
-                                { <span class="badge badge-success">Sử dụng</span> }
+                                {
+                                    <span class="badge badge-success">Đang hoạt động</span>
+                                }
                                 else
-                                { <span class="badge badge-gray">Tạm ngưng</span> }
+                                {
+                                    <span class="badge badge-warning">Tạm ngưng</span>
+                                }
                             </td>
-                            <td style="font-size:.8rem; color:var(--muted)">
-                                @dm.CreatedAt.ToString("dd/MM/yyyy")
-                            </td>
+                            <td class="kh-created">@dm.CreatedAt.ToString("dd/MM/yyyy")</td>
                             <td>
-                                <div style="display:flex; gap:4px">
+                                <div class="kh-actions">
                                     <a asp-action="Edit" asp-route-id="@dm.DanhMucId"
                                        class="btn btn-outline btn-sm" title="Chỉnh sửa">
                                         <i class="bi bi-pencil"></i>
                                     </a>
                                     <form method="post" asp-action="softdelete" asp-route-id="@dm.DanhMucId"
-                                          onsubmit="return confirm('Chuyển «@dm.TenDanhMuc» vào thùng rác?')"
-                                          style="display:inline">
+                                          onsubmit="return confirm('Chuyển &laquo;@dm.TenDanhMuc&raquo; vào thùng rác?')"
+                                          class="kh-inline-form">
                                         @Html.AntiForgeryToken()
-                                        <button type="submit" class="btn btn-danger btn-sm" title="Xóa">
+                                        <button type="submit" class="btn btn-danger btn-sm" title="Xóa mềm">
                                             <i class="bi bi-trash"></i>
                                         </button>
                                     </form>
@@ -139,15 +194,14 @@
 
             @if (totalPages > 1)
             {
-                <div style="display:flex; align-items:center; justify-content:space-between;
-                            padding:14px 20px; border-top:1px solid var(--border)">
-                    <div style="font-size:.82rem; color:var(--muted)">
+                <div class="kh-pagination-wrap">
+                    <div class="kh-pagination-info">
                         Trang <strong>@pg</strong> / @totalPages &nbsp;·&nbsp; @total mục
                     </div>
-                    <div style="display:flex; gap:4px">
+                    <div class="kh-pagination-actions">
                         @if (pg > 1)
                         {
-                            <a href="?page=@(pg-1)&tuKhoa=@tuKhoa&trangThai=@trangThaiQ&pageSize=@pgSize"
+                            <a href="?page=@(pg - 1)&tuKhoa=@tuKhoa&trangThai=@trangThaiQ&pageSize=@pgSize"
                                class="btn btn-outline btn-sm"><i class="bi bi-chevron-left"></i></a>
                         }
                         @for (int p = Math.Max(1, pg - 2); p <= Math.Min(totalPages, pg + 2); p++)
@@ -165,7 +219,7 @@
                         }
                         @if (pg < totalPages)
                         {
-                            <a href="?page=@(pg+1)&tuKhoa=@tuKhoa&trangThai=@trangThaiQ&pageSize=@pgSize"
+                            <a href="?page=@(pg + 1)&tuKhoa=@tuKhoa&trangThai=@trangThaiQ&pageSize=@pgSize"
                                class="btn btn-outline btn-sm"><i class="bi bi-chevron-right"></i></a>
                         }
                     </div>

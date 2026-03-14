@@ -6,13 +6,12 @@
 // =============================================================================
 
 using Microsoft.AspNetCore.Mvc;
-using System.Text.Json;
 using TrungTamNgoaiNgu.Models;
 using TrungTamNgoaiNgu.Services.Interfaces;
 
 namespace TrungTamNgoaiNgu.Controllers.Admin;
 
-public class ClassesController(IClassesService classesService, IHttpClientFactory httpClientFactory) : Controller
+public class ClassesController(IClassesService classesService) : Controller
 {
     // =========================================================================
     // INDEX — Danh sách + phân trang + lọc
@@ -71,7 +70,7 @@ public class ClassesController(IClassesService classesService, IHttpClientFactor
 
         if (!ModelState.IsValid)
         {
-            await NapDropdowns(lopHoc.KhoaHocId, lopHoc.CoSoId);
+            await NapDropdowns(lopHoc);
             return View("~/Views/Admin/Classes/Create.cshtml", lopHoc);
         }
 
@@ -81,7 +80,7 @@ public class ClassesController(IClassesService classesService, IHttpClientFactor
         if (!ketQua.ThanhCong)
         {
             ModelState.AddModelError(string.Empty, ketQua.ThongBao);
-            await NapDropdowns(lopHoc.KhoaHocId, lopHoc.CoSoId);
+            await NapDropdowns(lopHoc);
             return View("~/Views/Admin/Classes/Create.cshtml", lopHoc);
         }
 
@@ -97,7 +96,7 @@ public class ClassesController(IClassesService classesService, IHttpClientFactor
         var lopHoc = await classesService.LayTheoIdAsync(id);
         if (lopHoc == null) return NotFound();
 
-        await NapDropdowns(lopHoc.KhoaHocId, lopHoc.CoSoId);
+        await NapDropdowns(lopHoc);
         return View("~/Views/Admin/Classes/Edit.cshtml", lopHoc);
     }
 
@@ -109,7 +108,7 @@ public class ClassesController(IClassesService classesService, IHttpClientFactor
 
         if (!ModelState.IsValid)
         {
-            await NapDropdowns(lopHoc.KhoaHocId, lopHoc.CoSoId);
+            await NapDropdowns(lopHoc);
             return View("~/Views/Admin/Classes/Edit.cshtml", lopHoc);
         }
 
@@ -121,7 +120,7 @@ public class ClassesController(IClassesService classesService, IHttpClientFactor
 
         if (!ketQua.ThanhCong)
         {
-            await NapDropdowns(lopHoc.KhoaHocId, lopHoc.CoSoId);
+            await NapDropdowns(lopHoc);
             return View("~/Views/Admin/Classes/Edit.cshtml", lopHoc);
         }
 
@@ -195,14 +194,25 @@ public class ClassesController(IClassesService classesService, IHttpClientFactor
     [HttpGet]
     public async Task<IActionResult> HocPhiByKhoaHoc(int? khoaHocId)
     {
+        if (!khoaHocId.HasValue || khoaHocId <= 0)
+            return Json(Array.Empty<object>());
+
         var hocPhis = await classesService.LayHocPhiDropdownAsync(khoaHocId);
-        return Json(hocPhis.Select(h => new { id = h.HocPhiId, name = $"{h.SoBuoi} buổi - {h.DonGia?.ToString("N0") ?? "?"}đ/buổi" }));
+        return Json(hocPhis.Select(h => new
+        {
+            id = h.HocPhiId,
+            name = $"{h.SoBuoi} buổi - {h.DonGia?.ToString("N0") ?? "?"}đ/buổi",
+            soBuoi = h.SoBuoi,
+            donGia = h.DonGia,
+            tongHocPhi = h.TongHocPhi,
+            tongHocPhiText = h.TongHocPhi.ToString("N0")
+        }));
     }
     /// <summary>GET /Admin/Classes/CoSoByTinh?tinhThanhId=1 — AJAX: cơ sở theo tỉnh</summary>
     [HttpGet]
-    public async Task<IActionResult> CoSoByTinh(int? tinhThanhId, string? phuongXa)
+    public async Task<IActionResult> CoSoByTinh(int? tinhThanhId, string? phuongXa, int? baoGomCoSoId)
     {
-        var coSos = await classesService.LayCoSoByTinhAsync(tinhThanhId, phuongXa);
+        var coSos = await classesService.LayCoSoByTinhAsync(tinhThanhId, phuongXa, baoGomCoSoId);
         return Json(coSos.Select(c => new
         {
             id = c.CoSoId,
@@ -212,20 +222,15 @@ public class ClassesController(IClassesService classesService, IHttpClientFactor
         }));
     }
 
-    /// <summary>GET /Admin/Classes/PhuongXaByTinh?maApi=79 — AJAX: phường/xã theo mã tỉnh API</summary>
+    /// <summary>GET /Admin/Classes/PhuongXaByTinh?tinhThanhId=79 — AJAX: phường/xã có cơ sở theo tỉnh</summary>
     [HttpGet]
-    public async Task<IActionResult> PhuongXaByTinh(int? maApi)
+    public async Task<IActionResult> PhuongXaByTinh(int? tinhThanhId, string? baoGomPhuongXa)
     {
-        if (!maApi.HasValue || maApi <= 0)
+        if (!tinhThanhId.HasValue || tinhThanhId <= 0)
             return Json(Array.Empty<object>());
 
-        var phuongXa = await LayPhuongXaTuOpenApiAsync(maApi.Value);
-        return Json(phuongXa.Select(px => new
-        {
-            name = px.Name,
-            district = px.District
-        }));
-
+        var phuongXa = await classesService.LayPhuongXaByTinhAsync(tinhThanhId, baoGomPhuongXa);
+        return Json(phuongXa.Select(px => new { name = px }));
     }
 
     /// <summary>GET /Admin/Classes/SinhMaLop?khoaHocId=1 — AJAX: sinh mã lớp tự động</summary>
@@ -239,118 +244,28 @@ public class ClassesController(IClassesService classesService, IHttpClientFactor
     // PRIVATE HELPERS
     // =========================================================================
 
-    private async Task NapDropdowns(int? khoaHocId = null, int? coSoId = null)
+    private async Task NapDropdowns(LopHoc? lopHoc = null)
     {
-        ViewBag.TinhThanhs = await classesService.LayTinhThanhDropdownAsync();
+        var khoaHocId = lopHoc?.KhoaHocId;
+        var coSoId = lopHoc?.CoSoId;
+        var caHocId = lopHoc?.CaHocId > 0 ? (int?)lopHoc.CaHocId : null;
+        var phongHocId = lopHoc?.PhongHocId;
+        var hocPhiId = lopHoc?.HocPhiId;
+        var taiKhoanId = lopHoc?.TaiKhoanId;
 
-        ViewBag.KhoaHocs   = await classesService.LayKhoaHocDropdownAsync();
-        ViewBag.CaHocs     = await classesService.LayCaHocDropdownAsync();
-        ViewBag.CoSos      = await classesService.LayCoSoDropdownAsync();
-        ViewBag.PhongHocs  = await classesService.LayPhongHocDropdownAsync(coSoId);
-        ViewBag.GiaoViens  = await classesService.LayGiaoVienDropdownAsync();
-        ViewBag.HocPhis    = await classesService.LayHocPhiDropdownAsync(khoaHocId);
+        var tinhThanhId = lopHoc?.CoSo?.TinhThanhId;
+        ViewBag.TinhThanhs = await classesService.LayTinhThanhDropdownAsync(tinhThanhId);
+
+        ViewBag.KhoaHocs   = await classesService.LayKhoaHocDropdownAsync(khoaHocId);
+        ViewBag.CaHocs     = await classesService.LayCaHocDropdownAsync(caHocId);
+        ViewBag.CoSos      = await classesService.LayCoSoDropdownAsync(coSoId);
+        ViewBag.PhongHocs  = await classesService.LayPhongHocDropdownAsync(coSoId, phongHocId);
+        ViewBag.GiaoViens  = await classesService.LayGiaoVienDropdownAsync(taiKhoanId);
+        ViewBag.HocPhis    = await classesService.LayHocPhiDropdownAsync(khoaHocId, hocPhiId);
     }
 
     private string LayNguoiThucHien()
         => User?.Identity?.IsAuthenticated == true && !string.IsNullOrWhiteSpace(User.Identity.Name)
             ? User.Identity.Name!
             : "Quản trị viên";
-
-    private async Task<List<PhuongXaDto>> LayPhuongXaTuOpenApiAsync(int maApi)
-    {
-        var client = httpClientFactory.CreateClient();
-        client.Timeout = TimeSpan.FromSeconds(10);
-        client.DefaultRequestHeaders.UserAgent.ParseAdd("ASPCORETrungTamNN/1.0");
-
-        var urls = new[]
-        {
-            $"https://provinces.open-api.vn/api/v2/p/{maApi}?depth=2",
-            $"https://provinces.open-api.vn/api/p/{maApi}?depth=3"
-        };
-
-        foreach (var url in urls)
-        {
-            try
-            {
-                using var response = await client.GetAsync(url);
-                if (!response.IsSuccessStatusCode) continue;
-
-                var payload = await response.Content.ReadAsStringAsync();
-                var wards = ParsePhuongXa(payload);
-                if (wards.Count > 0) return wards;
-            }
-            catch
-            {
-                // fallback sang endpoint kế tiếp
-            }
-        }
-
-        return [];
-    }
-
-    private static List<PhuongXaDto> ParsePhuongXa(string payload)
-    {
-        var ketQua = new List<PhuongXaDto>();
-
-        try
-        {
-            using var doc = JsonDocument.Parse(payload);
-
-            // v2 mới: dữ liệu ward nằm trực tiếp ở root.wards
-            if (doc.RootElement.TryGetProperty("wards", out var wardsV2) &&
-                wardsV2.ValueKind == JsonValueKind.Array)
-            {
-                foreach (var ward in wardsV2.EnumerateArray())
-                {
-                    if (!ward.TryGetProperty("name", out var wardName)) continue;
-                    var tenPhuongXa = wardName.GetString()?.Trim();
-                    if (string.IsNullOrWhiteSpace(tenPhuongXa)) continue;
-                    ketQua.Add(new PhuongXaDto(tenPhuongXa, string.Empty));
-                }
-                return ketQua.OrderBy(x => x.Name).ToList();
-            }
-
-            // v1 cũ: districts[].wards[]
-            if (!doc.RootElement.TryGetProperty("districts", out var districts) ||
-                districts.ValueKind != JsonValueKind.Array)
-            {
-                return ketQua;
-            }
-
-            foreach (var district in districts.EnumerateArray())
-            {
-                var tenQuanHuyen = district.TryGetProperty("name", out var districtName)
-                    ? districtName.GetString()?.Trim() ?? string.Empty
-                    : string.Empty;
-
-                if (!district.TryGetProperty("wards", out var wards) ||
-                    wards.ValueKind != JsonValueKind.Array)
-                {
-                    continue;
-                }
-
-                foreach (var ward in wards.EnumerateArray())
-                {
-                    if (!ward.TryGetProperty("name", out var wardName)) continue;
-
-                    var tenPhuongXa = wardName.GetString()?.Trim();
-                    if (string.IsNullOrWhiteSpace(tenPhuongXa)) continue;
-
-                    ketQua.Add(new PhuongXaDto(tenPhuongXa, tenQuanHuyen));
-                }
-            }
-        }
-        catch
-        {
-            // payload không hợp lệ
-        }
-
-        return ketQua
-            .GroupBy(x => new { x.Name, x.District })
-            .Select(g => g.First())
-            .OrderBy(x => x.Name)
-            .ToList();
-    }
-
-    private sealed record PhuongXaDto(string Name, string District);
 }

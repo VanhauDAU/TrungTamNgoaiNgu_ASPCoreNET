@@ -165,6 +165,16 @@
     color: var(--muted);
 }
 
+.kh-inline-note {
+    margin-top: 4px;
+    font-size: .74rem;
+    font-weight: 500;
+}
+
+.kh-inline-note.warning {
+    color: #b45309;
+}
+
 .kh-muted {
     color: var(--muted);
 }
@@ -320,6 +330,23 @@
     color: var(--muted);
 }
 
+.kh-summary-item {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    padding: 10px 12px;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    background: #fff;
+}
+
+.kh-summary-item span {
+    font-size: .74rem;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: .04em;
+}
+
 .kh-draft-note {
     margin-top: 10px;
     border: 1px dashed #c7d2fe;
@@ -454,6 +481,79 @@
     font-size: .9rem;
     color: var(--text);
     word-break: break-word;
+}
+
+.dm-name-stack {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    min-width: 220px;
+}
+
+.dm-tree-line {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding-left: calc(var(--level, 0) * 18px);
+}
+
+.dm-tree-line::before {
+    content: "";
+    width: calc(var(--level, 0) * 10px);
+    flex: 0 0 auto;
+}
+
+.dm-name {
+    font-weight: 600;
+}
+
+.dm-code {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 42px;
+    padding: 3px 8px;
+    border-radius: 999px;
+    background: #eff6ff;
+    color: #1d4ed8;
+    font-size: .72rem;
+    font-weight: 700;
+    border: 1px solid #bfdbfe;
+}
+
+.dm-parent-path {
+    font-size: .8rem;
+    color: var(--muted);
+    max-width: 220px;
+}
+
+.dm-slug,
+.dm-slug-preview {
+    display: inline-block;
+    font-size: .78rem;
+    background: #f8fafc;
+    padding: 4px 8px;
+    border-radius: 8px;
+    color: #334155;
+    border: 1px solid #e2e8f0;
+}
+
+.dm-order {
+    font-weight: 700;
+    color: #0f172a;
+}
+
+.dm-usage-stack {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    max-width: 220px;
+}
+
+.dm-category-cell {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
 }
 
 @media (max-width: 1024px) {

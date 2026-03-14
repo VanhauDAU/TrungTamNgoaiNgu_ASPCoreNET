@@ -26,8 +26,8 @@ public class CoursesController(ICoursesService courseService, IWebHostEnvironmen
         ViewBag.TuKhoa    = tuKhoa;
         ViewBag.DanhMucId = danhMucId;
         ViewBag.TrangThai = trangThai;
-        ViewBag.DanhMucs  = await courseService.LayDanhMucAsync();
         ViewBag.Stats     = await courseService.LayThongKeQuanLyAsync();
+        await NapDanhMucViewDataAsync(danhMucId);
 
         var ketQua = await courseService.LayDanhSachPhanTrangAsync(tuKhoa, danhMucId, trangThai, page, pageSize);
 
@@ -51,7 +51,7 @@ public class CoursesController(ICoursesService courseService, IWebHostEnvironmen
     // Hiển thị form thêm khóa học mới
     public async Task<IActionResult> Create()
     {
-        ViewBag.DanhMucs = await courseService.LayDanhMucAsync();
+        await NapDanhMucViewDataAsync();
         return View("~/Views/Admin/Courses/Create.cshtml", new KhoaHoc());
     }
 
@@ -68,7 +68,7 @@ public class CoursesController(ICoursesService courseService, IWebHostEnvironmen
 
         if (!ModelState.IsValid)
         {
-            ViewBag.DanhMucs = await courseService.LayDanhMucAsync();
+            await NapDanhMucViewDataAsync(khoaHoc.DanhMucId);
             return View("~/Views/Admin/Courses/Create.cshtml", khoaHoc);
         }
 
@@ -76,9 +76,13 @@ public class CoursesController(ICoursesService courseService, IWebHostEnvironmen
         khoaHoc.AnhKhoaHoc = await LuuAnhKhoaHocAsync(anhFile);
 
         // Tạo slug chuẩn + chống trùng
-        khoaHoc.Slug = await courseService.TaoSlugKhoaHocAsync(khoaHoc.TenKhoaHoc);
-
-        await courseService.ThemAsync(khoaHoc, LayNguoiThucHien());
+        var ketQua = await courseService.ThemAsync(khoaHoc, LayNguoiThucHien());
+        if (!ketQua.ThanhCong)
+        {
+            ModelState.AddModelError(string.Empty, ketQua.ThongBao);
+            await NapDanhMucViewDataAsync(khoaHoc.DanhMucId);
+            return View("~/Views/Admin/Courses/Create.cshtml", khoaHoc);
+        }
 
         TempData["ThanhCong"] = "Đã thêm khóa học thành công!";
         return RedirectToAction(nameof(Index));
@@ -90,7 +94,7 @@ public class CoursesController(ICoursesService courseService, IWebHostEnvironmen
     {
         var khoaHoc = await courseService.LayTheoIdAsync(id);
         if (khoaHoc == null) return NotFound();
-        ViewBag.DanhMucs = await courseService.LayDanhMucAsync();
+        await NapDanhMucViewDataAsync(khoaHoc.DanhMucId);
         return View("~/Views/Admin/Courses/Edit.cshtml", khoaHoc);
     }
 
@@ -105,7 +109,7 @@ public class CoursesController(ICoursesService courseService, IWebHostEnvironmen
 
         if (!ModelState.IsValid)
         {
-            ViewBag.DanhMucs = await courseService.LayDanhMucAsync();
+            await NapDanhMucViewDataAsync(khoaHoc.DanhMucId);
             return View("~/Views/Admin/Courses/Edit.cshtml", khoaHoc);
         }
 
@@ -117,13 +121,11 @@ public class CoursesController(ICoursesService courseService, IWebHostEnvironmen
         }
 
         // Cập nhật slug theo tên mới (tránh trùng slug khóa học khác)
-        khoaHoc.Slug = await courseService.TaoSlugKhoaHocAsync(khoaHoc.TenKhoaHoc, khoaHoc.KhoaHocId);
-
         var ketQua = await courseService.CapNhatCoKiemTraAsync(khoaHoc, LayNguoiThucHien());
         if (!ketQua.ThanhCong)
         {
-            ModelState.AddModelError("TrangThai", ketQua.ThongBao);
-            ViewBag.DanhMucs = await courseService.LayDanhMucAsync();
+            ModelState.AddModelError(string.Empty, ketQua.ThongBao);
+            await NapDanhMucViewDataAsync(khoaHoc.DanhMucId);
             return View("~/Views/Admin/Courses/Edit.cshtml", khoaHoc);
         }
 
@@ -239,5 +241,41 @@ public class CoursesController(ICoursesService courseService, IWebHostEnvironmen
         if (User?.Identity?.IsAuthenticated == true && !string.IsNullOrWhiteSpace(User.Identity.Name))
             return User.Identity.Name!;
         return "Quản trị viên";
+    }
+
+    private async Task NapDanhMucViewDataAsync(int? selectedDanhMucId = null)
+    {
+        var danhMucs = await courseService.LayDanhMucAsync(selectedDanhMucId);
+        ViewBag.DanhMucs = TaoDanhMucOptions(danhMucs);
+    }
+
+    private static List<CourseCategoryOptionViewModel> TaoDanhMucOptions(List<DanhMucKhoaHoc> danhMucs)
+    {
+        var ketQua = new List<CourseCategoryOptionViewModel>();
+        var byParent = danhMucs
+            .GroupBy(dm => dm.ParentId ?? 0)
+            .ToDictionary(
+                group => group.Key,
+                group => group.OrderBy(dm => dm.SortOrder).ThenBy(dm => dm.TenDanhMuc).ToList());
+
+        void Duyet(int parentId, int capDo)
+        {
+            if (!byParent.TryGetValue(parentId, out var children)) return;
+
+            foreach (var item in children)
+            {
+                ketQua.Add(new CourseCategoryOptionViewModel
+                {
+                    DanhMucId = item.DanhMucId,
+                    Label = $"{string.Concat(Enumerable.Repeat("-- ", capDo))}{item.TenDanhMuc}",
+                    IsInactive = item.TrangThai == 0
+                });
+
+                Duyet(item.DanhMucId, capDo + 1);
+            }
+        }
+
+        Duyet(0, 0);
+        return ketQua;
     }
 }

@@ -28,12 +28,28 @@ public class ServiceResult
     public string ThongBao { get; set; } = string.Empty;
 }
 
+public class ServiceResult<T> : ServiceResult
+{
+    public T? DuLieu { get; set; }
+}
+
 public class KhoaHocQuanLyThongKe
 {
     public int TongKhoaHoc { get; set; }
     public int DangHoatDong { get; set; }
     public int TamNgung { get; set; }
+    public int DangVanHanh { get; set; }
+    public int ChuaCoHocPhi { get; set; }
     public int DaXoaMem { get; set; }
+}
+
+public class DanhMucKhoaHocQuanLyThongKe
+{
+    public int TongDanhMuc { get; set; }
+    public int DanhMucGoc { get; set; }
+    public int DanhMucCon { get; set; }
+    public int DangHoatDong { get; set; }
+    public int TamNgung { get; set; }
 }
 
 // ---------------------------------------------------------------------------
@@ -81,7 +97,7 @@ public interface ICoursesService
     Task<KhoaHoc?> LayTheoIdAsync(int id);
 
     // Thêm khóa học mới → trả về ID sau khi tạo
-    Task<int> ThemAsync(KhoaHoc khoaHoc, string? nguoiThucHien = null);
+    Task<ServiceResult<int>> ThemAsync(KhoaHoc khoaHoc, string? nguoiThucHien = null);
 
     // Cập nhật khóa học, có kiểm tra nghiệp vụ
     Task<ServiceResult> CapNhatCoKiemTraAsync(KhoaHoc khoaHoc, string? nguoiThucHien = null);
@@ -101,15 +117,19 @@ public interface ICoursesService
     Task<ServiceResult> KhoiPhucHangLoatAsync(List<int> ids, string? nguoiThucHien = null);
 
     // Lấy tất cả danh mục để hiển thị dropdown
-    Task<List<DanhMucKhoaHoc>> LayDanhMucAsync();
+    Task<List<DanhMucKhoaHoc>> LayDanhMucAsync(int? baoGomDanhMucId = null);
+
+    Task<string> TaoSlugDanhMucAsync(string tenDanhMuc, int? boQuaDanhMucId = null);
 
     Task<List<DanhMucKhoaHoc>> LayDanhSachDanhMucAsync(string? tuKhoa = null);
 
     Task<DanhMucKhoaHoc?> LayDanhMucTheoIdAsync(int id);
 
-    Task<int> ThemDanhMucAsync(DanhMucKhoaHoc danhMuc);
+    Task<DanhMucKhoaHocQuanLyThongKe> LayThongKeDanhMucAsync();
 
-    Task<bool> CapNhatDanhMucAsync(DanhMucKhoaHoc danhMuc);
+    Task<ServiceResult<int>> ThemDanhMucAsync(DanhMucKhoaHoc danhMuc, string? nguoiThucHien = null);
+
+    Task<ServiceResult> CapNhatDanhMucAsync(DanhMucKhoaHoc danhMuc, string? nguoiThucHien = null);
 
     Task<ServiceResult> XoaMemDanhMucAsync(int id, string? nguoiThucHien = null);
 
@@ -165,20 +185,21 @@ public interface IClassesService
     Task<ServiceResult> KhoiPhucAsync(int id, string? nguoiThucHien = null);
 
     // ── Dropdowns (cho form Create/Edit) ─────────────────────────────────
-    Task<List<KhoaHoc>>    LayKhoaHocDropdownAsync();
-    Task<List<CaHoc>>      LayCaHocDropdownAsync();
-    Task<List<PhongHoc>>   LayPhongHocDropdownAsync(int? coSoId = null);
-    Task<List<CoSoDaoTao>> LayCoSoDropdownAsync();
-    Task<List<TaiKhoan>>   LayGiaoVienDropdownAsync();
-    Task<List<HocPhi>>     LayHocPhiDropdownAsync(int? khoaHocId = null);
+    Task<List<KhoaHoc>>    LayKhoaHocDropdownAsync(int? baoGomKhoaHocId = null);
+    Task<List<CaHoc>>      LayCaHocDropdownAsync(int? baoGomCaHocId = null);
+    Task<List<PhongHoc>>   LayPhongHocDropdownAsync(int? coSoId = null, int? baoGomPhongHocId = null);
+    Task<List<CoSoDaoTao>> LayCoSoDropdownAsync(int? baoGomCoSoId = null);
+    Task<List<TaiKhoan>>   LayGiaoVienDropdownAsync(int? baoGomTaiKhoanId = null);
+    Task<List<HocPhi>>     LayHocPhiDropdownAsync(int? khoaHocId = null, long? baoGomHocPhiId = null);
 
     // ── Chi tiết học viên & buổi học ─────────────────────────────────────
     Task<List<DangKyLopHoc>> LayHocVienTrongLopAsync(int lopHocId);
     Task<List<BuoiHoc>>      LayBuoiHocAsync(int lopHocId);
 
     // ── Dropdown địa chỉ 3 tầng ──────────────────────────────────────────
-    Task<List<TinhThanh>>  LayTinhThanhDropdownAsync();
-    Task<List<CoSoDaoTao>> LayCoSoByTinhAsync(int? tinhThanhId, string? phuongXa = null);
+    Task<List<TinhThanh>>  LayTinhThanhDropdownAsync(int? baoGomTinhThanhId = null);
+    Task<List<string>>     LayPhuongXaByTinhAsync(int? tinhThanhId, string? baoGomPhuongXa = null);
+    Task<List<CoSoDaoTao>> LayCoSoByTinhAsync(int? tinhThanhId, string? phuongXa = null, int? baoGomCoSoId = null);
 
     // ── Mã lớp tự sinh ───────────────────────────────────────────────────
     /// <summary>Format: K{maKH}-YYYYMM-NNN (VD: KIELTS-202603-001)</summary>
@@ -199,9 +220,21 @@ public class ClassSetupThongKe
     public int CoSoChuaCoPhong { get; set; }
 }
 
+public class ClassSetupUsageSnapshot
+{
+    public Dictionary<int, int> LopTheoCaHoc { get; set; } = [];
+    public Dictionary<int, int> BuoiTheoCaHoc { get; set; } = [];
+    public Dictionary<long, int> LopTheoHocPhi { get; set; } = [];
+    public Dictionary<int, int> PhongTheoCoSo { get; set; } = [];
+    public Dictionary<int, int> LopTheoCoSo { get; set; } = [];
+    public Dictionary<int, int> GiaoVienTheoCoSo { get; set; } = [];
+    public Dictionary<int, int> LopTheoPhongHoc { get; set; } = [];
+}
+
 public interface IClassSetupService
 {
     Task<ClassSetupThongKe> LayThongKeAsync();
+    Task<ClassSetupUsageSnapshot> LaySoLieuSuDungAsync();
 
     Task<List<CaHoc>> LayDanhSachCaHocAsync();
     Task<CaHoc?> LayCaHocTheoIdAsync(int id);

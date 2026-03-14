@@ -44,6 +44,7 @@
                                 <th>Tên ca</th>
                                 <th>Thời gian</th>
                                 <th>Mô tả</th>
+                                <th>Đang dùng</th>
                                 <th>Trạng thái</th>
                                 <th>Thao tác</th>
                             </tr>
@@ -51,12 +52,18 @@
                         <tbody>
                             @foreach (var item in Model.Items)
                             {
+                                var soLopDangDung = Model.SuDung.LopTheoCaHoc.GetValueOrDefault(item.CaHocId);
+                                var soBuoiDangDung = Model.SuDung.BuoiTheoCaHoc.GetValueOrDefault(item.CaHocId);
                                 <tr>
                                     <td><strong>@item.TenCa</strong></td>
                                     <td>@item.GioBatDau?.ToString("HH:mm") - @item.GioKetThuc?.ToString("HH:mm")</td>
                                     <td>
                                         <div>@(string.IsNullOrWhiteSpace(item.MoTa) ? "—" : item.MoTa)</div>
                                         <div class="meta">Cập nhật @item.UpdatedAt.ToString("dd/MM/yyyy HH:mm")</div>
+                                    </td>
+                                    <td>
+                                        <div>@soLopDangDung lớp đang dùng</div>
+                                        <div class="meta">@soBuoiDangDung buổi học đã gắn ca này</div>
                                     </td>
                                     <td>
                                         <span class="setup-badge @(item.TrangThai == 0 ? "inactive" : "active")">@(item.TrangThai == 0 ? "Tạm ngưng" : "Hoạt động")</span>
@@ -131,6 +138,7 @@
         <section class="setup-help-card">
             <div class="body">
                 <ul class="setup-help-list">
+                    <li><i class="bi bi-check2-circle"></i><span>Chỉ ca học `Hoạt động` mới xuất hiện trong form tạo và chỉnh sửa lớp.</span></li>
                     <li><i class="bi bi-check2-circle"></i><span>Ca học nên rõ giờ bắt đầu và kết thúc để tránh trùng lịch khi phân công giáo viên.</span></li>
                     <li><i class="bi bi-check2-circle"></i><span>Không xóa được ca học nếu đã gắn cho lớp hoặc buổi học.</span></li>
                 </ul>

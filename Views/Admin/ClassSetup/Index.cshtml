@@ -4,6 +4,11 @@
     ViewData["SetupSection"] = "Index";
     Layout = "~/Views/Shared/_AdminLayout.cshtml";
     var stats = Model.ThongKe;
+    var suDung = Model.SuDung;
+    var caDangDung = suDung.LopTheoCaHoc.Count(x => x.Value > 0);
+    var hocPhiDangDung = suDung.LopTheoHocPhi.Count(x => x.Value > 0);
+    var coSoDangDung = suDung.LopTheoCoSo.Count(x => x.Value > 0);
+    var phongDangDung = suDung.LopTheoPhongHoc.Count(x => x.Value > 0);
 }
 
 @section Styles {
@@ -92,7 +97,36 @@
             </div>
             <div class="setup-inline-note" style="margin-top:.9rem;">
                 <i class="bi bi-info-circle"></i>
-                <div>`Phòng học` là bắt buộc nếu muốn áp dụng đúng rule sĩ số nhỏ hơn sức chứa.</div>
+                <div>Form lớp chỉ dùng các bản ghi đang `Hoạt động`; riêng `Phòng học` là bắt buộc nếu muốn áp dụng đúng rule sĩ số nhỏ hơn sức chứa.</div>
+            </div>
+        </div>
+    </section>
+
+    <section class="setup-panel">
+        <div class="setup-panel-body">
+            <div class="setup-panel-title">
+                <div>
+                    <h5>Mức độ sử dụng hiện tại</h5>
+                    <p>Nhìn nhanh dữ liệu nền nào đã gắn với lớp thật để tránh chỉnh sửa quá tay.</p>
+                </div>
+            </div>
+            <div class="setup-kpi-grid">
+                <div class="setup-kpi">
+                    <div class="value">@caDangDung</div>
+                    <div class="label">Ca học đang có lớp</div>
+                </div>
+                <div class="setup-kpi">
+                    <div class="value">@hocPhiDangDung</div>
+                    <div class="label">Gói học phí đang áp dụng</div>
+                </div>
+                <div class="setup-kpi">
+                    <div class="value">@coSoDangDung</div>
+                    <div class="label">Cơ sở đang vận hành lớp</div>
+                </div>
+                <div class="setup-kpi">
+                    <div class="value">@phongDangDung</div>
+                    <div class="label">Phòng học đang gắn lớp</div>
+                </div>
             </div>
         </div>
     </section>

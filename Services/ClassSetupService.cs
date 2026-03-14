@@ -2,6 +2,7 @@ using Microsoft.EntityFrameworkCore;
 using System.Globalization;
 using System.Text;
 using TrungTamNgoaiNgu.Data;
+using TrungTamNgoaiNgu.Enums;
 using TrungTamNgoaiNgu.Models;
 using TrungTamNgoaiNgu.Services.Interfaces;
 
@@ -19,6 +20,69 @@ public class ClassSetupService(AppDbContext db) : IClassSetupService
             TongHocPhi = await db.HocPhis.CountAsync(),
             KhoaHocChuaCoHocPhi = await db.KhoaHocs.CountAsync(k => !db.HocPhis.Any(h => h.KhoaHocId == k.KhoaHocId)),
             CoSoChuaCoPhong = await db.CoSoDaoTaos.CountAsync(c => !db.PhongHocs.Any(p => p.CoSoId == c.CoSoId && p.DeletedAt == null))
+        };
+    }
+
+    public async Task<ClassSetupUsageSnapshot> LaySoLieuSuDungAsync()
+    {
+        var lopTheoCaHoc = await db.LopHocs
+            .AsNoTracking()
+            .Where(l => l.DeletedAt == null)
+            .GroupBy(l => l.CaHocId)
+            .Select(g => new { g.Key, Count = g.Count() })
+            .ToDictionaryAsync(x => x.Key, x => x.Count);
+
+        var buoiTheoCaHoc = await db.BuoiHocs
+            .AsNoTracking()
+            .Where(b => b.CaHocId.HasValue)
+            .GroupBy(b => b.CaHocId!.Value)
+            .Select(g => new { g.Key, Count = g.Count() })
+            .ToDictionaryAsync(x => x.Key, x => x.Count);
+
+        var lopTheoHocPhi = await db.LopHocs
+            .AsNoTracking()
+            .Where(l => l.DeletedAt == null && l.HocPhiId.HasValue)
+            .GroupBy(l => l.HocPhiId!.Value)
+            .Select(g => new { g.Key, Count = g.Count() })
+            .ToDictionaryAsync(x => x.Key, x => x.Count);
+
+        var phongTheoCoSo = await db.PhongHocs
+            .AsNoTracking()
+            .Where(p => p.DeletedAt == null && p.CoSoId.HasValue)
+            .GroupBy(p => p.CoSoId!.Value)
+            .Select(g => new { g.Key, Count = g.Count() })
+            .ToDictionaryAsync(x => x.Key, x => x.Count);
+
+        var lopTheoCoSo = await db.LopHocs
+            .AsNoTracking()
+            .Where(l => l.DeletedAt == null && l.CoSoId.HasValue)
+            .GroupBy(l => l.CoSoId!.Value)
+            .Select(g => new { g.Key, Count = g.Count() })
+            .ToDictionaryAsync(x => x.Key, x => x.Count);
+
+        var giaoVienTheoCoSo = await db.TaiKhoans
+            .AsNoTracking()
+            .Where(t => t.Role == 1 && t.DeletedAt == null && t.TrangThai == 1 && t.NhanSu != null && t.NhanSu.CoSoId.HasValue)
+            .GroupBy(t => t.NhanSu!.CoSoId!.Value)
+            .Select(g => new { g.Key, Count = g.Count() })
+            .ToDictionaryAsync(x => x.Key, x => x.Count);
+
+        var lopTheoPhongHoc = await db.LopHocs
+            .AsNoTracking()
+            .Where(l => l.DeletedAt == null && l.PhongHocId.HasValue)
+            .GroupBy(l => l.PhongHocId!.Value)
+            .Select(g => new { g.Key, Count = g.Count() })
+            .ToDictionaryAsync(x => x.Key, x => x.Count);
+
+        return new ClassSetupUsageSnapshot
+        {
+            LopTheoCaHoc = lopTheoCaHoc,
+            BuoiTheoCaHoc = buoiTheoCaHoc,
+            LopTheoHocPhi = lopTheoHocPhi,
+            PhongTheoCoSo = phongTheoCoSo,
+            LopTheoCoSo = lopTheoCoSo,
+            GiaoVienTheoCoSo = giaoVienTheoCoSo,
+            LopTheoPhongHoc = lopTheoPhongHoc
         };
     }
 
@@ -242,6 +306,7 @@ public class ClassSetupService(AppDbContext db) : IClassSetupService
             .Where(p => p.DeletedAt == null)
             .Include(p => p.CoSo)
             .OrderBy(p => p.CoSo!.TenCoSo)
+            .ThenBy(p => p.TrangThai != (int)PhongHocTrangThai.HoatDong)
             .ThenBy(p => p.TenPhong)
             .ToListAsync();
 
@@ -403,7 +468,9 @@ public class ClassSetupService(AppDbContext db) : IClassSetupService
     }
 
     private static byte ChuanHoaTrangThaiByte(byte trangThai) => trangThai == 0 ? (byte)0 : (byte)1;
-    private static int ChuanHoaTrangThaiInt(int trangThai) => trangThai == 0 ? 0 : 1;
+    private static int ChuanHoaTrangThaiInt(int trangThai) => Enum.IsDefined(typeof(PhongHocTrangThai), trangThai)
+        ? trangThai
+        : (int)PhongHocTrangThai.HoatDong;
     private static ServiceResult ThanhCong(string message) => new() { ThanhCong = true, ThongBao = message };
     private static ServiceResult ThatBai(string message) => new() { ThanhCong = false, ThongBao = message };
 }

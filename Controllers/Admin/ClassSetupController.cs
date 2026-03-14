@@ -8,9 +8,11 @@ public class ClassSetupController(IClassSetupService classSetupService) : Contro
 {
     public async Task<IActionResult> Index()
     {
+        var suDung = await classSetupService.LaySoLieuSuDungAsync();
         var vm = new ClassSetupDashboardViewModel
         {
-            ThongKe = await classSetupService.LayThongKeAsync()
+            ThongKe = await classSetupService.LayThongKeAsync(),
+            SuDung = suDung
         };
 
         return View("~/Views/Admin/ClassSetup/Index.cshtml", vm);
@@ -151,10 +153,12 @@ public class ClassSetupController(IClassSetupService classSetupService) : Contro
 
     private async Task<CaHocManagementViewModel> TaoCaHocViewModelAsync(CaHoc form)
     {
+        var suDung = await classSetupService.LaySoLieuSuDungAsync();
         return new CaHocManagementViewModel
         {
             Form = form,
-            Items = await classSetupService.LayDanhSachCaHocAsync()
+            Items = await classSetupService.LayDanhSachCaHocAsync(),
+            SuDung = suDung
         };
     }
 
@@ -166,11 +170,13 @@ public class ClassSetupController(IClassSetupService classSetupService) : Contro
 
     private async Task<HocPhiManagementViewModel> TaoHocPhiViewModelAsync(HocPhi form)
     {
+        var suDung = await classSetupService.LaySoLieuSuDungAsync();
         return new HocPhiManagementViewModel
         {
             Form = form,
             Items = await classSetupService.LayDanhSachHocPhiAsync(),
-            KhoaHocs = await classSetupService.LayKhoaHocHoatDongAsync()
+            KhoaHocs = await classSetupService.LayKhoaHocHoatDongAsync(),
+            SuDung = suDung
         };
     }
 
@@ -182,11 +188,13 @@ public class ClassSetupController(IClassSetupService classSetupService) : Contro
 
     private async Task<CoSoManagementViewModel> TaoCoSoViewModelAsync(CoSoDaoTao form)
     {
+        var suDung = await classSetupService.LaySoLieuSuDungAsync();
         return new CoSoManagementViewModel
         {
             Form = form,
             Items = await classSetupService.LayDanhSachCoSoAsync(),
-            TinhThanhs = await classSetupService.LayTinhThanhAsync()
+            TinhThanhs = await classSetupService.LayTinhThanhAsync(),
+            SuDung = suDung
         };
     }
 
@@ -198,11 +206,13 @@ public class ClassSetupController(IClassSetupService classSetupService) : Contro
 
     private async Task<PhongHocManagementViewModel> TaoPhongHocViewModelAsync(PhongHoc form)
     {
+        var suDung = await classSetupService.LaySoLieuSuDungAsync();
         return new PhongHocManagementViewModel
         {
             Form = form,
             Items = await classSetupService.LayDanhSachPhongHocAsync(),
-            CoSos = await classSetupService.LayCoSoHoatDongAsync()
+            CoSos = await classSetupService.LayCoSoHoatDongAsync(),
+            SuDung = suDung
         };
     }
 

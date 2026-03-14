@@ -18,6 +18,8 @@
 
 <form id="khoaHocForm" asp-action="Create" method="post" enctype="multipart/form-data" data-draft-key="khoahoc-create">
     @Html.AntiForgeryToken()
+    <input type="hidden" asp-for="Slug" id="slugInput" />
+    <input type="hidden" asp-for="MaKhoaHoc" id="maKhoaHocInput" />
     <div id="draftNotice" class="kh-draft-note kh-hidden">
         <span>Đã khôi phục bản nháp tự động cho form này.</span>
         <button type="button" id="clearDraftBtn">Xóa nháp</button>
@@ -30,10 +32,11 @@
             <div class="card">
                 <div class="card-header"><i class="bi bi-info-circle"></i> Thông tin cơ bản</div>
                 <div class="card-body kh-stack-14">
+                    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
 
                     <div class="form-group">
                         <label asp-for="TenKhoaHoc">Tên khóa học <span class="kh-required">*</span></label>
-                        <input asp-for="TenKhoaHoc" class="form-control" placeholder="VD: IELTS Intensive 7.0+" />
+                        <input asp-for="TenKhoaHoc" class="form-control" placeholder="VD: IELTS Intensive 7.0+" id="tenKhoaHocInput" />
                         <span asp-validation-for="TenKhoaHoc" class="text-danger"></span>
                     </div>
 
@@ -42,12 +45,13 @@
                             <label asp-for="DanhMucId">Danh mục <span class="kh-required">*</span></label>
                             <select asp-for="DanhMucId" class="form-control">
                                 <option value="">-- Chọn danh mục --</option>
-                                @foreach (var dm in (List<TrungTamNgoaiNgu.Models.DanhMucKhoaHoc>)ViewBag.DanhMucs)
+                                @foreach (var dm in (List<TrungTamNgoaiNgu.Models.CourseCategoryOptionViewModel>)ViewBag.DanhMucs)
                                 {
-                                    <option value="@dm.DanhMucId">@dm.TenDanhMuc</option>
+                                    <option value="@dm.DanhMucId">@dm.Label@(dm.IsInactive ? " (tạm ngưng)" : "")</option>
                                 }
                             </select>
                             <span asp-validation-for="DanhMucId" class="text-danger"></span>
+                            <div class="kh-help-text" id="categoryHint">Chọn đúng danh mục để học phí và báo cáo được nhóm chuẩn ngay từ đầu.</div>
                         </div>
 
                         <div class="form-group">
@@ -93,6 +97,27 @@
 
         <!-- ── Cột phải: ảnh + nút lưu ── -->
         <div class="kh-col-right">
+
+            <div class="card">
+                <div class="card-header"><i class="bi bi-clipboard-data"></i> Tóm tắt cấu hình</div>
+                <div class="card-body kh-stack-10">
+                    <div class="kh-summary-item">
+                        <span>Mã khóa học dự kiến</span>
+                        <code id="maKhoaHocPreview" class="dm-slug-preview">DMKHO-001</code>
+                    </div>
+                    <div class="kh-summary-item">
+                        <span>Slug dự kiến</span>
+                        <code id="slugPreview" class="dm-slug-preview">khoa-hoc</code>
+                    </div>
+                    <div class="kh-summary-item">
+                        <span>Danh mục đang chọn</span>
+                        <strong id="selectedCategoryPreview">Chưa chọn</strong>
+                    </div>
+                    <div class="kh-help-text">
+                        Khóa học sẽ sẵn sàng mở lớp hơn khi có danh mục đúng và ít nhất một gói học phí được cấu hình trong phần Thiết lập lớp học.
+                    </div>
+                </div>
+            </div>
 
             <div class="card">
                 <div class="card-header"><i class="bi bi-image"></i> Ảnh khóa học</div>
@@ -158,9 +183,67 @@
         const imgPreview = document.getElementById('imgPreview');
         const imgPlaceholder = document.getElementById('imgPlaceholder');
         const imgPreviewWrap = document.getElementById('imgPreviewWrap');
+        const tenKhoaHocInput = document.getElementById('tenKhoaHocInput');
+        const maKhoaHocInput = document.getElementById('maKhoaHocInput');
+        const maKhoaHocPreview = document.getElementById('maKhoaHocPreview');
+        const slugInput = document.getElementById('slugInput');
+        const slugPreview = document.getElementById('slugPreview');
+        const danhMucSelect = form.querySelector('select[name="DanhMucId"]');
+        const selectedCategoryPreview = document.getElementById('selectedCategoryPreview');
         let isDirty = false;
         let isSubmitting = false;
         let saveTimer = null;
+
+        function slugify(value) {
+            return (value || '')
+                .trim()
+                .toLowerCase()
+                .normalize('NFD')
+                .replace(/[\u0300-\u036f]/g, '')
+                .replace(/đ/g, 'd')
+                .replace(/[^a-z0-9]+/g, '-')
+                .replace(/^-+|-+$/g, '')
+                || 'khoa-hoc';
+        }
+
+        function syncSummary() {
+            const slug = slugify(tenKhoaHocInput?.value || '');
+            if (slugInput) slugInput.value = slug;
+            if (slugPreview) slugPreview.textContent = slug;
+
+            const categoryLabel = danhMucSelect?.selectedOptions?.[0]?.text?.trim() || '';
+            const code = buildCodePreview(categoryLabel, tenKhoaHocInput?.value || '');
+            if (maKhoaHocInput) maKhoaHocInput.value = code;
+            if (maKhoaHocPreview) maKhoaHocPreview.textContent = code;
+
+            const selectedText = danhMucSelect?.selectedOptions?.[0]?.text?.trim() || '';
+            if (selectedCategoryPreview) {
+                selectedCategoryPreview.textContent = selectedText && !selectedText.startsWith('--')
+                    ? selectedText
+                    : 'Chưa chọn';
+            }
+        }
+
+        function tokenFromText(value, fallback) {
+            const parts = (value || '')
+                .trim()
+                .toLowerCase()
+                .normalize('NFD')
+                .replace(/[\u0300-\u036f]/g, '')
+                .replace(/đ/g, 'd')
+                .replace(/[^a-z0-9\s]+/g, ' ')
+                .split(/\s+/)
+                .filter(Boolean);
+
+            if (parts.length > 1) return parts.map(x => x[0]).join('').toUpperCase().slice(0, 3) || fallback;
+            return (parts[0] || fallback).toUpperCase().slice(0, 3) || fallback;
+        }
+
+        function buildCodePreview(categoryLabel, courseLabel) {
+            const categoryToken = tokenFromText(categoryLabel, 'DM');
+            const courseToken = tokenFromText(courseLabel, 'KH');
+            return `${categoryToken}${courseToken}-001`;
+        }
 
         function collectDraft() {
             const payload = {};
@@ -198,6 +281,9 @@
             el.addEventListener('change', () => { isDirty = true; saveDraft(); });
         });
 
+        tenKhoaHocInput?.addEventListener('input', syncSummary);
+        danhMucSelect?.addEventListener('change', syncSummary);
+
         clearDraftBtn.addEventListener('click', () => {
             clearTimeout(saveTimer);
             localStorage.removeItem(draftKey);
@@ -230,6 +316,7 @@
         });
 
         restoreDraft();
+        syncSummary();
 
         function previewImg(input) {
             if (input.files && input.files[0]) {

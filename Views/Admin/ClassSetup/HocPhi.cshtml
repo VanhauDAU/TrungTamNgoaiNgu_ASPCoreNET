@@ -45,6 +45,7 @@
                                 <th>Số buổi</th>
                                 <th>Đơn giá</th>
                                 <th>Tổng học phí</th>
+                                <th>Đang dùng</th>
                                 <th>Trạng thái</th>
                                 <th>Thao tác</th>
                             </tr>
@@ -52,6 +53,7 @@
                         <tbody>
                             @foreach (var item in Model.Items)
                             {
+                                var soLopDangDung = Model.SuDung.LopTheoHocPhi.GetValueOrDefault(item.HocPhiId);
                                 <tr>
                                     <td>
                                         <strong>@(item.KhoaHoc?.TenKhoaHoc ?? $"Khóa học #{item.KhoaHocId}")</strong>
@@ -60,6 +62,10 @@
                                     <td>@item.SoBuoi buổi</td>
                                     <td>@item.DonGia?.ToString("N0") đ / buổi</td>
                                     <td>@item.TongHocPhi.ToString("N0") đ</td>
+                                    <td>
+                                        <div>@soLopDangDung lớp đang áp dụng</div>
+                                        <div class="meta">Lưu ý: đổi số buổi sẽ ảnh hưởng luồng mở lớp mới</div>
+                                    </td>
                                     <td>
                                         <span class="setup-badge @(item.TrangThai == 0 ? "inactive" : "active")">@(item.TrangThai == 0 ? "Tạm ngưng" : "Hoạt động")</span>
                                     </td>
@@ -135,6 +141,7 @@
             <div class="body">
                 <ul class="setup-help-list">
                     <li><i class="bi bi-check2-circle"></i><span>Mỗi khóa học có thể có nhiều gói theo số buổi để mở nhiều loại lớp.</span></li>
+                    <li><i class="bi bi-check2-circle"></i><span>Chỉ gói học phí `Hoạt động` mới xuất hiện trong form tạo và chỉnh sửa lớp.</span></li>
                     <li><i class="bi bi-check2-circle"></i><span>Không xóa được gói học phí đã được lớp học sử dụng.</span></li>
                 </ul>
             </div>

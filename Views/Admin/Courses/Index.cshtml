@@ -1,4 +1,5 @@
 @model List<TrungTamNgoaiNgu.Models.KhoaHoc>
+@using TrungTamNgoaiNgu.Enums
 @{
     ViewData["Title"] = "Khóa học";
     Layout = "~/Views/Shared/_AdminLayout.cshtml";
@@ -45,6 +46,14 @@
         <div class="kh-mini-label">Khóa học tạm ngưng</div>
         <div class="kh-mini-value">@stats.TamNgung</div>
     </div>
+    <div class="kh-mini-card soon">
+        <div class="kh-mini-label">Đang vận hành</div>
+        <div class="kh-mini-value">@stats.DangVanHanh</div>
+    </div>
+    <div class="kh-mini-card closed">
+        <div class="kh-mini-label">Chưa có học phí</div>
+        <div class="kh-mini-value">@stats.ChuaCoHocPhi</div>
+    </div>
     <div class="kh-mini-card deleted">
         <div class="kh-mini-label">Đã xóa mềm</div>
         <div class="kh-mini-value">@stats.DaXoaMem</div>
@@ -63,15 +72,15 @@
 
             <select name="danhMucId" class="form-control kh-select-danhmuc">
                 <option value="">Tất cả danh mục</option>
-                @foreach (var dm in (List<TrungTamNgoaiNgu.Models.DanhMucKhoaHoc>)ViewBag.DanhMucs)
+                @foreach (var dm in (List<TrungTamNgoaiNgu.Models.CourseCategoryOptionViewModel>)ViewBag.DanhMucs)
                 {
                     if (danhMucIdQ == dm.DanhMucId.ToString())
                     {
-                        <option value="@dm.DanhMucId" selected>@dm.TenDanhMuc</option>
+                        <option value="@dm.DanhMucId" selected>@dm.Label@(dm.IsInactive ? " (tạm ngưng)" : "")</option>
                     }
                     else
                     {
-                        <option value="@dm.DanhMucId">@dm.TenDanhMuc</option>
+                        <option value="@dm.DanhMucId">@dm.Label@(dm.IsInactive ? " (tạm ngưng)" : "")</option>
                     }
                 }
             </select>
@@ -143,7 +152,8 @@
                         <th>Ảnh</th>
                         <th>Tên khóa học</th>
                         <th>Danh mục</th>
-                        <th>Số lớp</th>
+                        <th>Học phí</th>
+                        <th>Vận hành</th>
                         <th>Trạng thái</th>
                         <th>Ngày tạo</th>
                         <th>Thao tác</th>
@@ -153,6 +163,10 @@
                     @for (int i = 0; i < Model.Count; i++)
                     {
                         var kh = Model[i];
+                        var hocPhiHoatDong = kh.HocPhis?.Count(h => h.TrangThai != 0) ?? 0;
+                        var lopSapMo = kh.LopHocs?.Count(l => l.TrangThai == LopHocTrangThai.SapMo) ?? 0;
+                        var lopDangTuyen = kh.LopHocs?.Count(l => l.TrangThai == LopHocTrangThai.DangTuyenSinh || l.TrangThai == LopHocTrangThai.ChotDanhSach) ?? 0;
+                        var lopDangHoc = kh.LopHocs?.Count(l => l.TrangThai == LopHocTrangThai.DangHoc) ?? 0;
                         <tr>
                             <td class="kh-check-col">
                                 <input type="checkbox" name="selectedIds" value="@kh.KhoaHocId"
@@ -174,14 +188,36 @@
                             <td>
                                 <div class="kh-name">@kh.TenKhoaHoc</div>
                                 <div class="kh-slug">@kh.Slug</div>
+                                @if (hocPhiHoatDong == 0)
+                                {
+                                    <div class="kh-inline-note warning">Chưa có gói học phí hoạt động</div>
+                                }
                             </td>
                             <td>
                                 @if (kh.DanhMuc != null)
-                                { <span class="badge badge-indigo">@kh.DanhMuc.TenDanhMuc</span> }
+                                {
+                                    <div class="dm-category-cell">
+                                        @if (kh.DanhMuc.Parent != null)
+                                        {
+                                            <div class="kh-slug">@kh.DanhMuc.Parent.TenDanhMuc</div>
+                                        }
+                                        <span class="badge badge-indigo">@kh.DanhMuc.TenDanhMuc</span>
+                                    </div>
+                                }
                                 else { <span class="kh-muted">—</span> }
                             </td>
                             <td>
-                                <span class="badge badge-gray">@(kh.LopHocs?.Count ?? 0) lớp</span>
+                                <div class="dm-usage-stack">
+                                    <span class="badge badge-indigo">@hocPhiHoatDong gói hoạt động</span>
+                                    <span class="badge badge-gray">@(kh.HocPhis?.Count ?? 0) tổng gói</span>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="dm-usage-stack">
+                                    <span class="badge badge-gray">@lopSapMo sắp mở</span>
+                                    <span class="badge badge-warning">@lopDangTuyen tuyển sinh</span>
+                                    <span class="badge badge-success">@lopDangHoc đang học</span>
+                                </div>
                             </td>
                             <td>
                                 @if (kh.TrangThai == 0)

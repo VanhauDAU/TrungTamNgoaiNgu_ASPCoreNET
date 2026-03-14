@@ -4,6 +4,8 @@
     ViewData["Title"] = "Chỉnh sửa lớp học";
     Layout = "~/Views/Shared/_AdminLayout.cshtml";
     var lichHocHienTai = (Model.LichHoc ?? "").Split(',', System.StringSplitOptions.RemoveEmptyEntries);
+    var tinhThanhHienTaiId = Model.CoSo?.TinhThanhId;
+    var phuongXaHienTai = Model.CoSo?.TenPhuongXa ?? string.Empty;
 
     var buocHopLe = Model.TrangThai switch
     {
@@ -109,16 +111,30 @@
                 </div>
                 <div class="form-group">
                     <label class="form-label">Gói học phí</label>
-                    <select asp-for="HocPhiId" class="form-control">
+                    <select asp-for="HocPhiId" id="hocPhiSelect" class="form-control">
                         <option value="">-- Chọn gói học phí --</option>
                         @foreach (var hp in (List<TrungTamNgoaiNgu.Models.HocPhi>)ViewBag.HocPhis)
                         {
                             if (Model.HocPhiId == hp.HocPhiId)
-                            { <option value="@hp.HocPhiId" selected>@hp.SoBuoi buổi · @hp.DonGia?.ToString("N0")đ/buổi</option> }
+                            {
+                                <option value="@hp.HocPhiId"
+                                        data-so-buoi="@hp.SoBuoi"
+                                        data-tong-tien="@hp.TongHocPhi.ToString("N0")"
+                                        selected>
+                                    @hp.SoBuoi buổi · @hp.DonGia?.ToString("N0")đ/buổi
+                                </option>
+                            }
                             else
-                            { <option value="@hp.HocPhiId">@hp.SoBuoi buổi · @hp.DonGia?.ToString("N0")đ/buổi</option> }
+                            {
+                                <option value="@hp.HocPhiId"
+                                        data-so-buoi="@hp.SoBuoi"
+                                        data-tong-tien="@hp.TongHocPhi.ToString("N0")">
+                                    @hp.SoBuoi buổi · @hp.DonGia?.ToString("N0")đ/buổi
+                                </option>
+                            }
                         }
                     </select>
+                    <div class="meta-hint" id="hocPhiInfo"></div>
                     <small class="text-muted">Thiếu gói học phí? <a asp-controller="ClassSetup" asp-action="HocPhi">Quản lý ngay</a></small>
                 </div>
             </div>
@@ -129,17 +145,50 @@
             <p class="panel-sub">Điều chỉnh cơ sở, phòng học, giáo viên và ca học.</p>
             <div class="form-row-2">
                 <div class="form-group">
+                    <label class="form-label">Tỉnh/Thành phố</label>
+                    <select id="tinhThanhSelect" class="form-control">
+                        <option value="">-- Chọn tỉnh/thành phố --</option>
+                        @foreach (var tt in (List<TrungTamNgoaiNgu.Models.TinhThanh>)ViewBag.TinhThanhs)
+                        {
+                            if (tinhThanhHienTaiId == tt.TinhThanhId)
+                            {
+                                <option value="@tt.TinhThanhId" selected>@tt.TenTinhThanh</option>
+                            }
+                            else
+                            {
+                                <option value="@tt.TinhThanhId">@tt.TenTinhThanh</option>
+                            }
+                        }
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Phường/Xã</label>
+                    <select id="phuongXaSelect" class="form-control" data-selected="@phuongXaHienTai">
+                        @if (!string.IsNullOrWhiteSpace(phuongXaHienTai))
+                        {
+                            <option value="@phuongXaHienTai" selected>@phuongXaHienTai</option>
+                        }
+                        else
+                        {
+                            <option value="">-- Chọn tỉnh/thành trước --</option>
+                        }
+                    </select>
+                </div>
+            </div>
+            <div class="form-row-2">
+                <div class="form-group">
                     <label class="form-label">Cơ sở</label>
                     <select asp-for="CoSoId" id="coSoSelect" class="form-control">
                         <option value="">-- Chọn cơ sở --</option>
                         @foreach (var cs in (List<TrungTamNgoaiNgu.Models.CoSoDaoTao>)ViewBag.CoSos)
                         {
                             if (Model.CoSoId == cs.CoSoId)
-                            { <option value="@cs.CoSoId" selected>@cs.TenCoSo</option> }
+                            { <option value="@cs.CoSoId" data-diachi="@cs.DiaChi" selected>@cs.TenCoSo</option> }
                             else
-                            { <option value="@cs.CoSoId">@cs.TenCoSo</option> }
+                            { <option value="@cs.CoSoId" data-diachi="@cs.DiaChi">@cs.TenCoSo</option> }
                         }
                     </select>
+                    <div class="meta-hint" id="coSoDiaChi"></div>
                     <small class="text-muted">Thiếu cơ sở? <a asp-controller="ClassSetup" asp-action="CoSo">Thêm cơ sở đào tạo</a></small>
                 </div>
                 <div class="form-group">
@@ -230,15 +279,17 @@
             <div class="form-row-3">
                 <div class="form-group">
                     <label class="form-label">Ngày bắt đầu</label>
-                    <input asp-for="NgayBatDau" type="date" class="form-control" />
+                    <input asp-for="NgayBatDau" id="ngayBDInput" type="date" class="form-control" />
                 </div>
                 <div class="form-group">
-                    <label class="form-label">Ngày kết thúc</label>
-                    <input asp-for="NgayKetThuc" type="date" class="form-control" />
+                    <label class="form-label">Ngày kết thúc <small class="text-muted">(tự tính)</small></label>
+                    <input asp-for="NgayKetThuc" id="ngayKTInput" type="date" class="form-control" readonly />
+                    <div class="meta-hint" id="ngayKetThucInfo">Ngày kết thúc sẽ được tự tính lại theo lịch học và số buổi hiện tại.</div>
                 </div>
                 <div class="form-group">
-                    <label class="form-label">Số buổi dự kiến</label>
-                    <input asp-for="SoBuoiDuKien" type="number" class="form-control" min="1" />
+                    <label class="form-label">Số buổi dự kiến <small class="text-muted">(đồng bộ từ gói học phí nếu có)</small></label>
+                    <input asp-for="SoBuoiDuKien" id="soBuoiInput" type="number" class="form-control" min="1" />
+                    <div class="meta-hint" id="sbdInfo"></div>
                 </div>
             </div>
 
@@ -330,16 +381,81 @@
         const editForm = document.getElementById('editForm');
         const checks = document.querySelectorAll('.lich-hoc-check');
         const lichHocInput = document.getElementById('lichHocInput');
+        const khoaHocSelect = document.getElementById('khoaHocSelect');
+        const hocPhiSelect = document.getElementById('hocPhiSelect');
+        const hocPhiInfo = document.getElementById('hocPhiInfo');
+        const tinhThanhSelect = document.getElementById('tinhThanhSelect');
+        const phuongXaSelect = document.getElementById('phuongXaSelect');
         const coSoSelect = document.getElementById('coSoSelect');
+        const coSoDiaChi = document.getElementById('coSoDiaChi');
         const phongHocSelect = document.getElementById('phongHocSelect');
         const phongCapacityInfo = document.getElementById('phongCapacityInfo');
+        const ngayBDInput = document.getElementById('ngayBDInput');
+        const ngayKTInput = document.getElementById('ngayKTInput');
+        const ngayKetThucInfo = document.getElementById('ngayKetThucInfo');
+        const soBuoiInput = document.getElementById('soBuoiInput');
+        const sbdInfo = document.getElementById('sbdInfo');
         const soHocInput = document.getElementById('soHocInput');
         const giaoVienSelect = document.getElementById('giaoVienSelect');
         const giaoVienScopeInfo = document.getElementById('giaoVienScopeInfo');
         const previewSiSoEdit = document.getElementById('previewSiSoEdit');
+        const DOW_MAP = { '2':1, '3':2, '4':3, '5':4, '6':5, '7':6, 'CN':0 };
 
         function updateLichHoc() {
             lichHocInput.value = [...checks].filter(c => c.checked).map(c => c.value).join(',');
+        }
+
+        function toInputDate(date) {
+            const year = date.getFullYear();
+            const month = String(date.getMonth() + 1).padStart(2, '0');
+            const day = String(date.getDate()).padStart(2, '0');
+            return `${year}-${month}-${day}`;
+        }
+
+        function getSoBuoiTarget() {
+            const selected = hocPhiSelect.selectedOptions[0];
+            const soBuoiGoi = Number(selected?.dataset?.soBuoi || 0);
+            const soBuoiNhap = Number(soBuoiInput.value || 0);
+            return soBuoiGoi > 0 ? soBuoiGoi : soBuoiNhap;
+        }
+
+        function tinhNgayKetThuc() {
+            const startValue = ngayBDInput.value;
+            const lichHoc = [...checks].filter(c => c.checked).map(c => c.value);
+            const soBuoi = getSoBuoiTarget();
+
+            if (!startValue || lichHoc.length === 0 || soBuoi <= 0) {
+                ngayKTInput.value = '';
+                sbdInfo.textContent = '';
+                ngayKetThucInfo.textContent = 'Ngày kết thúc sẽ được tự tính lại theo lịch học và số buổi hiện tại.';
+                return;
+            }
+
+            const days = new Set(lichHoc.map(x => DOW_MAP[x]));
+            const current = new Date(`${startValue}T00:00:00`);
+            let daTinh = 0;
+            let lastDate = null;
+
+            while (daTinh < soBuoi) {
+                if (days.has(current.getDay())) {
+                    daTinh++;
+                    lastDate = new Date(current);
+                }
+                current.setDate(current.getDate() + 1);
+            }
+
+            if (!lastDate) {
+                ngayKTInput.value = '';
+                sbdInfo.textContent = '';
+                ngayKetThucInfo.textContent = 'Không thể tính ngày kết thúc với lịch học hiện tại.';
+                return;
+            }
+
+            ngayKTInput.value = toInputDate(lastDate);
+            sbdInfo.textContent = hocPhiSelect.value
+                ? `Đồng bộ ${soBuoi} buổi từ gói học phí và tự tính lịch kết thúc.`
+                : `Tự tính lịch kết thúc theo ${soBuoi} buổi đang cấu hình.`;
+            ngayKetThucInfo.textContent = `Kết thúc dự kiến vào ${lastDate.toLocaleDateString('vi-VN')}.`;
         }
 
         function updatePhongCapacityInfo() {
@@ -353,6 +469,107 @@
 
             phongCapacityInfo.textContent = `Phòng tối đa ${sucChua} học viên. Sĩ số lớp phải nhỏ hơn ${sucChua}.`;
             if (sucChua > 1) soHocInput.max = String(sucChua - 1);
+        }
+
+        async function loadPhuongXa(tinhThanhId, selectedWard = '') {
+            phuongXaSelect.innerHTML = '<option value="">-- Đang tải phường/xã... --</option>';
+            phuongXaSelect.disabled = true;
+
+            try {
+                const query = new URLSearchParams({
+                    tinhThanhId: tinhThanhId || '',
+                    baoGomPhuongXa: selectedWard || ''
+                });
+                const res = await fetch(`/Admin/Classes/PhuongXaByTinh?${query.toString()}`);
+                if (!res.ok) throw new Error();
+
+                const data = await res.json();
+                phuongXaSelect.innerHTML = '<option value="">-- Tất cả địa bàn --</option>';
+                data.forEach(w => {
+                    const selected = selectedWard && w.name === selectedWard ? ' selected' : '';
+                    phuongXaSelect.innerHTML += `<option value="${w.name}"${selected}>${w.name}</option>`;
+                });
+
+                if (data.length === 0) {
+                    phuongXaSelect.innerHTML = '<option value="">Chưa có dữ liệu phường/xã</option>';
+                } else {
+                    phuongXaSelect.disabled = false;
+                }
+            } catch {
+                phuongXaSelect.innerHTML = '<option value="">Không tải được phường/xã từ API</option>';
+            }
+        }
+
+        async function loadCoSoByDiaBan(tinhThanhId, phuongXa, selectedCoSoId = '') {
+            if (!tinhThanhId) {
+                coSoSelect.innerHTML = '<option value="">-- Chọn tỉnh/thành trước --</option>';
+                coSoSelect.disabled = true;
+                coSoDiaChi.textContent = '';
+                return;
+            }
+
+            const query = new URLSearchParams({
+                tinhThanhId: tinhThanhId || '',
+                phuongXa: phuongXa || '',
+                baoGomCoSoId: selectedCoSoId || ''
+            });
+
+            const res = await fetch(`/Admin/Classes/CoSoByTinh?${query.toString()}`);
+            const data = await res.json();
+
+            coSoSelect.innerHTML = '<option value="">-- Chọn cơ sở đào tạo --</option>';
+            data.forEach(c => {
+                const selected = selectedCoSoId && String(c.id) === String(selectedCoSoId) ? ' selected' : '';
+                const px = c.phuongXa ? ` - ${c.phuongXa}` : '';
+                coSoSelect.innerHTML += `<option value="${c.id}" data-diachi="${c.diaChi ?? ''}"${selected}>${c.name}${px}</option>`;
+            });
+
+            coSoSelect.disabled = data.length === 0;
+            if (data.length === 0) {
+                coSoSelect.innerHTML = '<option value="">Không có cơ sở phù hợp</option>';
+            }
+
+            coSoDiaChi.textContent = coSoSelect.selectedOptions[0]?.dataset?.diachi
+                ? `Địa chỉ: ${coSoSelect.selectedOptions[0].dataset.diachi}`
+                : '';
+        }
+
+        async function loadHocPhi(khoaHocId, selectedHocPhiId = '') {
+            if (!khoaHocId) {
+                hocPhiSelect.innerHTML = '<option value="">-- Chọn khóa học trước --</option>';
+                soBuoiInput.readOnly = false;
+                updateHocPhiInfo();
+                return;
+            }
+
+            const res = await fetch(`/Admin/Classes/HocPhiByKhoaHoc?khoaHocId=${khoaHocId || ''}`);
+            const data = await res.json();
+            hocPhiSelect.innerHTML = '<option value="">-- Chọn gói học phí --</option>';
+            data.forEach(h => {
+                const selected = selectedHocPhiId && String(h.id) === String(selectedHocPhiId) ? ' selected' : '';
+                hocPhiSelect.innerHTML += `<option value="${h.id}" data-so-buoi="${h.soBuoi ?? ''}" data-tong-tien="${h.tongHocPhiText ?? ''}"${selected}>${h.name}</option>`;
+            });
+            updateHocPhiInfo();
+        }
+
+        function updateHocPhiInfo() {
+            const selected = hocPhiSelect.selectedOptions[0];
+            const soBuoi = Number(selected?.dataset?.soBuoi || 0);
+            const tongTien = selected?.dataset?.tongTien || '';
+
+            if (!selected || !selected.value || !soBuoi) {
+                soBuoiInput.readOnly = false;
+                hocPhiInfo.textContent = '';
+                tinhNgayKetThuc();
+                return;
+            }
+
+            soBuoiInput.readOnly = true;
+            soBuoiInput.value = soBuoi;
+            hocPhiInfo.textContent = tongTien
+                ? `Đồng bộ ${soBuoi} buổi từ gói học phí. Tổng học phí tham chiếu: ${tongTien} đ.`
+                : `Đồng bộ ${soBuoi} buổi từ gói học phí đã chọn.`;
+            tinhNgayKetThuc();
         }
 
         function refreshGiaoVienLabels() {
@@ -386,16 +603,59 @@
                 : `Giáo viên khác cơ sở: ${coSoName} (vẫn được phân công).`;
         }
 
-        checks.forEach(c => c.addEventListener('change', updateLichHoc));
+        checks.forEach(c => c.addEventListener('change', () => {
+            updateLichHoc();
+            tinhNgayKetThuc();
+        }));
         updateLichHoc();
         soHocInput.addEventListener('input', () => {
             previewSiSoEdit.textContent = soHocInput.value?.trim()
                 ? `${soHocInput.value.trim()} học viên`
                 : 'Chưa nhập';
         });
+        hocPhiSelect.addEventListener('change', updateHocPhiInfo);
+        ngayBDInput.addEventListener('change', tinhNgayKetThuc);
+        soBuoiInput.addEventListener('input', () => {
+            if (!hocPhiSelect.value) {
+                tinhNgayKetThuc();
+            }
+        });
+        khoaHocSelect.addEventListener('change', async () => {
+            await loadHocPhi(khoaHocSelect.value, '');
+        });
+        tinhThanhSelect.addEventListener('change', async () => {
+            const selectedWard = '';
+            const selectedCoSoId = '';
+
+            phongHocSelect.innerHTML = '<option value="">-- Chọn cơ sở trước --</option>';
+            phongHocSelect.disabled = true;
+            phongCapacityInfo.textContent = '';
+
+            if (!tinhThanhSelect.value) {
+                phuongXaSelect.innerHTML = '<option value="">-- Chọn tỉnh/thành trước --</option>';
+                phuongXaSelect.disabled = true;
+                await loadCoSoByDiaBan('', '', '');
+                refreshGiaoVienLabels();
+                return;
+            }
+
+            await loadPhuongXa(tinhThanhSelect.value, selectedWard);
+            await loadCoSoByDiaBan(tinhThanhSelect.value, selectedWard, selectedCoSoId);
+            refreshGiaoVienLabels();
+        });
+        phuongXaSelect.addEventListener('change', async () => {
+            await loadCoSoByDiaBan(tinhThanhSelect.value, phuongXaSelect.value, '');
+            phongHocSelect.innerHTML = '<option value="">-- Chọn cơ sở trước --</option>';
+            phongHocSelect.disabled = true;
+            phongCapacityInfo.textContent = '';
+            refreshGiaoVienLabels();
+        });
 
         if (coSoSelect) {
             coSoSelect.addEventListener('change', async () => {
+                coSoDiaChi.textContent = coSoSelect.selectedOptions[0]?.dataset?.diachi
+                    ? `Địa chỉ: ${coSoSelect.selectedOptions[0].dataset.diachi}`
+                    : '';
                 const res = await fetch(`/Admin/Classes/PhongHocByCoso?coSoId=${coSoSelect.value}`);
                 const data = await res.json();
                 phongHocSelect.innerHTML = '<option value="">-- Chọn phòng học --</option>';
@@ -411,19 +671,46 @@
         phongHocSelect.addEventListener('change', updatePhongCapacityInfo);
         giaoVienSelect.addEventListener('change', refreshGiaoVienLabels);
         updatePhongCapacityInfo();
+        updateHocPhiInfo();
         refreshGiaoVienLabels();
+        tinhNgayKetThuc();
+        coSoDiaChi.textContent = coSoSelect.selectedOptions[0]?.dataset?.diachi
+            ? `Địa chỉ: ${coSoSelect.selectedOptions[0].dataset.diachi}`
+            : '';
         previewSiSoEdit.textContent = soHocInput.value?.trim()
             ? `${soHocInput.value.trim()} học viên`
             : 'Chưa nhập';
+
+        if (tinhThanhSelect.value) {
+            loadPhuongXa(tinhThanhSelect.value, phuongXaSelect.dataset.selected || phuongXaSelect.value)
+                .then(() => loadCoSoByDiaBan(tinhThanhSelect.value, phuongXaSelect.dataset.selected || phuongXaSelect.value, coSoSelect.value));
+        }
 
         editForm.addEventListener('submit', (event) => {
             const selectedPhong = phongHocSelect.selectedOptions[0];
             const sucChua = Number(selectedPhong?.dataset?.succhua || 0);
             const siSo = Number(soHocInput.value || 0);
+            const selectedHocPhi = hocPhiSelect.selectedOptions[0];
+            const soBuoiGoiHocPhi = Number(selectedHocPhi?.dataset?.soBuoi || 0);
+            const soBuoiDuKien = Number(soBuoiInput.value || 0);
             if (sucChua > 0 && siSo > 0 && siSo >= sucChua) {
                 event.preventDefault();
                 phongCapacityInfo.textContent = `Sĩ số ${siSo} không hợp lệ. Phải nhỏ hơn sức chứa ${sucChua}.`;
                 soHocInput.focus();
+                return;
+            }
+
+            if (selectedHocPhi?.value && soBuoiGoiHocPhi > 0 && soBuoiDuKien > 0 && soBuoiDuKien !== soBuoiGoiHocPhi) {
+                event.preventDefault();
+                hocPhiInfo.textContent = `Số buổi dự kiến phải khớp gói học phí đã chọn (${soBuoiGoiHocPhi} buổi).`;
+                soBuoiInput.focus();
+                return;
+            }
+
+            if (selectedHocPhi?.value && !ngayKTInput.value) {
+                event.preventDefault();
+                ngayKetThucInfo.textContent = 'Không thể lưu vì chưa đủ dữ liệu để tự tính ngày kết thúc.';
+                ngayBDInput.focus();
             }
         });
     </script>
