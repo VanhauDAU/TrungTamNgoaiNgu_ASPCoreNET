@@ -28,12 +28,28 @@ public class ServiceResult
     public string ThongBao { get; set; } = string.Empty;
 }
 
+public class ServiceResult<T> : ServiceResult
+{
+    public T? DuLieu { get; set; }
+}
+
 public class KhoaHocQuanLyThongKe
 {
     public int TongKhoaHoc { get; set; }
     public int DangHoatDong { get; set; }
     public int TamNgung { get; set; }
+    public int DangVanHanh { get; set; }
+    public int ChuaCoHocPhi { get; set; }
     public int DaXoaMem { get; set; }
+}
+
+public class DanhMucKhoaHocQuanLyThongKe
+{
+    public int TongDanhMuc { get; set; }
+    public int DanhMucGoc { get; set; }
+    public int DanhMucCon { get; set; }
+    public int DangHoatDong { get; set; }
+    public int TamNgung { get; set; }
 }
 
 // ---------------------------------------------------------------------------
@@ -81,7 +97,7 @@ public interface ICoursesService
     Task<KhoaHoc?> LayTheoIdAsync(int id);
 
     // Thêm khóa học mới → trả về ID sau khi tạo
-    Task<int> ThemAsync(KhoaHoc khoaHoc, string? nguoiThucHien = null);
+    Task<ServiceResult<int>> ThemAsync(KhoaHoc khoaHoc, string? nguoiThucHien = null);
 
     // Cập nhật khóa học, có kiểm tra nghiệp vụ
     Task<ServiceResult> CapNhatCoKiemTraAsync(KhoaHoc khoaHoc, string? nguoiThucHien = null);
@@ -101,15 +117,19 @@ public interface ICoursesService
     Task<ServiceResult> KhoiPhucHangLoatAsync(List<int> ids, string? nguoiThucHien = null);
 
     // Lấy tất cả danh mục để hiển thị dropdown
-    Task<List<DanhMucKhoaHoc>> LayDanhMucAsync();
+    Task<List<DanhMucKhoaHoc>> LayDanhMucAsync(int? baoGomDanhMucId = null);
+
+    Task<string> TaoSlugDanhMucAsync(string tenDanhMuc, int? boQuaDanhMucId = null);
 
     Task<List<DanhMucKhoaHoc>> LayDanhSachDanhMucAsync(string? tuKhoa = null);
 
     Task<DanhMucKhoaHoc?> LayDanhMucTheoIdAsync(int id);
 
-    Task<int> ThemDanhMucAsync(DanhMucKhoaHoc danhMuc);
+    Task<DanhMucKhoaHocQuanLyThongKe> LayThongKeDanhMucAsync();
 
-    Task<bool> CapNhatDanhMucAsync(DanhMucKhoaHoc danhMuc);
+    Task<ServiceResult<int>> ThemDanhMucAsync(DanhMucKhoaHoc danhMuc, string? nguoiThucHien = null);
+
+    Task<ServiceResult> CapNhatDanhMucAsync(DanhMucKhoaHoc danhMuc, string? nguoiThucHien = null);
 
     Task<ServiceResult> XoaMemDanhMucAsync(int id, string? nguoiThucHien = null);
 

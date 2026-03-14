@@ -1,54 +1,168 @@
-@model TrungTamNgoaiNgu.Models.DanhMucKhoaHoc
+@model TrungTamNgoaiNgu.Models.CourseCategoryFormViewModel
 @{
     ViewData["Title"] = "Chỉnh sửa danh mục";
     Layout = "~/Views/Shared/_AdminLayout.cshtml";
 }
 
+@section Styles {
+    <link rel="stylesheet" href="~/css/admin-courses.css" asp-append-version="true" />
+}
+
 <div class="page-header">
     <div>
-        <div class="page-title">Chỉnh sửa: @Model.TenDanhMuc</div>
-        <div class="page-subtitle">Quay lại <a asp-action="Index">danh sách danh mục</a></div>
+        <div class="page-title">Chỉnh sửa danh mục</div>
+        <div class="page-sub">Đang chỉnh sửa: <strong>@Model.Form.TenDanhMuc</strong></div>
+    </div>
+    <div class="kh-header-actions">
+        <a asp-action="Trash" class="btn btn-outline">
+            <i class="bi bi-trash3"></i> Thùng rác
+        </a>
+        <a asp-action="Index" class="btn btn-outline">
+            <i class="bi bi-arrow-left"></i> Quay lại
+        </a>
     </div>
 </div>
 
-<div class="card" style="max-width:800px">
-    <form asp-action="Edit" method="post">
-        @Html.AntiForgeryToken()
-        
-        <!-- ID ẩn để Binding Model -->
-        <input type="hidden" asp-for="DanhMucId" />
-        <input type="hidden" asp-for="Slug" />
+<form asp-action="Edit" method="post">
+    @Html.AntiForgeryToken()
+    <input type="hidden" asp-for="Form.DanhMucId" />
+    <input type="hidden" asp-for="Form.Slug" id="slugInput" />
 
-        <div class="form-group mb-3">
-            <label asp-for="TenDanhMuc" class="form-label font-weight-bold">Tên danh mục <span class="text-danger">*</span></label>
-            <input asp-for="TenDanhMuc" class="form-control" />
-            <span asp-validation-for="TenDanhMuc" class="text-danger" style="font-size:.85rem"></span>
+    <div class="kh-form-grid">
+        <div class="kh-col-left">
+            <div class="card">
+                <div class="card-header"><i class="bi bi-diagram-3"></i> Thông tin danh mục</div>
+                <div class="card-body kh-stack-14">
+                    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+                    <div class="kh-two-col">
+                        <div class="form-group">
+                            <label asp-for="Form.TenDanhMuc">Tên danh mục <span class="kh-required">*</span></label>
+                            <input asp-for="Form.TenDanhMuc" class="form-control" id="tenDanhMucInput" />
+                            <span asp-validation-for="Form.TenDanhMuc" class="text-danger"></span>
+                        </div>
+
+                        <div class="form-group">
+                            <label asp-for="Form.MaDanhMuc">Mã danh mục</label>
+                            <input asp-for="Form.MaDanhMuc" class="form-control" />
+                            <span asp-validation-for="Form.MaDanhMuc" class="text-danger"></span>
+                        </div>
+                    </div>
+
+                    <div class="kh-two-col">
+                        <div class="form-group">
+                            <label asp-for="Form.ParentId">Danh mục cha</label>
+                            <select asp-for="Form.ParentId" class="form-control">
+                                <option value="">Danh mục gốc</option>
+                                @foreach (var option in Model.ParentOptions)
+                                {
+                                    if (Model.Form.ParentId == option.DanhMucId)
+                                    {
+                                        <option value="@option.DanhMucId" selected>
+                                            @option.Label@(option.IsInactive ? " (tạm ngưng)" : "")
+                                        </option>
+                                    }
+                                    else
+                                    {
+                                        <option value="@option.DanhMucId">
+                                            @option.Label@(option.IsInactive ? " (tạm ngưng)" : "")
+                                        </option>
+                                    }
+                                }
+                            </select>
+                            <div class="kh-help-text">Thay đổi cây danh mục sẽ ảnh hưởng cách hiển thị ở dropdown khóa học.</div>
+                        </div>
+
+                        <div class="form-group">
+                            <label asp-for="Form.SortOrder">Thứ tự hiển thị</label>
+                            <input asp-for="Form.SortOrder" class="form-control" type="number" min="0" />
+                            <div class="kh-help-text">Số càng nhỏ càng được ưu tiên hiển thị.</div>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label asp-for="Form.MoTa">Mô tả ngắn</label>
+                        <textarea asp-for="Form.MoTa" class="form-control" rows="4"></textarea>
+                        <span asp-validation-for="Form.MoTa" class="text-danger"></span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header"><i class="bi bi-toggle-on"></i> Trạng thái sử dụng</div>
+                <div class="card-body kh-stack-14">
+                    <div class="form-group">
+                        <label asp-for="Form.TrangThai">Trạng thái</label>
+                        <select asp-for="Form.TrangThai" class="form-control">
+                            @if (Model.Form.TrangThai == 1) { <option value="1" selected>Đang hoạt động</option> }
+                            else { <option value="1">Đang hoạt động</option> }
+                            @if (Model.Form.TrangThai == 0) { <option value="0" selected>Tạm ngưng</option> }
+                            else { <option value="0">Tạm ngưng</option> }
+                        </select>
+                    </div>
+                    <div class="kh-help-text">
+                        Nếu danh mục này còn khóa học đang hoạt động, hệ thống sẽ giữ dữ liệu an toàn và chặn thao tác không hợp lệ.
+                    </div>
+                </div>
+            </div>
         </div>
 
-        <div class="form-group mb-3">
-            <label asp-for="MoTa" class="form-label font-weight-bold">Mô tả ngắn</label>
-            <textarea asp-for="MoTa" class="form-control" rows="3"></textarea>
-            <span asp-validation-for="MoTa" class="text-danger" style="font-size:.85rem"></span>
-        </div>
+        <div class="kh-col-right">
+            <div class="card">
+                <div class="card-header"><i class="bi bi-link-45deg"></i> Slug hiện tại</div>
+                <div class="card-body kh-stack-10">
+                    <code id="slugPreview" class="dm-slug-preview">@Model.SlugPreview</code>
+                    <div class="kh-help-text">Slug sẽ được tạo lại tự động nếu tên danh mục thay đổi.</div>
+                </div>
+            </div>
 
-        <div class="form-group mb-4">
-            <label asp-for="TrangThai" class="form-label font-weight-bold">Trạng thái</label>
-            <select asp-for="TrangThai" class="form-control">
-                <option value="1">Sử dụng</option>
-                <option value="0">Tạm ngưng</option>
-            </select>
-        </div>
+            <div class="card">
+                <div class="card-header"><i class="bi bi-bar-chart-line"></i> Tình hình sử dụng</div>
+                <div class="card-body kh-stack-10">
+                    <div class="badge badge-gray">@Model.SoDanhMucCon danh mục con</div>
+                    <div class="badge badge-indigo">@Model.SoKhoaHocTong khóa học</div>
+                    <div class="badge badge-success">@Model.SoKhoaHocDangHoatDong khóa học đang hoạt động</div>
+                </div>
+            </div>
 
-        <hr style="opacity: .1" />
-        <div style="display:flex; justify-content:flex-end; gap:8px">
-            <a asp-action="Index" class="btn btn-outline">Hủy bỏ</a>
-            <button type="submit" class="btn btn-primary">
-                <i class="bi bi-save"></i> Cập nhật
-            </button>
+            <div class="card">
+                <div class="card-body kh-stack-10">
+                    <button type="submit" class="btn btn-primary kh-full-btn">
+                        <i class="bi bi-check-lg"></i> Cập nhật danh mục
+                    </button>
+                    <a asp-action="Index" class="btn btn-outline kh-full-btn">Hủy bỏ</a>
+                </div>
+            </div>
         </div>
-    </form>
-</div>
+    </div>
+</form>
 
 @section Scripts {
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    <script>
+        const tenDanhMucInput = document.getElementById('tenDanhMucInput');
+        const slugInput = document.getElementById('slugInput');
+        const slugPreview = document.getElementById('slugPreview');
+
+        function slugify(value) {
+            return (value || '')
+                .trim()
+                .toLowerCase()
+                .normalize('NFD')
+                .replace(/[\u0300-\u036f]/g, '')
+                .replace(/đ/g, 'd')
+                .replace(/[^a-z0-9]+/g, '-')
+                .replace(/^-+|-+$/g, '')
+                || 'danh-muc';
+        }
+
+        function syncSlugPreview() {
+            const slug = slugify(tenDanhMucInput?.value || '');
+            if (slugInput) slugInput.value = slug;
+            if (slugPreview) slugPreview.textContent = slug;
+        }
+
+        tenDanhMucInput?.addEventListener('input', syncSlugPreview);
+        syncSlugPreview();
+    </script>
 }
