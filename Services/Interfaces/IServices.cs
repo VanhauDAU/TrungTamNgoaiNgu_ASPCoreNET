@@ -213,11 +213,8 @@ public interface IClassesService
 public class ClassSetupThongKe
 {
     public int TongCaHoc { get; set; }
-    public int TongCoSo { get; set; }
-    public int TongPhongHoc { get; set; }
     public int TongHocPhi { get; set; }
     public int KhoaHocChuaCoHocPhi { get; set; }
-    public int CoSoChuaCoPhong { get; set; }
 }
 
 public class ClassSetupUsageSnapshot
@@ -225,10 +222,6 @@ public class ClassSetupUsageSnapshot
     public Dictionary<int, int> LopTheoCaHoc { get; set; } = [];
     public Dictionary<int, int> BuoiTheoCaHoc { get; set; } = [];
     public Dictionary<long, int> LopTheoHocPhi { get; set; } = [];
-    public Dictionary<int, int> PhongTheoCoSo { get; set; } = [];
-    public Dictionary<int, int> LopTheoCoSo { get; set; } = [];
-    public Dictionary<int, int> GiaoVienTheoCoSo { get; set; } = [];
-    public Dictionary<int, int> LopTheoPhongHoc { get; set; } = [];
 }
 
 public interface IClassSetupService
@@ -246,19 +239,52 @@ public interface IClassSetupService
     Task<ServiceResult> LuuHocPhiAsync(HocPhi hocPhi, string? nguoiThucHien = null);
     Task<ServiceResult> XoaHocPhiAsync(long id, string? nguoiThucHien = null);
 
-    Task<List<CoSoDaoTao>> LayDanhSachCoSoAsync();
-    Task<CoSoDaoTao?> LayCoSoTheoIdAsync(int id);
-    Task<ServiceResult> LuuCoSoAsync(CoSoDaoTao coSo, string? nguoiThucHien = null);
-    Task<ServiceResult> XoaCoSoAsync(int id, string? nguoiThucHien = null);
-
-    Task<List<PhongHoc>> LayDanhSachPhongHocAsync();
-    Task<PhongHoc?> LayPhongHocTheoIdAsync(int id);
-    Task<ServiceResult> LuuPhongHocAsync(PhongHoc phongHoc, string? nguoiThucHien = null);
-    Task<ServiceResult> XoaPhongHocAsync(int id, string? nguoiThucHien = null);
-
     Task<List<KhoaHoc>> LayKhoaHocHoatDongAsync();
+}
+
+// ---------------------------------------------------------------------------
+// CAMPUS SERVICE — Quản lý cơ sở đào tạo
+// ---------------------------------------------------------------------------
+public class CampusQuanLyThongKe
+{
+    public int TongCoSo { get; set; }
+    public int CoSoHoatDong { get; set; }
+    public int CoSoTamNgung { get; set; }
+    public int TongPhongHoc { get; set; }
+    public int CoSoDangVanHanh { get; set; }
+    public int CoSoChuaCoPhong { get; set; }
+}
+
+public class CampusTongQuanChiTiet
+{
+    public int TongPhongHoc { get; set; }
+    public int PhongHoatDong { get; set; }
+    public int TongLopHoc { get; set; }
+    public int LopDangVanHanh { get; set; }
+    public int TongNhanSu { get; set; }
+    public int TongGiaoVien { get; set; }
+}
+
+public interface ICampusService
+{
+    Task<CampusQuanLyThongKe> LayThongKeAsync();
+    Task<List<CoSoDaoTao>> LayDanhSachAsync(string? tuKhoa = null, int? tinhThanhId = null, int? trangThai = null);
+    Task<CoSoDaoTao?> LayTheoIdAsync(int id);
+    Task<TinhThanh?> LayTinhThanhTheoIdAsync(int id);
+    Task<ServiceResult<int>> ThemAsync(CoSoDaoTao coSo, string? nguoiThucHien = null);
+    Task<ServiceResult> CapNhatAsync(CoSoDaoTao coSo, string? nguoiThucHien = null);
+    Task<ServiceResult> XoaAsync(int id, string? nguoiThucHien = null);
+
+    Task<CampusTongQuanChiTiet> LayTongQuanChiTietAsync(int coSoId);
+    Task<List<PhongHoc>> LayPhongTheoCoSoAsync(int coSoId);
+    Task<PhongHoc?> LayPhongTheoIdAsync(int id);
+    Task<ServiceResult> LuuPhongTheoCoSoAsync(int coSoId, PhongHoc phongHoc, string? nguoiThucHien = null);
+    Task<ServiceResult> XoaPhongAsync(int coSoId, int phongHocId, string? nguoiThucHien = null);
+
+    Task<List<TaiKhoan>> LayNhanSuTheoCoSoAsync(int coSoId);
+    Task<List<LopHoc>> LayLopTheoCoSoAsync(int coSoId);
     Task<List<TinhThanh>> LayTinhThanhAsync();
-    Task<List<CoSoDaoTao>> LayCoSoHoatDongAsync();
+    Task<List<string>> LayPhuongXaNoiBoTheoTinhAsync(int? tinhThanhId, string? baoGomPhuongXa = null);
 }
 
 // ---------------------------------------------------------------------------

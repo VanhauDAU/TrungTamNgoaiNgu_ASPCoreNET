@@ -1,0 +1,189 @@
+@model TrungTamNgoaiNgu.Models.CampusIndexViewModel
+@{
+    ViewData["Title"] = "Cơ sở đào tạo";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+}
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/admin-campus.css" asp-append-version="true" />
+}
+
+<div class="page-header campus-page-header">
+    <div>
+        <div class="page-title">Cơ sở đào tạo</div>
+        <div class="page-sub">Quản lý cơ sở, phòng học và các chỉ số vận hành của từng chi nhánh trong một module riêng.</div>
+    </div>
+    <div class="campus-header-actions">
+        <a asp-controller="Classes" asp-action="Create" class="btn btn-outline">
+            <i class="bi bi-plus-circle"></i> Tạo lớp
+        </a>
+        <a asp-action="Create" class="btn btn-primary">
+            <i class="bi bi-buildings"></i> Thêm cơ sở
+        </a>
+    </div>
+</div>
+
+@if (TempData["ThanhCong"] != null)
+{
+    <div class="alert alert-success"><i class="bi bi-check-circle-fill"></i> @TempData["ThanhCong"]</div>
+}
+@if (TempData["LoiXay"] != null)
+{
+    <div class="alert alert-danger"><i class="bi bi-exclamation-triangle-fill"></i> @TempData["LoiXay"]</div>
+}
+
+<section class="campus-stats">
+    <article class="campus-stat-card">
+        <div class="label">Tổng cơ sở</div>
+        <div class="value">@Model.ThongKe.TongCoSo</div>
+        <div class="meta">@Model.ThongKe.CoSoHoatDong cơ sở hoạt động</div>
+    </article>
+    <article class="campus-stat-card">
+        <div class="label">Tổng phòng học</div>
+        <div class="value">@Model.ThongKe.TongPhongHoc</div>
+        <div class="meta">@Model.ThongKe.CoSoChuaCoPhong cơ sở chưa có phòng</div>
+    </article>
+    <article class="campus-stat-card">
+        <div class="label">Đang vận hành</div>
+        <div class="value">@Model.ThongKe.CoSoDangVanHanh</div>
+        <div class="meta">Cơ sở đang có lớp tuyển sinh hoặc đang học</div>
+    </article>
+    <article class="campus-stat-card">
+        <div class="label">Tạm ngưng</div>
+        <div class="value">@Model.ThongKe.CoSoTamNgung</div>
+        <div class="meta">Cần rà soát để mở lại hoặc đóng hẳn</div>
+    </article>
+</section>
+
+<section class="campus-filter-card">
+    <div class="campus-filter-body">
+        <form method="get" class="campus-filter-form">
+            <div class="campus-filter-field">
+                <label for="campusKeyword">Tìm kiếm</label>
+                <div class="campus-search">
+                    <i class="bi bi-search"></i>
+                    <input id="campusKeyword" name="tuKhoa" value="@Model.TuKhoa" class="form-control" placeholder="Tên cơ sở, mã cơ sở, phường/xã, địa chỉ..." />
+                </div>
+            </div>
+            <div class="campus-filter-field">
+                <label for="campusProvince">Tỉnh/thành</label>
+                <select id="campusProvince" name="tinhThanhId" class="form-control">
+                    <option value="">Tất cả tỉnh/thành</option>
+                    @foreach (var tinhThanh in Model.TinhThanhs)
+                    {
+                        if (Model.TinhThanhId == tinhThanh.TinhThanhId)
+                        {
+                            <option value="@tinhThanh.TinhThanhId" selected="selected">@tinhThanh.TenTinhThanh</option>
+                        }
+                        else
+                        {
+                            <option value="@tinhThanh.TinhThanhId">@tinhThanh.TenTinhThanh</option>
+                        }
+                    }
+                </select>
+            </div>
+            <div class="campus-filter-field">
+                <label for="campusStatus">Trạng thái</label>
+                <select id="campusStatus" name="trangThai" class="form-control">
+                    <option value="">Tất cả trạng thái</option>
+                    @if (Model.TrangThai == 1)
+                    {
+                        <option value="1" selected="selected">Hoạt động</option>
+                    }
+                    else
+                    {
+                        <option value="1">Hoạt động</option>
+                    }
+                    @if (Model.TrangThai == 0)
+                    {
+                        <option value="0" selected="selected">Tạm ngưng</option>
+                    }
+                    else
+                    {
+                        <option value="0">Tạm ngưng</option>
+                    }
+                </select>
+            </div>
+            <div class="campus-filter-actions">
+                <button type="submit" class="btn btn-primary">
+                    <i class="bi bi-funnel-fill"></i> Lọc
+                </button>
+                <a asp-action="Index" class="btn btn-outline">
+                    <i class="bi bi-x-circle"></i> Xóa lọc
+                </a>
+            </div>
+        </form>
+    </div>
+</section>
+
+<section class="campus-card">
+    <div class="campus-table-wrap">
+        @if (!Model.Items.Any())
+        {
+            <div class="campus-empty">
+                <i class="bi bi-buildings"></i>
+                Chưa có cơ sở nào phù hợp với điều kiện lọc hiện tại.
+            </div>
+        }
+        else
+        {
+            <table class="campus-table">
+                <thead>
+                    <tr>
+                        <th>Cơ sở</th>
+                        <th>Khu vực</th>
+                        <th>Liên hệ</th>
+                        <th>Vận hành</th>
+                        <th>Trạng thái</th>
+                        <th>Thao tác</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model.Items)
+                    {
+                        var coSo = item.CoSo;
+                        var statusClass = coSo.TrangThai == 0 ? "inactive" : "active";
+                        var statusText = coSo.TrangThai == 0 ? "Tạm ngưng" : "Hoạt động";
+                        <tr>
+                            <td>
+                                <strong>@coSo.TenCoSo</strong>
+                                <div class="campus-meta">@coSo.MaCoSo · @coSo.Slug</div>
+                            </td>
+                            <td>
+                                <div>@(coSo.TinhThanh?.TenTinhThanh ?? "Chưa chọn tỉnh/thành")</div>
+                                <div class="campus-meta">@(string.IsNullOrWhiteSpace(coSo.TenPhuongXa) ? "Chưa có phường/xã" : coSo.TenPhuongXa)</div>
+                            </td>
+                            <td>
+                                <div>@(string.IsNullOrWhiteSpace(coSo.SoDienThoai) ? "Chưa có số điện thoại" : coSo.SoDienThoai)</div>
+                                <div class="campus-meta">@(string.IsNullOrWhiteSpace(coSo.Email) ? "Chưa có email" : coSo.Email)</div>
+                            </td>
+                            <td>
+                                <div>@item.SoPhongHoc phòng · @item.SoLopHoc lớp</div>
+                                <div class="campus-meta">@item.SoNhanSu nhân sự · @item.SoGiaoVien giáo viên</div>
+                            </td>
+                            <td>
+                                <span class="setup-badge @statusClass">@statusText</span>
+                            </td>
+                            <td>
+                                <div class="campus-actions">
+                                    <a asp-action="Detail" asp-route-id="@coSo.CoSoId" class="btn btn-outline btn-sm" title="Chi tiết">
+                                        <i class="bi bi-eye"></i>
+                                    </a>
+                                    <a asp-action="Edit" asp-route-id="@coSo.CoSoId" class="btn btn-outline btn-sm" title="Chỉnh sửa">
+                                        <i class="bi bi-pencil"></i>
+                                    </a>
+                                    <form method="post" asp-action="Delete" asp-route-id="@coSo.CoSoId" onsubmit="return confirm('Xóa cơ sở này?')" style="display:inline;">
+                                        @Html.AntiForgeryToken()
+                                        <button type="submit" class="btn btn-danger btn-sm" title="Xóa">
+                                            <i class="bi bi-trash"></i>
+                                        </button>
+                                    </form>
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        }
+    </div>
+</section>

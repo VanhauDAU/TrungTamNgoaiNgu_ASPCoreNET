@@ -204,3 +204,43 @@ Nhập sĩ số tối đa
 3. Nếu có `hocPhiId` thì bắt buộc phải có `ngayBatDau` và `lichHoc` để tính `ngayKetThuc`.
 4. `ngayKetThuc` không nhập tay ở UI; backend là nguồn chân lý để tự tính.
 5. Giáo viên được phép dạy liên cơ sở, nhưng UI phải thể hiện rõ phạm vi cơ sở để người dùng quyết định.
+
+---
+
+## 9. Quy Trinh Quan Ly Co So Dao Tao (Cap nhat 2026-03-14)
+
+```
+[Admin vao module Co so dao tao]
+    ↓
+Man hinh Index
+    → Loc theo tu khoa / tinh-thanh / trang thai
+    → Xem nhanh so phong, so lop, so nhan su, so giao vien cua tung co so
+
+Chon Them moi / Chinh sua
+    ↓
+Nhap thong tin co so
+    → maCoSo va slug duoc backend tu sinh
+    → dia ban van dung du lieu noi bo
+    → luu xong di vao trang Detail cua co so
+
+Trang Detail co so
+    ↓
+Tabs:
+    1. Tong quan
+        → thong tin lien he, dia chi, ban do, thong ke van hanh
+    2. Phong hoc
+        → CRUD phong hoc ngay trong ngu canh co so
+        → khong cho chon lai co so trong form phong
+    3. Nhan su
+        → liet ke tai khoan co NhanSu.CoSoId = CoSoId
+    4. Lop hoc
+        → liet ke cac lop co LopHoc.CoSoId = CoSoId
+```
+
+### Rule bat buoc cho Co so
+
+1. `maCoSo` va `slug` do backend sinh, khong nhap tay.
+2. Khong xoa duoc co so neu con `PhongHoc`, `LopHoc`, `NhanSu` hoac `HoaDon` lien quan.
+3. `PhongHoc` thuoc module `Co so`, khong con la setup item doc lap.
+4. Ten phong phai unique trong cung mot co so.
+5. Khong xoa duoc phong neu van co lop dang gan phong do.

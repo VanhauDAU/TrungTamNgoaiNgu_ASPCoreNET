@@ -4,7 +4,7 @@ using TrungTamNgoaiNgu.Services.Interfaces;
 
 namespace TrungTamNgoaiNgu.Controllers.Admin;
 
-public class ClassSetupController(IClassSetupService classSetupService) : Controller
+public class ClassSetupController(IClassSetupService classSetupService, ICampusService campusService) : Controller
 {
     public async Task<IActionResult> Index()
     {
@@ -80,69 +80,56 @@ public class ClassSetupController(IClassSetupService classSetupService) : Contro
         return RedirectToAction(nameof(HocPhi));
     }
 
-    public async Task<IActionResult> CoSo(int? id = null)
+    public IActionResult CoSo(int? id = null)
     {
-        var vm = await TaoCoSoViewModelAsync(id);
-        return View("~/Views/Admin/ClassSetup/CoSo.cshtml", vm);
+        if (id.HasValue && id.Value > 0)
+            return RedirectToAction("Edit", "Campuses", new { id = id.Value });
+
+        return RedirectToAction("Index", "Campuses");
     }
 
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> CoSo(CoSoDaoTao form)
+    public IActionResult CoSo(CoSoDaoTao form)
     {
-        ModelState.Remove(nameof(CoSoDaoTao.MaCoSo));
-        ModelState.Remove(nameof(CoSoDaoTao.Slug));
-
-        var ketQua = await classSetupService.LuuCoSoAsync(form, LayNguoiThucHien());
-        if (ketQua.ThanhCong)
-        {
-            TempData["ThanhCong"] = ketQua.ThongBao;
-            return RedirectToAction(nameof(CoSo));
-        }
-
-        ModelState.AddModelError(string.Empty, ketQua.ThongBao);
-        var vm = await TaoCoSoViewModelAsync(form);
-        return View("~/Views/Admin/ClassSetup/CoSo.cshtml", vm);
+        TempData["LoiXay"] = "Màn hình cơ sở đã chuyển sang module `Cơ sở đào tạo` mới.";
+        return RedirectToAction("Index", "Campuses");
     }
 
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> DeleteCoSo(int id)
+    public IActionResult DeleteCoSo(int id)
     {
-        var ketQua = await classSetupService.XoaCoSoAsync(id, LayNguoiThucHien());
-        TempData[ketQua.ThanhCong ? "ThanhCong" : "LoiXay"] = ketQua.ThongBao;
-        return RedirectToAction(nameof(CoSo));
+        TempData["LoiXay"] = "Hành động này đã chuyển sang module `Cơ sở đào tạo` mới.";
+        return RedirectToAction("Index", "Campuses");
     }
 
     public async Task<IActionResult> PhongHoc(int? id = null)
     {
-        var vm = await TaoPhongHocViewModelAsync(id);
-        return View("~/Views/Admin/ClassSetup/PhongHoc.cshtml", vm);
-    }
-
-    [HttpPost]
-    [ValidateAntiForgeryToken]
-    public async Task<IActionResult> PhongHoc(PhongHoc form)
-    {
-        var ketQua = await classSetupService.LuuPhongHocAsync(form, LayNguoiThucHien());
-        if (ketQua.ThanhCong)
+        if (id.HasValue && id.Value > 0)
         {
-            TempData["ThanhCong"] = ketQua.ThongBao;
-            return RedirectToAction(nameof(PhongHoc));
+            var room = await campusService.LayPhongTheoIdAsync(id.Value);
+            if (room?.CoSoId.HasValue == true)
+                return RedirectToAction("Detail", "Campuses", new { id = room.CoSoId.Value, tab = "rooms", roomId = id.Value });
         }
 
-        ModelState.AddModelError(string.Empty, ketQua.ThongBao);
-        var vm = await TaoPhongHocViewModelAsync(form);
-        return View("~/Views/Admin/ClassSetup/PhongHoc.cshtml", vm);
+        return RedirectToAction("Index", "Campuses");
     }
 
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> DeletePhongHoc(int id)
+    public IActionResult PhongHoc(PhongHoc form)
     {
-        var ketQua = await classSetupService.XoaPhongHocAsync(id, LayNguoiThucHien());
-        TempData[ketQua.ThanhCong ? "ThanhCong" : "LoiXay"] = ketQua.ThongBao;
-        return RedirectToAction(nameof(PhongHoc));
+        TempData["LoiXay"] = "Màn hình phòng học đã chuyển vào chi tiết cơ sở.";
+        return RedirectToAction("Index", "Campuses");
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public IActionResult DeletePhongHoc(int id)
+    {
+        TempData["LoiXay"] = "Hành động này đã chuyển vào chi tiết cơ sở.";
+        return RedirectToAction("Index", "Campuses");
     }
 
     private async Task<CaHocManagementViewModel> TaoCaHocViewModelAsync(int? id)
@@ -176,42 +163,6 @@ public class ClassSetupController(IClassSetupService classSetupService) : Contro
             Form = form,
             Items = await classSetupService.LayDanhSachHocPhiAsync(),
             KhoaHocs = await classSetupService.LayKhoaHocHoatDongAsync(),
-            SuDung = suDung
-        };
-    }
-
-    private async Task<CoSoManagementViewModel> TaoCoSoViewModelAsync(int? id)
-    {
-        var form = id.HasValue ? await classSetupService.LayCoSoTheoIdAsync(id.Value) ?? new CoSoDaoTao() : new CoSoDaoTao();
-        return await TaoCoSoViewModelAsync(form);
-    }
-
-    private async Task<CoSoManagementViewModel> TaoCoSoViewModelAsync(CoSoDaoTao form)
-    {
-        var suDung = await classSetupService.LaySoLieuSuDungAsync();
-        return new CoSoManagementViewModel
-        {
-            Form = form,
-            Items = await classSetupService.LayDanhSachCoSoAsync(),
-            TinhThanhs = await classSetupService.LayTinhThanhAsync(),
-            SuDung = suDung
-        };
-    }
-
-    private async Task<PhongHocManagementViewModel> TaoPhongHocViewModelAsync(int? id)
-    {
-        var form = id.HasValue ? await classSetupService.LayPhongHocTheoIdAsync(id.Value) ?? new PhongHoc() : new PhongHoc();
-        return await TaoPhongHocViewModelAsync(form);
-    }
-
-    private async Task<PhongHocManagementViewModel> TaoPhongHocViewModelAsync(PhongHoc form)
-    {
-        var suDung = await classSetupService.LaySoLieuSuDungAsync();
-        return new PhongHocManagementViewModel
-        {
-            Form = form,
-            Items = await classSetupService.LayDanhSachPhongHocAsync(),
-            CoSos = await classSetupService.LayCoSoHoatDongAsync(),
             SuDung = suDung
         };
     }

@@ -7,8 +7,6 @@
     var suDung = Model.SuDung;
     var caDangDung = suDung.LopTheoCaHoc.Count(x => x.Value > 0);
     var hocPhiDangDung = suDung.LopTheoHocPhi.Count(x => x.Value > 0);
-    var coSoDangDung = suDung.LopTheoCoSo.Count(x => x.Value > 0);
-    var phongDangDung = suDung.LopTheoPhongHoc.Count(x => x.Value > 0);
 }
 
 @section Styles {
@@ -18,7 +16,7 @@
 <div class="page-header setup-page-header">
     <div>
         <div class="page-title">Thiết lập dữ liệu nền cho lớp học</div>
-        <div class="page-sub">Quản lý `ca học`, `gói học phí`, `cơ sở`, `phòng học` trên một luồng riêng rồi quay lại tạo lớp khi dữ liệu đã sẵn sàng.</div>
+        <div class="page-sub">Class setup giờ chỉ giữ các dữ liệu nền trực tiếp phục vụ mở lớp: `ca học` và `gói học phí`.</div>
     </div>
     <div class="setup-header-actions">
         <a asp-controller="Classes" asp-action="Create" class="btn btn-primary"><i class="bi bi-plus-circle"></i> Quay lại tạo lớp</a>
@@ -39,16 +37,6 @@
         <div class="value">@stats.TongHocPhi</div>
         <div class="meta">@stats.KhoaHocChuaCoHocPhi khóa học chưa có gói học phí.</div>
     </div>
-    <div class="setup-stat-card">
-        <div class="label">Cơ sở đào tạo</div>
-        <div class="value">@stats.TongCoSo</div>
-        <div class="meta">Địa điểm vận hành để gán lớp, giáo viên, phòng.</div>
-    </div>
-    <div class="setup-stat-card">
-        <div class="label">Phòng học</div>
-        <div class="value">@stats.TongPhongHoc</div>
-        <div class="meta">@stats.CoSoChuaCoPhong cơ sở chưa có phòng học.</div>
-    </div>
 </div>
 
 <div class="setup-grid">
@@ -57,7 +45,7 @@
             <div class="setup-panel-title">
                 <div>
                     <h5>Checklist sẵn sàng tạo lớp</h5>
-                    <p>Đi đủ 4 bước này thì form tạo lớp sẽ chọn được toàn bộ dữ liệu nền.</p>
+                    <p>Đi đủ 2 bước này thì form tạo lớp sẽ chọn được dữ liệu nền cốt lõi.</p>
                 </div>
             </div>
             <div class="setup-kpi-grid">
@@ -69,14 +57,6 @@
                     <div class="value">@stats.TongHocPhi</div>
                     <div class="label">Gói học phí đã có</div>
                 </div>
-                <div class="setup-kpi">
-                    <div class="value">@stats.TongCoSo</div>
-                    <div class="label">Cơ sở đã có</div>
-                </div>
-                <div class="setup-kpi">
-                    <div class="value">@stats.TongPhongHoc</div>
-                    <div class="label">Phòng học đã có</div>
-                </div>
             </div>
         </div>
     </section>
@@ -86,18 +66,17 @@
             <div class="setup-panel-title">
                 <div>
                     <h5>Lối đi nhanh</h5>
-                    <p>Ưu tiên hoàn thiện dữ liệu còn thiếu, sau đó quay lại trang thêm lớp.</p>
+                    <p>Hoàn thiện ca học và học phí tại đây; phần cơ sở/phòng học đã chuyển sang module riêng.</p>
                 </div>
             </div>
             <div class="setup-header-actions">
-                <a asp-action="CoSo" class="btn btn-outline"><i class="bi bi-buildings"></i> Quản lý cơ sở</a>
-                <a asp-action="PhongHoc" class="btn btn-outline"><i class="bi bi-door-open"></i> Quản lý phòng học</a>
                 <a asp-action="CaHoc" class="btn btn-outline"><i class="bi bi-clock-history"></i> Quản lý ca học</a>
                 <a asp-action="HocPhi" class="btn btn-outline"><i class="bi bi-cash-coin"></i> Quản lý học phí</a>
+                <a asp-controller="Campuses" asp-action="Index" class="btn btn-outline"><i class="bi bi-buildings"></i> Module cơ sở đào tạo</a>
             </div>
             <div class="setup-inline-note" style="margin-top:.9rem;">
                 <i class="bi bi-info-circle"></i>
-                <div>Form lớp chỉ dùng các bản ghi đang `Hoạt động`; riêng `Phòng học` là bắt buộc nếu muốn áp dụng đúng rule sĩ số nhỏ hơn sức chứa.</div>
+                <div>Form lớp chỉ dùng các bản ghi đang `Hoạt động`. Phần cơ sở và phòng học được quản lý riêng theo từng cơ sở để dễ vận hành hơn.</div>
             </div>
         </div>
     </section>
@@ -107,7 +86,7 @@
             <div class="setup-panel-title">
                 <div>
                     <h5>Mức độ sử dụng hiện tại</h5>
-                    <p>Nhìn nhanh dữ liệu nền nào đã gắn với lớp thật để tránh chỉnh sửa quá tay.</p>
+                    <p>Nhìn nhanh dữ liệu nền nào đang gắn với lớp thật để tránh chỉnh sửa quá tay.</p>
                 </div>
             </div>
             <div class="setup-kpi-grid">
@@ -118,14 +97,6 @@
                 <div class="setup-kpi">
                     <div class="value">@hocPhiDangDung</div>
                     <div class="label">Gói học phí đang áp dụng</div>
-                </div>
-                <div class="setup-kpi">
-                    <div class="value">@coSoDangDung</div>
-                    <div class="label">Cơ sở đang vận hành lớp</div>
-                </div>
-                <div class="setup-kpi">
-                    <div class="value">@phongDangDung</div>
-                    <div class="label">Phòng học đang gắn lớp</div>
                 </div>
             </div>
         </div>

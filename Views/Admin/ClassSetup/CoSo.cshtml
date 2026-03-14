@@ -1,7 +1,7 @@
 @model TrungTamNgoaiNgu.Models.CoSoManagementViewModel
 @{
-    ViewData["Title"] = "Thiết lập cơ sở đào tạo";
-    ViewData["SetupSection"] = "CoSo";
+    ViewData["Title"] = "Cơ sở đào tạo";
+    ViewData["SetupSection"] = "Index";
     Layout = "~/Views/Shared/_AdminLayout.cshtml";
 }
 
@@ -11,198 +11,26 @@
 
 <div class="page-header setup-page-header">
     <div>
-        <div class="page-title">Quản lý cơ sở đào tạo</div>
-        <div class="page-sub">Thiết lập cơ sở theo tỉnh/thành và phường/xã để form lớp lọc đúng địa điểm và hiển thị giáo viên theo cơ sở.</div>
+        <div class="page-title">Cơ sở đào tạo đã chuyển module</div>
+        <div class="page-sub">Phần cơ sở không còn nằm trong Thiết lập lớp học. Toàn bộ CRUD, chi tiết cơ sở và phòng học đã được tách sang module riêng để dễ quản lý hơn.</div>
     </div>
     <div class="setup-header-actions">
-        <a asp-controller="Classes" asp-action="Create" class="btn btn-primary"><i class="bi bi-plus-circle"></i> Tạo lớp</a>
-        <a asp-action="Index" class="btn btn-outline"><i class="bi bi-grid-1x2"></i> Tổng quan</a>
+        <a asp-controller="Campuses" asp-action="Index" class="btn btn-primary">
+            <i class="bi bi-buildings"></i> Mở module Cơ sở
+        </a>
+        <a asp-action="Index" class="btn btn-outline">
+            <i class="bi bi-sliders"></i> Quay lại setup
+        </a>
     </div>
 </div>
 
 @await Html.PartialAsync("~/Views/Admin/ClassSetup/_SetupTabs.cshtml")
 
-<div class="setup-workspace">
-    <section class="setup-panel">
-        <div class="setup-panel-body">
-            <div class="setup-panel-title">
-                <div>
-                    <h5>Danh sách cơ sở</h5>
-                    <p>Tổng cộng @Model.Items.Count cơ sở đào tạo đang có trong hệ thống.</p>
-                </div>
-            </div>
-            <div class="setup-table-wrap">
-                @if (!Model.Items.Any())
-                {
-                    <div class="setup-empty"><i class="bi bi-buildings"></i>Chưa có cơ sở đào tạo nào.</div>
-                }
-                else
-                {
-                    <table class="setup-table">
-                        <thead>
-                            <tr>
-                                <th>Cơ sở</th>
-                                <th>Khu vực</th>
-                                <th>Liên hệ</th>
-                                <th>Vận hành</th>
-                                <th>Trạng thái</th>
-                                <th>Thao tác</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @foreach (var item in Model.Items)
-                            {
-                                var soPhong = Model.SuDung.PhongTheoCoSo.GetValueOrDefault(item.CoSoId);
-                                var soLop = Model.SuDung.LopTheoCoSo.GetValueOrDefault(item.CoSoId);
-                                var soGiaoVien = Model.SuDung.GiaoVienTheoCoSo.GetValueOrDefault(item.CoSoId);
-                                <tr>
-                                    <td>
-                                        <strong>@item.TenCoSo</strong>
-                                        <div class="meta">@item.MaCoSo · @item.Slug</div>
-                                    </td>
-                                    <td>
-                                        <div>@(item.TinhThanh?.TenTinhThanh ?? "Chưa chọn tỉnh/thành")</div>
-                                        <div class="meta">@(string.IsNullOrWhiteSpace(item.TenPhuongXa) ? "Chưa có phường/xã" : item.TenPhuongXa)</div>
-                                    </td>
-                                    <td>
-                                        <div>@(string.IsNullOrWhiteSpace(item.SoDienThoai) ? "—" : item.SoDienThoai)</div>
-                                        <div class="meta">@(string.IsNullOrWhiteSpace(item.DiaChi) ? "Chưa có địa chỉ" : item.DiaChi)</div>
-                                    </td>
-                                    <td>
-                                        <div>@soPhong phòng · @soLop lớp</div>
-                                        <div class="meta">@soGiaoVien giáo viên đang gắn cơ sở này</div>
-                                    </td>
-                                    <td>
-                                        <span class="setup-badge @(item.TrangThai == 0 ? "inactive" : "active")">@(item.TrangThai == 0 ? "Tạm ngưng" : "Hoạt động")</span>
-                                    </td>
-                                    <td>
-                                        <div class="setup-actions">
-                                            <a asp-action="CoSo" asp-route-id="@item.CoSoId" class="btn btn-outline btn-sm"><i class="bi bi-pencil"></i></a>
-                                            <form method="post" asp-action="DeleteCoSo" asp-route-id="@item.CoSoId" onsubmit="return confirm('Xóa cơ sở này?')" style="display:inline;">
-                                                @Html.AntiForgeryToken()
-                                                <button type="submit" class="btn btn-danger btn-sm"><i class="bi bi-trash"></i></button>
-                                            </form>
-                                        </div>
-                                    </td>
-                                </tr>
-                            }
-                        </tbody>
-                    </table>
-                }
-            </div>
+<section class="setup-panel">
+    <div class="setup-panel-body">
+        <div class="setup-empty">
+            <i class="bi bi-arrow-right-circle"></i>
+            Module `Cơ sở đào tạo` hiện quản lý riêng danh sách cơ sở, phòng học theo cơ sở, nhân sự và lớp học liên quan.
         </div>
-    </section>
-
-    <aside class="setup-side">
-        <section class="setup-form-card">
-            <div class="body">
-                <div class="setup-form-title">
-                    <div>
-                        <h5>@(Model.IsEditing ? "Cập nhật cơ sở" : "Thêm cơ sở")</h5>
-                        <p>@(Model.IsEditing ? "Mã cơ sở giữ ổn định, hệ thống chỉ cập nhật thông tin vận hành." : "Mã cơ sở và slug được sinh tự động ở backend.")</p>
-                    </div>
-                </div>
-                <form method="post" asp-action="CoSo" class="setup-form-grid">
-                    @Html.AntiForgeryToken()
-                    <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
-                    <input asp-for="Form.CoSoId" type="hidden" />
-                    <div class="setup-group">
-                        <label asp-for="Form.TenCoSo"></label>
-                        <input asp-for="Form.TenCoSo" class="form-control" placeholder="VD: Five Genius Quận 7" />
-                    </div>
-                    <div class="setup-form-grid two">
-                        <div class="setup-group">
-                            <label asp-for="Form.TinhThanhId"></label>
-                            <select asp-for="Form.TinhThanhId" class="form-control" id="tinhThanhSetupSelect">
-                                <option value="">-- Chọn tỉnh/thành --</option>
-                                @foreach (var item in Model.TinhThanhs)
-                                {
-                                    <option value="@item.TinhThanhId">@item.TenTinhThanh</option>
-                                }
-                            </select>
-                        </div>
-                        <div class="setup-group">
-                            <label asp-for="Form.TenPhuongXa"></label>
-                            <input asp-for="Form.TenPhuongXa" class="form-control" list="phuongXaSuggestions" placeholder="Chọn từ danh sách hoặc nhập tay" />
-                            <datalist id="phuongXaSuggestions"></datalist>
-                        </div>
-                    </div>
-                    <div class="setup-group">
-                        <label asp-for="Form.DiaChi"></label>
-                        <input asp-for="Form.DiaChi" class="form-control" placeholder="Địa chỉ chi tiết" />
-                    </div>
-                    <div class="setup-form-grid two">
-                        <div class="setup-group">
-                            <label asp-for="Form.SoDienThoai"></label>
-                            <input asp-for="Form.SoDienThoai" class="form-control" />
-                        </div>
-                        <div class="setup-group">
-                            <label asp-for="Form.Email"></label>
-                            <input asp-for="Form.Email" type="email" class="form-control" />
-                        </div>
-                    </div>
-                    <div class="setup-form-grid two">
-                        <div class="setup-group">
-                            <label asp-for="Form.NgayKhaiTruong"></label>
-                            <input asp-for="Form.NgayKhaiTruong" type="date" class="form-control" />
-                        </div>
-                        <div class="setup-group">
-                            <label asp-for="Form.TrangThai">Trạng thái</label>
-                            <select asp-for="Form.TrangThai" class="form-control">
-                                <option value="1">Hoạt động</option>
-                                <option value="0">Tạm ngưng</option>
-                            </select>
-                        </div>
-                    </div>
-                    <div class="setup-group">
-                        <label asp-for="Form.BanDoGoogle"></label>
-                        <input asp-for="Form.BanDoGoogle" class="form-control" placeholder="Link nhúng Google Maps (nếu có)" />
-                    </div>
-                    <div class="setup-form-actions">
-                        @if (Model.IsEditing)
-                        {
-                            <a asp-action="CoSo" class="btn btn-outline"><i class="bi bi-arrow-counterclockwise"></i> Tạo mới</a>
-                        }
-                        <button type="submit" class="btn btn-primary"><i class="bi bi-floppy2"></i> @(Model.IsEditing ? "Lưu thay đổi" : "Thêm cơ sở")</button>
-                    </div>
-                </form>
-            </div>
-        </section>
-        <section class="setup-help-card">
-            <div class="body">
-                <ul class="setup-help-list">
-                    <li><i class="bi bi-check2-circle"></i><span>Chỉ cơ sở ở trạng thái `Hoạt động` mới xuất hiện trong form tạo và chỉnh sửa lớp.</span></li>
-                    <li><i class="bi bi-check2-circle"></i><span>Danh sách phường/xã chỉ hiển thị các địa bàn đang có cơ sở để form lớp học gọn và chính xác hơn.</span></li>
-                    <li><i class="bi bi-check2-circle"></i><span>Không xóa được cơ sở nếu đã có phòng học, lớp học, nhân sự hoặc hóa đơn liên quan.</span></li>
-                </ul>
-            </div>
-        </section>
-    </aside>
-</div>
-
-@section Scripts {
-    @await Html.PartialAsync("_ValidationScriptsPartial")
-    <script>
-        const tinhThanhSetupSelect = document.getElementById('tinhThanhSetupSelect');
-        const phuongXaSuggestions = document.getElementById('phuongXaSuggestions');
-        async function loadPhuongXaSuggestions() {
-            const tinhThanhId = tinhThanhSetupSelect?.value;
-            if (!tinhThanhId) {
-                phuongXaSuggestions.innerHTML = '';
-                return;
-            }
-
-            try {
-                const res = await fetch(`/Admin/Classes/PhuongXaByTinh?tinhThanhId=${tinhThanhId}`);
-                if (!res.ok) throw new Error();
-                const data = await res.json();
-                phuongXaSuggestions.innerHTML = data.map(item => `<option value="${item.name}"></option>`).join('');
-            } catch {
-                phuongXaSuggestions.innerHTML = '';
-            }
-        }
-
-        tinhThanhSetupSelect?.addEventListener('change', loadPhuongXaSuggestions);
-        loadPhuongXaSuggestions();
-    </script>
-}
+    </div>
+</section>
