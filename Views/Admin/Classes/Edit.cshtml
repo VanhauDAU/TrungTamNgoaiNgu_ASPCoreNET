@@ -109,16 +109,30 @@
                 </div>
                 <div class="form-group">
                     <label class="form-label">Gói học phí</label>
-                    <select asp-for="HocPhiId" class="form-control">
+                    <select asp-for="HocPhiId" id="hocPhiSelect" class="form-control">
                         <option value="">-- Chọn gói học phí --</option>
                         @foreach (var hp in (List<TrungTamNgoaiNgu.Models.HocPhi>)ViewBag.HocPhis)
                         {
                             if (Model.HocPhiId == hp.HocPhiId)
-                            { <option value="@hp.HocPhiId" selected>@hp.SoBuoi buổi · @hp.DonGia?.ToString("N0")đ/buổi</option> }
+                            {
+                                <option value="@hp.HocPhiId"
+                                        data-so-buoi="@hp.SoBuoi"
+                                        data-tong-tien="@hp.TongHocPhi.ToString("N0")"
+                                        selected>
+                                    @hp.SoBuoi buổi · @hp.DonGia?.ToString("N0")đ/buổi
+                                </option>
+                            }
                             else
-                            { <option value="@hp.HocPhiId">@hp.SoBuoi buổi · @hp.DonGia?.ToString("N0")đ/buổi</option> }
+                            {
+                                <option value="@hp.HocPhiId"
+                                        data-so-buoi="@hp.SoBuoi"
+                                        data-tong-tien="@hp.TongHocPhi.ToString("N0")">
+                                    @hp.SoBuoi buổi · @hp.DonGia?.ToString("N0")đ/buổi
+                                </option>
+                            }
                         }
                     </select>
+                    <div class="meta-hint" id="hocPhiInfo"></div>
                     <small class="text-muted">Thiếu gói học phí? <a asp-controller="ClassSetup" asp-action="HocPhi">Quản lý ngay</a></small>
                 </div>
             </div>
@@ -238,7 +252,7 @@
                 </div>
                 <div class="form-group">
                     <label class="form-label">Số buổi dự kiến</label>
-                    <input asp-for="SoBuoiDuKien" type="number" class="form-control" min="1" />
+                    <input asp-for="SoBuoiDuKien" id="soBuoiInput" type="number" class="form-control" min="1" />
                 </div>
             </div>
 
@@ -330,9 +344,13 @@
         const editForm = document.getElementById('editForm');
         const checks = document.querySelectorAll('.lich-hoc-check');
         const lichHocInput = document.getElementById('lichHocInput');
+        const khoaHocSelect = document.getElementById('khoaHocSelect');
+        const hocPhiSelect = document.getElementById('hocPhiSelect');
+        const hocPhiInfo = document.getElementById('hocPhiInfo');
         const coSoSelect = document.getElementById('coSoSelect');
         const phongHocSelect = document.getElementById('phongHocSelect');
         const phongCapacityInfo = document.getElementById('phongCapacityInfo');
+        const soBuoiInput = document.getElementById('soBuoiInput');
         const soHocInput = document.getElementById('soHocInput');
         const giaoVienSelect = document.getElementById('giaoVienSelect');
         const giaoVienScopeInfo = document.getElementById('giaoVienScopeInfo');
@@ -353,6 +371,39 @@
 
             phongCapacityInfo.textContent = `Phòng tối đa ${sucChua} học viên. Sĩ số lớp phải nhỏ hơn ${sucChua}.`;
             if (sucChua > 1) soHocInput.max = String(sucChua - 1);
+        }
+
+        async function loadHocPhi(khoaHocId, selectedHocPhiId = '') {
+            if (!khoaHocId) {
+                hocPhiSelect.innerHTML = '<option value="">-- Chọn khóa học trước --</option>';
+                updateHocPhiInfo();
+                return;
+            }
+
+            const res = await fetch(`/Admin/Classes/HocPhiByKhoaHoc?khoaHocId=${khoaHocId || ''}`);
+            const data = await res.json();
+            hocPhiSelect.innerHTML = '<option value="">-- Chọn gói học phí --</option>';
+            data.forEach(h => {
+                const selected = selectedHocPhiId && String(h.id) === String(selectedHocPhiId) ? ' selected' : '';
+                hocPhiSelect.innerHTML += `<option value="${h.id}" data-so-buoi="${h.soBuoi ?? ''}" data-tong-tien="${h.tongHocPhiText ?? ''}"${selected}>${h.name}</option>`;
+            });
+            updateHocPhiInfo();
+        }
+
+        function updateHocPhiInfo() {
+            const selected = hocPhiSelect.selectedOptions[0];
+            const soBuoi = Number(selected?.dataset?.soBuoi || 0);
+            const tongTien = selected?.dataset?.tongTien || '';
+
+            if (!selected || !selected.value || !soBuoi) {
+                hocPhiInfo.textContent = '';
+                return;
+            }
+
+            soBuoiInput.value = soBuoi;
+            hocPhiInfo.textContent = tongTien
+                ? `Đồng bộ ${soBuoi} buổi từ gói học phí. Tổng học phí tham chiếu: ${tongTien} đ.`
+                : `Đồng bộ ${soBuoi} buổi từ gói học phí đã chọn.`;
         }
 
         function refreshGiaoVienLabels() {
@@ -393,6 +444,10 @@
                 ? `${soHocInput.value.trim()} học viên`
                 : 'Chưa nhập';
         });
+        hocPhiSelect.addEventListener('change', updateHocPhiInfo);
+        khoaHocSelect.addEventListener('change', async () => {
+            await loadHocPhi(khoaHocSelect.value, '');
+        });
 
         if (coSoSelect) {
             coSoSelect.addEventListener('change', async () => {
@@ -411,6 +466,7 @@
         phongHocSelect.addEventListener('change', updatePhongCapacityInfo);
         giaoVienSelect.addEventListener('change', refreshGiaoVienLabels);
         updatePhongCapacityInfo();
+        updateHocPhiInfo();
         refreshGiaoVienLabels();
         previewSiSoEdit.textContent = soHocInput.value?.trim()
             ? `${soHocInput.value.trim()} học viên`
@@ -420,10 +476,20 @@
             const selectedPhong = phongHocSelect.selectedOptions[0];
             const sucChua = Number(selectedPhong?.dataset?.succhua || 0);
             const siSo = Number(soHocInput.value || 0);
+            const selectedHocPhi = hocPhiSelect.selectedOptions[0];
+            const soBuoiGoiHocPhi = Number(selectedHocPhi?.dataset?.soBuoi || 0);
+            const soBuoiDuKien = Number(soBuoiInput.value || 0);
             if (sucChua > 0 && siSo > 0 && siSo >= sucChua) {
                 event.preventDefault();
                 phongCapacityInfo.textContent = `Sĩ số ${siSo} không hợp lệ. Phải nhỏ hơn sức chứa ${sucChua}.`;
                 soHocInput.focus();
+                return;
+            }
+
+            if (selectedHocPhi?.value && soBuoiGoiHocPhi > 0 && soBuoiDuKien > 0 && soBuoiDuKien !== soBuoiGoiHocPhi) {
+                event.preventDefault();
+                hocPhiInfo.textContent = `Số buổi dự kiến phải khớp gói học phí đã chọn (${soBuoiGoiHocPhi} buổi).`;
+                soBuoiInput.focus();
             }
         });
     </script>

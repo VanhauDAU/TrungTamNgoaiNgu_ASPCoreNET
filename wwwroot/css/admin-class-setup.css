@@ -42,6 +42,8 @@
 .setup-badge { display:inline-flex; align-items:center; gap:.32rem; padding:.28rem .58rem; border-radius:999px; font-size:.76rem; font-weight:700; }
 .setup-badge.active { background:#dcfce7; color:#166534; }
 .setup-badge.inactive { background:#fee2e2; color:#b91c1c; }
+.setup-badge.warning { background:#fef3c7; color:#92400e; }
+.setup-badge.dark { background:#e2e8f0; color:#0f172a; }
 .setup-empty { padding:2rem 1rem; text-align:center; color:#64748b; }
 .setup-empty i { font-size:2rem; display:block; margin-bottom:.45rem; color:#94a3b8; }
 .setup-help-list { display:grid; gap:.65rem; margin:0; padding:0; list-style:none; }

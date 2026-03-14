@@ -2,6 +2,7 @@ using Microsoft.EntityFrameworkCore;
 using System.Globalization;
 using System.Text;
 using TrungTamNgoaiNgu.Data;
+using TrungTamNgoaiNgu.Enums;
 using TrungTamNgoaiNgu.Models;
 using TrungTamNgoaiNgu.Services.Interfaces;
 
@@ -242,6 +243,7 @@ public class ClassSetupService(AppDbContext db) : IClassSetupService
             .Where(p => p.DeletedAt == null)
             .Include(p => p.CoSo)
             .OrderBy(p => p.CoSo!.TenCoSo)
+            .ThenBy(p => p.TrangThai != (int)PhongHocTrangThai.HoatDong)
             .ThenBy(p => p.TenPhong)
             .ToListAsync();
 
@@ -403,7 +405,9 @@ public class ClassSetupService(AppDbContext db) : IClassSetupService
     }
 
     private static byte ChuanHoaTrangThaiByte(byte trangThai) => trangThai == 0 ? (byte)0 : (byte)1;
-    private static int ChuanHoaTrangThaiInt(int trangThai) => trangThai == 0 ? 0 : 1;
+    private static int ChuanHoaTrangThaiInt(int trangThai) => Enum.IsDefined(typeof(PhongHocTrangThai), trangThai)
+        ? trangThai
+        : (int)PhongHocTrangThai.HoatDong;
     private static ServiceResult ThanhCong(string message) => new() { ThanhCong = true, ThongBao = message };
     private static ServiceResult ThatBai(string message) => new() { ThanhCong = false, ThongBao = message };
 }

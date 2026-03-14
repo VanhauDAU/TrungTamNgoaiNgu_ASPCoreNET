@@ -71,7 +71,7 @@ public class ClassesController(IClassesService classesService, IHttpClientFactor
 
         if (!ModelState.IsValid)
         {
-            await NapDropdowns(lopHoc.KhoaHocId, lopHoc.CoSoId);
+            await NapDropdowns(lopHoc);
             return View("~/Views/Admin/Classes/Create.cshtml", lopHoc);
         }
 
@@ -81,7 +81,7 @@ public class ClassesController(IClassesService classesService, IHttpClientFactor
         if (!ketQua.ThanhCong)
         {
             ModelState.AddModelError(string.Empty, ketQua.ThongBao);
-            await NapDropdowns(lopHoc.KhoaHocId, lopHoc.CoSoId);
+            await NapDropdowns(lopHoc);
             return View("~/Views/Admin/Classes/Create.cshtml", lopHoc);
         }
 
@@ -97,7 +97,7 @@ public class ClassesController(IClassesService classesService, IHttpClientFactor
         var lopHoc = await classesService.LayTheoIdAsync(id);
         if (lopHoc == null) return NotFound();
 
-        await NapDropdowns(lopHoc.KhoaHocId, lopHoc.CoSoId);
+        await NapDropdowns(lopHoc);
         return View("~/Views/Admin/Classes/Edit.cshtml", lopHoc);
     }
 
@@ -109,7 +109,7 @@ public class ClassesController(IClassesService classesService, IHttpClientFactor
 
         if (!ModelState.IsValid)
         {
-            await NapDropdowns(lopHoc.KhoaHocId, lopHoc.CoSoId);
+            await NapDropdowns(lopHoc);
             return View("~/Views/Admin/Classes/Edit.cshtml", lopHoc);
         }
 
@@ -121,7 +121,7 @@ public class ClassesController(IClassesService classesService, IHttpClientFactor
 
         if (!ketQua.ThanhCong)
         {
-            await NapDropdowns(lopHoc.KhoaHocId, lopHoc.CoSoId);
+            await NapDropdowns(lopHoc);
             return View("~/Views/Admin/Classes/Edit.cshtml", lopHoc);
         }
 
@@ -195,8 +195,19 @@ public class ClassesController(IClassesService classesService, IHttpClientFactor
     [HttpGet]
     public async Task<IActionResult> HocPhiByKhoaHoc(int? khoaHocId)
     {
+        if (!khoaHocId.HasValue || khoaHocId <= 0)
+            return Json(Array.Empty<object>());
+
         var hocPhis = await classesService.LayHocPhiDropdownAsync(khoaHocId);
-        return Json(hocPhis.Select(h => new { id = h.HocPhiId, name = $"{h.SoBuoi} buổi - {h.DonGia?.ToString("N0") ?? "?"}đ/buổi" }));
+        return Json(hocPhis.Select(h => new
+        {
+            id = h.HocPhiId,
+            name = $"{h.SoBuoi} buổi - {h.DonGia?.ToString("N0") ?? "?"}đ/buổi",
+            soBuoi = h.SoBuoi,
+            donGia = h.DonGia,
+            tongHocPhi = h.TongHocPhi,
+            tongHocPhiText = h.TongHocPhi.ToString("N0")
+        }));
     }
     /// <summary>GET /Admin/Classes/CoSoByTinh?tinhThanhId=1 — AJAX: cơ sở theo tỉnh</summary>
     [HttpGet]
@@ -239,16 +250,23 @@ public class ClassesController(IClassesService classesService, IHttpClientFactor
     // PRIVATE HELPERS
     // =========================================================================
 
-    private async Task NapDropdowns(int? khoaHocId = null, int? coSoId = null)
+    private async Task NapDropdowns(LopHoc? lopHoc = null)
     {
+        var khoaHocId = lopHoc?.KhoaHocId;
+        var coSoId = lopHoc?.CoSoId;
+        var caHocId = lopHoc?.CaHocId > 0 ? (int?)lopHoc.CaHocId : null;
+        var phongHocId = lopHoc?.PhongHocId;
+        var hocPhiId = lopHoc?.HocPhiId;
+        var taiKhoanId = lopHoc?.TaiKhoanId;
+
         ViewBag.TinhThanhs = await classesService.LayTinhThanhDropdownAsync();
 
-        ViewBag.KhoaHocs   = await classesService.LayKhoaHocDropdownAsync();
-        ViewBag.CaHocs     = await classesService.LayCaHocDropdownAsync();
-        ViewBag.CoSos      = await classesService.LayCoSoDropdownAsync();
-        ViewBag.PhongHocs  = await classesService.LayPhongHocDropdownAsync(coSoId);
-        ViewBag.GiaoViens  = await classesService.LayGiaoVienDropdownAsync();
-        ViewBag.HocPhis    = await classesService.LayHocPhiDropdownAsync(khoaHocId);
+        ViewBag.KhoaHocs   = await classesService.LayKhoaHocDropdownAsync(khoaHocId);
+        ViewBag.CaHocs     = await classesService.LayCaHocDropdownAsync(caHocId);
+        ViewBag.CoSos      = await classesService.LayCoSoDropdownAsync(coSoId);
+        ViewBag.PhongHocs  = await classesService.LayPhongHocDropdownAsync(coSoId, phongHocId);
+        ViewBag.GiaoViens  = await classesService.LayGiaoVienDropdownAsync(taiKhoanId);
+        ViewBag.HocPhis    = await classesService.LayHocPhiDropdownAsync(khoaHocId, hocPhiId);
     }
 
     private string LayNguoiThucHien()

@@ -80,6 +80,15 @@ public static class TrangThaiExtensions
         _                              => "badge text-bg-light",
     };
 
+    public static string GetBadgeClass(this PhongHocTrangThai trangThai) => trangThai switch
+    {
+        PhongHocTrangThai.DangBaoTri => "setup-badge warning",
+        PhongHocTrangThai.HoatDong   => "setup-badge active",
+        PhongHocTrangThai.TamNgung   => "setup-badge inactive",
+        PhongHocTrangThai.NgungHan   => "setup-badge dark",
+        _                            => "setup-badge inactive",
+    };
+
     // -------------------------------------------------------------------------
     // Icon Bootstrap Icons tương ứng (dùng trong View)
     // <i class="bi @Model.TrangThai.GetIcon()"></i>

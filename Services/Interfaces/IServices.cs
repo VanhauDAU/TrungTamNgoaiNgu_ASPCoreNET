@@ -165,12 +165,12 @@ public interface IClassesService
     Task<ServiceResult> KhoiPhucAsync(int id, string? nguoiThucHien = null);
 
     // ── Dropdowns (cho form Create/Edit) ─────────────────────────────────
-    Task<List<KhoaHoc>>    LayKhoaHocDropdownAsync();
-    Task<List<CaHoc>>      LayCaHocDropdownAsync();
-    Task<List<PhongHoc>>   LayPhongHocDropdownAsync(int? coSoId = null);
-    Task<List<CoSoDaoTao>> LayCoSoDropdownAsync();
-    Task<List<TaiKhoan>>   LayGiaoVienDropdownAsync();
-    Task<List<HocPhi>>     LayHocPhiDropdownAsync(int? khoaHocId = null);
+    Task<List<KhoaHoc>>    LayKhoaHocDropdownAsync(int? baoGomKhoaHocId = null);
+    Task<List<CaHoc>>      LayCaHocDropdownAsync(int? baoGomCaHocId = null);
+    Task<List<PhongHoc>>   LayPhongHocDropdownAsync(int? coSoId = null, int? baoGomPhongHocId = null);
+    Task<List<CoSoDaoTao>> LayCoSoDropdownAsync(int? baoGomCoSoId = null);
+    Task<List<TaiKhoan>>   LayGiaoVienDropdownAsync(int? baoGomTaiKhoanId = null);
+    Task<List<HocPhi>>     LayHocPhiDropdownAsync(int? khoaHocId = null, long? baoGomHocPhiId = null);
 
     // ── Chi tiết học viên & buổi học ─────────────────────────────────────
     Task<List<DangKyLopHoc>> LayHocVienTrongLopAsync(int lopHocId);

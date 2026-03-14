@@ -139,9 +139,14 @@
                         <option value="">-- Chọn khóa học trước --</option>
                         @foreach (var hp in (List<TrungTamNgoaiNgu.Models.HocPhi>)ViewBag.HocPhis)
                         {
-                            <option value="@hp.HocPhiId">@hp.SoBuoi buổi · @hp.DonGia?.ToString("N0")đ/buổi</option>
+                            <option value="@hp.HocPhiId"
+                                    data-so-buoi="@hp.SoBuoi"
+                                    data-tong-tien="@hp.TongHocPhi.ToString("N0")">
+                                @hp.SoBuoi buổi · @hp.DonGia?.ToString("N0")đ/buổi
+                            </option>
                         }
                     </select>
+                    <div class="meta-hint" id="hocPhiInfo"></div>
                     <small class="text-muted">Thiếu gói học phí? <a asp-controller="ClassSetup" asp-action="HocPhi">Quản lý ngay</a></small>
                 </div>
             </div>
@@ -328,6 +333,7 @@
             </div>
             <div class="hero-notes">
                 <div class="hero-note"><i class="bi bi-stars"></i><span>Mã lớp tự sinh tại backend và khóa chỉnh sửa ở UI.</span></div>
+                <div class="hero-note"><i class="bi bi-cash-coin"></i><span>Gói học phí sẽ tự đồng bộ số buổi dự kiến để tránh lệch cấu hình lớp.</span></div>
                 <div class="hero-note"><i class="bi bi-diagram-3"></i><span>Giáo viên cùng hoặc khác cơ sở đều được phân công, scope hiển thị rõ.</span></div>
                 <div class="hero-note"><i class="bi bi-door-open"></i><span>Sĩ số lớp phải nhỏ hơn sức chứa phòng học đã chọn.</span></div>
             </div>
@@ -348,6 +354,7 @@
     const maLopInput       = document.getElementById('maLopInput');
     const maLopBadge       = document.getElementById('maLopBadge');
     const hocPhiSel        = document.getElementById('hocPhiSelect');
+    const hocPhiInfo       = document.getElementById('hocPhiInfo');
     const tinhThanhSel     = document.getElementById('tinhThanhSelect');
     const phuongXaSel      = document.getElementById('phuongXaSelect');
     const coSoSel          = document.getElementById('coSoSelect');
@@ -432,12 +439,36 @@
     }
 
     async function loadHocPhi(khoaHocId) {
+        if (!khoaHocId) {
+            hocPhiSel.innerHTML = '<option value="">-- Chọn khóa học trước --</option>';
+            updateHocPhiInfo();
+            return;
+        }
+
         const hpRes = await fetch(`/Admin/Classes/HocPhiByKhoaHoc?khoaHocId=${khoaHocId || ''}`);
         const hpData = await hpRes.json();
         hocPhiSel.innerHTML = '<option value="">-- Chọn gói học phí --</option>';
         hpData.forEach(h => {
-            hocPhiSel.innerHTML += `<option value="${h.id}">${h.name}</option>`;
+            hocPhiSel.innerHTML += `<option value="${h.id}" data-so-buoi="${h.soBuoi ?? ''}" data-tong-tien="${h.tongHocPhiText ?? ''}">${h.name}</option>`;
         });
+        updateHocPhiInfo();
+    }
+
+    function updateHocPhiInfo() {
+        const selected = hocPhiSel.selectedOptions[0];
+        const soBuoi = Number(selected?.dataset?.soBuoi || 0);
+        const tongTien = selected?.dataset?.tongTien || '';
+
+        if (!selected || !selected.value || !soBuoi) {
+            hocPhiInfo.textContent = '';
+            return;
+        }
+
+        soBuoiInput.value = soBuoi;
+        hocPhiInfo.textContent = tongTien
+            ? `Đồng bộ ${soBuoi} buổi từ gói học phí. Tổng học phí tham chiếu: ${tongTien} đ.`
+            : `Đồng bộ ${soBuoi} buổi từ gói học phí đã chọn.`;
+        capNhatPreviewForm();
     }
 
     async function loadPhuongXa(maApi) {
@@ -564,6 +595,7 @@
     ngayKTInput.addEventListener('change', tinhSoBuoi);
     phongHocSel.addEventListener('change', updatePhongCapacityInfo);
     giaoVienSelect.addEventListener('change', refreshGiaoVienLabels);
+    hocPhiSel.addEventListener('change', updateHocPhiInfo);
     soHocInput.addEventListener('input', capNhatPreviewForm);
 
     khoaHocSelect.addEventListener('change', async () => {
@@ -616,11 +648,21 @@
         const selectedPhong = phongHocSel.selectedOptions[0];
         const sucChua = Number(selectedPhong?.dataset?.succhua || 0);
         const siSo = Number(soHocInput.value || 0);
+        const selectedHocPhi = hocPhiSel.selectedOptions[0];
+        const soBuoiGoiHocPhi = Number(selectedHocPhi?.dataset?.soBuoi || 0);
+        const soBuoiDuKien = Number(soBuoiInput.value || 0);
 
         if (sucChua > 0 && siSo > 0 && siSo >= sucChua) {
             event.preventDefault();
             phongCapacityInfo.textContent = `Sĩ số ${siSo} không hợp lệ. Phải nhỏ hơn sức chứa ${sucChua}.`;
             soHocInput.focus();
+            return;
+        }
+
+        if (selectedHocPhi?.value && soBuoiGoiHocPhi > 0 && soBuoiDuKien > 0 && soBuoiDuKien !== soBuoiGoiHocPhi) {
+            event.preventDefault();
+            hocPhiInfo.textContent = `Số buổi dự kiến phải khớp gói học phí đã chọn (${soBuoiGoiHocPhi} buổi).`;
+            soBuoiInput.focus();
         }
     });
 
@@ -629,6 +671,7 @@
             maLopBadge.style.display = 'none';
             capNhatPreviewForm();
             tinhSoBuoi();
+            updateHocPhiInfo();
             refreshGiaoVienLabels();
             phongCapacityInfo.textContent = '';
         }, 0);
@@ -642,6 +685,7 @@
     }
     refreshGiaoVienLabels();
     updateLichHoc();
+    updateHocPhiInfo();
     capNhatPreviewForm();
     </script>
 }
