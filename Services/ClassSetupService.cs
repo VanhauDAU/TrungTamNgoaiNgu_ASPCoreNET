@@ -15,11 +15,8 @@ public class ClassSetupService(AppDbContext db) : IClassSetupService
         return new ClassSetupThongKe
         {
             TongCaHoc = await db.CaHocs.CountAsync(),
-            TongCoSo = await db.CoSoDaoTaos.CountAsync(),
-            TongPhongHoc = await db.PhongHocs.CountAsync(p => p.DeletedAt == null),
             TongHocPhi = await db.HocPhis.CountAsync(),
-            KhoaHocChuaCoHocPhi = await db.KhoaHocs.CountAsync(k => !db.HocPhis.Any(h => h.KhoaHocId == k.KhoaHocId)),
-            CoSoChuaCoPhong = await db.CoSoDaoTaos.CountAsync(c => !db.PhongHocs.Any(p => p.CoSoId == c.CoSoId && p.DeletedAt == null))
+            KhoaHocChuaCoHocPhi = await db.KhoaHocs.CountAsync(k => !db.HocPhis.Any(h => h.KhoaHocId == k.KhoaHocId))
         };
     }
 
@@ -46,43 +43,11 @@ public class ClassSetupService(AppDbContext db) : IClassSetupService
             .Select(g => new { g.Key, Count = g.Count() })
             .ToDictionaryAsync(x => x.Key, x => x.Count);
 
-        var phongTheoCoSo = await db.PhongHocs
-            .AsNoTracking()
-            .Where(p => p.DeletedAt == null && p.CoSoId.HasValue)
-            .GroupBy(p => p.CoSoId!.Value)
-            .Select(g => new { g.Key, Count = g.Count() })
-            .ToDictionaryAsync(x => x.Key, x => x.Count);
-
-        var lopTheoCoSo = await db.LopHocs
-            .AsNoTracking()
-            .Where(l => l.DeletedAt == null && l.CoSoId.HasValue)
-            .GroupBy(l => l.CoSoId!.Value)
-            .Select(g => new { g.Key, Count = g.Count() })
-            .ToDictionaryAsync(x => x.Key, x => x.Count);
-
-        var giaoVienTheoCoSo = await db.TaiKhoans
-            .AsNoTracking()
-            .Where(t => t.Role == 1 && t.DeletedAt == null && t.TrangThai == 1 && t.NhanSu != null && t.NhanSu.CoSoId.HasValue)
-            .GroupBy(t => t.NhanSu!.CoSoId!.Value)
-            .Select(g => new { g.Key, Count = g.Count() })
-            .ToDictionaryAsync(x => x.Key, x => x.Count);
-
-        var lopTheoPhongHoc = await db.LopHocs
-            .AsNoTracking()
-            .Where(l => l.DeletedAt == null && l.PhongHocId.HasValue)
-            .GroupBy(l => l.PhongHocId!.Value)
-            .Select(g => new { g.Key, Count = g.Count() })
-            .ToDictionaryAsync(x => x.Key, x => x.Count);
-
         return new ClassSetupUsageSnapshot
         {
             LopTheoCaHoc = lopTheoCaHoc,
             BuoiTheoCaHoc = buoiTheoCaHoc,
-            LopTheoHocPhi = lopTheoHocPhi,
-            PhongTheoCoSo = phongTheoCoSo,
-            LopTheoCoSo = lopTheoCoSo,
-            GiaoVienTheoCoSo = giaoVienTheoCoSo,
-            LopTheoPhongHoc = lopTheoPhongHoc
+            LopTheoHocPhi = lopTheoHocPhi
         };
     }
 

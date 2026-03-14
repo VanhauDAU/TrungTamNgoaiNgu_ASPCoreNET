@@ -1,0 +1,446 @@
+@model TrungTamNgoaiNgu.Models.CampusDetailViewModel
+@using TrungTamNgoaiNgu.Enums
+@{
+    ViewData["Title"] = $"Chi tiết cơ sở - {Model.CoSo.TenCoSo}";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+    var campus = Model.CoSo;
+    var statusClass = campus.TrangThai == 0 ? "inactive" : "active";
+    var statusText = campus.TrangThai == 0 ? "Tạm ngưng" : "Hoạt động";
+}
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/admin-campus.css" asp-append-version="true" />
+}
+
+<div class="page-header campus-page-header">
+    <div>
+        <div class="page-title">Chi tiết cơ sở</div>
+        <div class="page-sub"><a asp-action="Index">Cơ sở đào tạo</a> / @campus.TenCoSo</div>
+    </div>
+    <div class="campus-header-actions">
+        <a asp-controller="Classes" asp-action="Create" class="btn btn-outline">
+            <i class="bi bi-plus-circle"></i> Tạo lớp mới
+        </a>
+        <a asp-action="Edit" asp-route-id="@campus.CoSoId" class="btn btn-outline">
+            <i class="bi bi-pencil"></i> Chỉnh sửa cơ sở
+        </a>
+        <a asp-action="Index" class="btn btn-outline">
+            <i class="bi bi-arrow-left"></i> Danh sách cơ sở
+        </a>
+    </div>
+</div>
+
+@if (TempData["ThanhCong"] != null)
+{
+    <div class="alert alert-success"><i class="bi bi-check-circle-fill"></i> @TempData["ThanhCong"]</div>
+}
+@if (TempData["LoiXay"] != null)
+{
+    <div class="alert alert-danger"><i class="bi bi-exclamation-triangle-fill"></i> @TempData["LoiXay"]</div>
+}
+
+<section class="campus-detail-hero">
+    <div class="campus-hero-top">
+        <div>
+            <h1 class="campus-hero-title">@campus.TenCoSo</h1>
+            <p class="campus-hero-sub">
+                @campus.MaCoSo · @campus.Slug · @(campus.TinhThanh?.TenTinhThanh ?? "Chưa chọn tỉnh/thành")
+                @if (!string.IsNullOrWhiteSpace(campus.TenPhuongXa))
+                {
+                    <span>· @campus.TenPhuongXa</span>
+                }
+            </p>
+            <div class="campus-hero-tags">
+                <span class="setup-badge @statusClass">@statusText</span>
+                <span class="campus-pill"><i class="bi bi-telephone"></i> @(string.IsNullOrWhiteSpace(campus.SoDienThoai) ? "Chưa có số điện thoại" : campus.SoDienThoai)</span>
+                <span class="campus-pill"><i class="bi bi-envelope"></i> @(string.IsNullOrWhiteSpace(campus.Email) ? "Chưa có email" : campus.Email)</span>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="campus-detail-stats">
+    <article class="campus-detail-stat">
+        <div class="label">Tổng phòng</div>
+        <div class="value">@Model.TongQuan.TongPhongHoc</div>
+    </article>
+    <article class="campus-detail-stat">
+        <div class="label">Phòng hoạt động</div>
+        <div class="value">@Model.TongQuan.PhongHoatDong</div>
+    </article>
+    <article class="campus-detail-stat">
+        <div class="label">Tổng lớp</div>
+        <div class="value">@Model.TongQuan.TongLopHoc</div>
+    </article>
+    <article class="campus-detail-stat">
+        <div class="label">Lớp đang vận hành</div>
+        <div class="value">@Model.TongQuan.LopDangVanHanh</div>
+    </article>
+    <article class="campus-detail-stat">
+        <div class="label">Nhân sự</div>
+        <div class="value">@Model.TongQuan.TongNhanSu</div>
+    </article>
+    <article class="campus-detail-stat">
+        <div class="label">Giáo viên</div>
+        <div class="value">@Model.TongQuan.TongGiaoVien</div>
+    </article>
+</section>
+
+<nav class="campus-tabs">
+    <a asp-action="Detail" asp-route-id="@campus.CoSoId" asp-route-tab="overview" class="campus-tab @(Model.ActiveTab == "overview" ? "active" : null)">
+        <i class="bi bi-grid"></i> Tổng quan
+    </a>
+    <a asp-action="Detail" asp-route-id="@campus.CoSoId" asp-route-tab="rooms" class="campus-tab @(Model.ActiveTab == "rooms" ? "active" : null)">
+        <i class="bi bi-door-open"></i> Phòng học
+    </a>
+    <a asp-action="Detail" asp-route-id="@campus.CoSoId" asp-route-tab="staff" class="campus-tab @(Model.ActiveTab == "staff" ? "active" : null)">
+        <i class="bi bi-people"></i> Nhân sự
+    </a>
+    <a asp-action="Detail" asp-route-id="@campus.CoSoId" asp-route-tab="classes" class="campus-tab @(Model.ActiveTab == "classes" ? "active" : null)">
+        <i class="bi bi-mortarboard"></i> Lớp học
+    </a>
+</nav>
+
+@if (Model.ActiveTab == "overview")
+{
+    <section class="campus-detail-grid">
+        <div class="campus-panel">
+            <h5>Thông tin vận hành</h5>
+            <p class="campus-panel-sub">Tổng hợp thông tin liên hệ, địa chỉ và tình trạng khai thác của cơ sở.</p>
+            <div class="campus-info-list">
+                <div class="campus-info-item">
+                    <div class="label">Địa chỉ</div>
+                    <div class="value">@(string.IsNullOrWhiteSpace(campus.DiaChi) ? "Chưa cập nhật" : campus.DiaChi)</div>
+                </div>
+                <div class="campus-info-item">
+                    <div class="label">Tỉnh/thành</div>
+                    <div class="value">@(campus.TinhThanh?.TenTinhThanh ?? "Chưa cập nhật")</div>
+                </div>
+                <div class="campus-info-item">
+                    <div class="label">Phường/xã</div>
+                    <div class="value">@(string.IsNullOrWhiteSpace(campus.TenPhuongXa) ? "Chưa cập nhật" : campus.TenPhuongXa)</div>
+                </div>
+                <div class="campus-info-item">
+                    <div class="label">Số điện thoại</div>
+                    <div class="value">@(string.IsNullOrWhiteSpace(campus.SoDienThoai) ? "Chưa cập nhật" : campus.SoDienThoai)</div>
+                </div>
+                <div class="campus-info-item">
+                    <div class="label">Email</div>
+                    <div class="value">@(string.IsNullOrWhiteSpace(campus.Email) ? "Chưa cập nhật" : campus.Email)</div>
+                </div>
+                <div class="campus-info-item">
+                    <div class="label">Ngày khai trương</div>
+                    <div class="value">@(campus.NgayKhaiTruong?.ToString("dd/MM/yyyy") ?? "Chưa cập nhật")</div>
+                </div>
+            </div>
+        </div>
+
+        <aside class="campus-side">
+            <div class="campus-panel">
+                <h5>Trạng thái sẵn sàng</h5>
+                <p class="campus-panel-sub">Nhìn nhanh để biết cơ sở đã đủ dữ liệu để mở lớp và phân bổ phòng học chưa.</p>
+                <div class="campus-summary-grid">
+                    <div class="campus-summary-item">
+                        <div class="label">Phòng học</div>
+                        <div class="value">@(Model.TongQuan.TongPhongHoc > 0 ? "Đã có phòng học" : "Chưa có phòng học")</div>
+                    </div>
+                    <div class="campus-summary-item">
+                        <div class="label">Nhân sự</div>
+                        <div class="value">@(Model.TongQuan.TongNhanSu > 0 ? "Đã gắn nhân sự" : "Chưa gắn nhân sự")</div>
+                    </div>
+                    <div class="campus-summary-item">
+                        <div class="label">Lớp đang vận hành</div>
+                        <div class="value">@Model.TongQuan.LopDangVanHanh lớp</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="campus-panel">
+                <h5>Bản đồ</h5>
+                <p class="campus-panel-sub">Sử dụng link nhúng Google Maps để nhìn nhanh vị trí cơ sở ngay trong admin.</p>
+                @if (string.IsNullOrWhiteSpace(campus.BanDoGoogle))
+                {
+                    <div class="campus-empty">
+                        <i class="bi bi-map"></i>
+                        Chưa cập nhật bản đồ Google cho cơ sở này.
+                    </div>
+                }
+                else
+                {
+                    <iframe class="campus-map-frame" src="@campus.BanDoGoogle" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+                }
+            </div>
+        </aside>
+    </section>
+}
+else if (Model.ActiveTab == "rooms")
+{
+    <section class="campus-detail-grid">
+        <div class="campus-panel">
+            <h5>Danh sách phòng học</h5>
+            <p class="campus-panel-sub">Phòng học được quản lý trong đúng ngữ cảnh của cơ sở hiện tại, không còn là một màn hình setup độc lập.</p>
+            @if (!Model.PhongHocs.Any())
+            {
+                <div class="campus-empty">
+                    <i class="bi bi-door-open"></i>
+                    Cơ sở này chưa có phòng học nào.
+                </div>
+            }
+            else
+            {
+                <div class="campus-table-wrap">
+                    <table class="campus-table">
+                        <thead>
+                            <tr>
+                                <th>Phòng</th>
+                                <th>Sức chứa</th>
+                                <th>Trạng thái</th>
+                                <th>Đang sử dụng</th>
+                                <th>Thao tác</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var room in Model.PhongHocs)
+                            {
+                                var roomStatus = Enum.IsDefined(typeof(PhongHocTrangThai), room.TrangThai)
+                                    ? (PhongHocTrangThai)room.TrangThai
+                                    : PhongHocTrangThai.HoatDong;
+                                var soLopDungPhong = Model.LopHocs.Count(l => l.PhongHocId == room.PhongHocId);
+                                <tr>
+                                    <td>
+                                        <strong>@room.TenPhong</strong>
+                                        <div class="campus-meta">@(string.IsNullOrWhiteSpace(room.TrangThietBi) ? "Chưa cập nhật trang thiết bị" : room.TrangThietBi)</div>
+                                    </td>
+                                    <td>
+                                        <div>@(room.SucChua?.ToString() ?? "0") học viên</div>
+                                        <div class="campus-meta">@(room.NgayBaoTri?.ToString("dd/MM/yyyy") ?? "Chưa có lịch bảo trì")</div>
+                                    </td>
+                                    <td>
+                                        <span class="@roomStatus.GetBadgeClass()">@roomStatus.GetLabel()</span>
+                                    </td>
+                                    <td>
+                                        <div>@soLopDungPhong lớp</div>
+                                        <div class="campus-meta">@(string.IsNullOrWhiteSpace(room.GhiChuBaoTri) ? "Không có ghi chú bảo trì" : room.GhiChuBaoTri)</div>
+                                    </td>
+                                    <td>
+                                        <div class="campus-actions">
+                                            <a asp-action="Detail" asp-route-id="@campus.CoSoId" asp-route-tab="rooms" asp-route-roomId="@room.PhongHocId" class="btn btn-outline btn-sm" title="Sửa phòng">
+                                                <i class="bi bi-pencil"></i>
+                                            </a>
+                                            <form method="post" asp-action="DeleteRoom" asp-route-campusId="@campus.CoSoId" asp-route-id="@room.PhongHocId" onsubmit="return confirm('Xóa phòng học này?')" style="display:inline;">
+                                                @Html.AntiForgeryToken()
+                                                <button type="submit" class="btn btn-danger btn-sm" title="Xóa phòng">
+                                                    <i class="bi bi-trash"></i>
+                                                </button>
+                                            </form>
+                                        </div>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            }
+        </div>
+
+        <aside class="campus-side">
+            <div class="campus-panel">
+                <h5>@(Model.RoomForm.IsEditing ? "Cập nhật phòng học" : "Thêm phòng học")</h5>
+                <p class="campus-panel-sub">Phòng học sẽ mặc định gắn vào cơ sở này, không cần chọn lại cơ sở trong form.</p>
+
+                <form method="post" asp-action="SaveRoom">
+                    @Html.AntiForgeryToken()
+                    <input type="hidden" name="campusId" value="@campus.CoSoId" />
+                    <input asp-for="RoomForm.Form.PhongHocId" type="hidden" />
+
+                    <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
+
+                    <div class="campus-form-group">
+                        <label asp-for="RoomForm.Form.TenPhong"></label>
+                        <input asp-for="RoomForm.Form.TenPhong" class="form-control" placeholder="VD: P101" />
+                        <span asp-validation-for="RoomForm.Form.TenPhong" class="text-danger"></span>
+                    </div>
+
+                    <div class="campus-form-group">
+                        <label asp-for="RoomForm.Form.SucChua"></label>
+                        <input asp-for="RoomForm.Form.SucChua" type="number" min="2" class="form-control" />
+                        <span asp-validation-for="RoomForm.Form.SucChua" class="text-danger"></span>
+                    </div>
+
+                    <div class="campus-form-group">
+                        <label asp-for="RoomForm.Form.TrangThai"></label>
+                        <select asp-for="RoomForm.Form.TrangThai" class="form-control">
+                            <option value="@((int)PhongHocTrangThai.HoatDong)">Hoạt động</option>
+                            <option value="@((int)PhongHocTrangThai.DangBaoTri)">Đang bảo trì</option>
+                            <option value="@((int)PhongHocTrangThai.TamNgung)">Tạm ngưng</option>
+                            <option value="@((int)PhongHocTrangThai.NgungHan)">Ngưng hẳn</option>
+                        </select>
+                    </div>
+
+                    <div class="campus-form-group">
+                        <label asp-for="RoomForm.Form.TrangThietBi"></label>
+                        <textarea asp-for="RoomForm.Form.TrangThietBi" class="form-control" rows="2" placeholder="Máy chiếu, loa, điều hòa..."></textarea>
+                    </div>
+
+                    <div class="campus-form-group">
+                        <label asp-for="RoomForm.Form.MoTa"></label>
+                        <textarea asp-for="RoomForm.Form.MoTa" class="form-control" rows="2"></textarea>
+                    </div>
+
+                    <div class="campus-form-group">
+                        <label asp-for="RoomForm.Form.GhiChuBaoTri"></label>
+                        <textarea asp-for="RoomForm.Form.GhiChuBaoTri" class="form-control" rows="2"></textarea>
+                    </div>
+
+                    <div class="campus-form-group">
+                        <label asp-for="RoomForm.Form.NgayBaoTri"></label>
+                        <input asp-for="RoomForm.Form.NgayBaoTri" type="date" class="form-control" />
+                    </div>
+
+                    <div class="campus-header-actions">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="bi bi-floppy2"></i> @(Model.RoomForm.IsEditing ? "Lưu phòng học" : "Thêm phòng học")
+                        </button>
+                        @if (Model.RoomForm.IsEditing)
+                        {
+                            <a asp-action="Detail" asp-route-id="@campus.CoSoId" asp-route-tab="rooms" class="btn btn-outline">
+                                <i class="bi bi-arrow-counterclockwise"></i> Tạo mới
+                            </a>
+                        }
+                    </div>
+                </form>
+            </div>
+        </aside>
+    </section>
+}
+else if (Model.ActiveTab == "staff")
+{
+    <section class="campus-panel">
+        <h5>Danh sách nhân sự của cơ sở</h5>
+        <p class="campus-panel-sub">Hiển thị tài khoản đang gắn với cơ sở này qua hồ sơ nhân sự. CRUD chi tiết sẽ kết nối với module nhân sự sau.</p>
+        @if (!Model.NhanSus.Any())
+        {
+            <div class="campus-empty">
+                <i class="bi bi-people"></i>
+                Cơ sở này chưa có nhân sự nào được gắn.
+            </div>
+        }
+        else
+        {
+            <div class="campus-table-wrap">
+                <table class="campus-table">
+                    <thead>
+                        <tr>
+                            <th>Nhân sự</th>
+                            <th>Vai trò</th>
+                            <th>Chức vụ</th>
+                            <th>Trạng thái</th>
+                            <th>Liên hệ</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var staff in Model.NhanSus)
+                        {
+                            <tr>
+                                <td>
+                                    <strong>@(staff.HoSo?.HoTen ?? staff.TenTaiKhoan)</strong>
+                                    <div class="campus-meta">@staff.TenTaiKhoan</div>
+                                </td>
+                                <td>@staff.RoleName</td>
+                                <td>
+                                    @(string.IsNullOrWhiteSpace(staff.NhanSu?.ChucVu) ? "Chưa cập nhật" : staff.NhanSu.ChucVu)
+                                    <div class="campus-meta">@(string.IsNullOrWhiteSpace(staff.NhanSu?.ChuyenMon) ? "Chưa cập nhật chuyên môn" : staff.NhanSu.ChuyenMon)</div>
+                                </td>
+                                <td>
+                                    <span class="setup-badge @(staff.IsActive ? "active" : "inactive")">@staff.TrangThaiText</span>
+                                </td>
+                                <td>
+                                    <div>@(string.IsNullOrWhiteSpace(staff.Email) ? "Chưa có email" : staff.Email)</div>
+                                    <div class="campus-meta">Module nhân sự sẽ kết nối chi tiết sau.</div>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        }
+    </section>
+}
+else
+{
+    <section class="campus-panel">
+        <h5>Danh sách lớp học theo cơ sở</h5>
+        <p class="campus-panel-sub">Giúp theo dõi nhanh cơ sở đang vận hành lớp nào, ở phòng nào và mức lấp đầy hiện tại ra sao.</p>
+        @if (!Model.LopHocs.Any())
+        {
+            <div class="campus-empty">
+                <i class="bi bi-mortarboard"></i>
+                Cơ sở này chưa có lớp học nào.
+            </div>
+        }
+        else
+        {
+            <div class="campus-table-wrap">
+                <table class="campus-table">
+                    <thead>
+                        <tr>
+                            <th>Lớp học</th>
+                            <th>Khóa học</th>
+                            <th>Phòng học</th>
+                            <th>Lịch học</th>
+                            <th>Sĩ số</th>
+                            <th>Trạng thái</th>
+                            <th>Thao tác</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var lop in Model.LopHocs)
+                        {
+                            var siSo = lop.DangKys.Count;
+                            var siSoToiDa = lop.SoHocVienToiDa ?? 0;
+                            <tr>
+                                <td>
+                                    <strong>@lop.TenLopHoc</strong>
+                                    <div class="campus-meta">@lop.MaLopHoc</div>
+                                </td>
+                                <td>
+                                    @(lop.KhoaHoc?.TenKhoaHoc ?? "Chưa gắn khóa học")
+                                    <div class="campus-meta">@((lop.HocPhiId ?? 0) > 0 ? $"Học phí #{lop.HocPhiId}" : "Chưa gắn học phí")</div>
+                                </td>
+                                <td>
+                                    @(lop.PhongHoc?.TenPhong ?? "Chưa gắn phòng")
+                                    <div class="campus-meta">@(lop.CaHoc?.TenCa ?? "Chưa gắn ca học")</div>
+                                </td>
+                                <td>
+                                    <div>@(lop.NgayBatDau?.ToString("dd/MM/yyyy") ?? "Chưa có ngày bắt đầu")</div>
+                                    <div class="campus-meta">Kết thúc @(lop.NgayKetThuc?.ToString("dd/MM/yyyy") ?? "đang tính")</div>
+                                </td>
+                                <td>
+                                    <div>@siSo / @siSoToiDa</div>
+                                    <div class="campus-meta">@((lop.SoBuoiDuKien ?? 0)) buổi dự kiến</div>
+                                </td>
+                                <td>
+                                    <span class="@lop.TrangThaiBadgeClass">@lop.TrangThaiText</span>
+                                </td>
+                                <td>
+                                    <div class="campus-actions">
+                                        <a asp-controller="Classes" asp-action="Detail" asp-route-id="@lop.LopHocId" class="btn btn-outline btn-sm" title="Chi tiết lớp">
+                                            <i class="bi bi-eye"></i>
+                                        </a>
+                                        <a asp-controller="Classes" asp-action="Edit" asp-route-id="@lop.LopHocId" class="btn btn-outline btn-sm" title="Chỉnh sửa lớp">
+                                            <i class="bi bi-pencil"></i>
+                                        </a>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        }
+    </section>
+}
+
+@section Scripts {
+    @await Html.PartialAsync("_ValidationScriptsPartial")
+}

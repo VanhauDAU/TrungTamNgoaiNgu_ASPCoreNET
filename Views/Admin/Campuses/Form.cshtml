@@ -1,0 +1,211 @@
+@model TrungTamNgoaiNgu.Models.CampusFormViewModel
+@{
+    ViewData["Title"] = Model.IsEditing ? "Chỉnh sửa cơ sở" : "Thêm cơ sở";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+    var phuongXaValue = Model.Form.TenPhuongXa ?? string.Empty;
+}
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/admin-campus.css" asp-append-version="true" />
+}
+
+<div class="page-header campus-page-header">
+    <div>
+        <div class="page-title">@(Model.IsEditing ? "Chỉnh sửa cơ sở" : "Thêm cơ sở đào tạo")</div>
+        <div class="page-sub">Cấu hình thông tin vận hành, địa bàn và liên hệ cho từng cơ sở một cách độc lập với thiết lập lớp học.</div>
+    </div>
+    <div class="campus-header-actions">
+        @if (Model.IsEditing)
+        {
+            <a asp-action="Detail" asp-route-id="@Model.Form.CoSoId" class="btn btn-outline">
+                <i class="bi bi-grid-1x2"></i> Chi tiết cơ sở
+            </a>
+        }
+        <a asp-action="Index" class="btn btn-outline">
+            <i class="bi bi-arrow-left"></i> Danh sách cơ sở
+        </a>
+    </div>
+</div>
+
+<form method="post" asp-action="@(Model.IsEditing ? "Edit" : "Create")" class="campus-form-grid">
+    @Html.AntiForgeryToken()
+    <input asp-for="Form.CoSoId" type="hidden" />
+
+    <section class="campus-form-main">
+        <div class="campus-panel">
+            <h5>Thông tin cơ sở</h5>
+            <p class="campus-panel-sub">Thông tin này được sử dụng trong form lớp học, điều phối nhân sự và quản lý phòng học theo chi nhánh.</p>
+
+            <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
+
+            <div class="campus-form-group">
+                <label asp-for="Form.TenCoSo"></label>
+                <input asp-for="Form.TenCoSo" class="form-control" placeholder="VD: Cơ sở Gò Nổi" />
+                <span asp-validation-for="Form.TenCoSo" class="text-danger"></span>
+            </div>
+
+            <div class="campus-two-col">
+                <div class="campus-form-group">
+                    <label asp-for="Form.TinhThanhId"></label>
+                    <select asp-for="Form.TinhThanhId" class="form-control" id="campusProvinceSelect">
+                        <option value="">-- Chọn tỉnh/thành --</option>
+                        @foreach (var tinhThanh in Model.TinhThanhs)
+                        {
+                            <option value="@tinhThanh.TinhThanhId">@tinhThanh.TenTinhThanh</option>
+                        }
+                    </select>
+                    <span asp-validation-for="Form.TinhThanhId" class="text-danger"></span>
+                </div>
+                <div class="campus-form-group">
+                    <label asp-for="Form.TenPhuongXa"></label>
+                    <input asp-for="Form.TenPhuongXa" class="form-control" list="phuongXaSuggestions" placeholder="Chọn từ danh sách hoặc nhập tay" />
+                    <datalist id="phuongXaSuggestions"></datalist>
+                    <span class="campus-help" id="campusWardHint">Chọn tỉnh/thành để tải gợi ý phường/xã.</span>
+                    <span asp-validation-for="Form.TenPhuongXa" class="text-danger"></span>
+                </div>
+            </div>
+
+            <div class="campus-form-group">
+                <label asp-for="Form.DiaChi"></label>
+                <input asp-for="Form.DiaChi" class="form-control" placeholder="Địa chỉ chi tiết" />
+                <span asp-validation-for="Form.DiaChi" class="text-danger"></span>
+            </div>
+
+            <div class="campus-two-col">
+                <div class="campus-form-group">
+                    <label asp-for="Form.SoDienThoai"></label>
+                    <input asp-for="Form.SoDienThoai" class="form-control" placeholder="Số điện thoại cơ sở" />
+                    <span asp-validation-for="Form.SoDienThoai" class="text-danger"></span>
+                </div>
+                <div class="campus-form-group">
+                    <label asp-for="Form.Email"></label>
+                    <input asp-for="Form.Email" type="email" class="form-control" placeholder="Email liên hệ" />
+                    <span asp-validation-for="Form.Email" class="text-danger"></span>
+                </div>
+            </div>
+
+            <div class="campus-two-col">
+                <div class="campus-form-group">
+                    <label asp-for="Form.NgayKhaiTruong"></label>
+                    <input asp-for="Form.NgayKhaiTruong" type="date" class="form-control" />
+                    <span asp-validation-for="Form.NgayKhaiTruong" class="text-danger"></span>
+                </div>
+                <div class="campus-form-group">
+                    <label asp-for="Form.TrangThai"></label>
+                    <select asp-for="Form.TrangThai" class="form-control">
+                        <option value="1">Hoạt động</option>
+                        <option value="0">Tạm ngưng</option>
+                    </select>
+                    <span class="campus-help">Chỉ cơ sở hoạt động mới được đưa vào lựa chọn trong form lớp học.</span>
+                </div>
+            </div>
+
+            <div class="campus-form-group">
+                <label asp-for="Form.BanDoGoogle"></label>
+                <input asp-for="Form.BanDoGoogle" class="form-control" placeholder="Link nhúng Google Maps nếu có" />
+                <span asp-validation-for="Form.BanDoGoogle" class="text-danger"></span>
+            </div>
+
+            <div class="campus-header-actions">
+                <button type="submit" class="btn btn-primary">
+                    <i class="bi bi-floppy2"></i> @(Model.IsEditing ? "Lưu thay đổi" : "Thêm cơ sở")
+                </button>
+                <a asp-action="Index" class="btn btn-outline">
+                    <i class="bi bi-x-circle"></i> Hủy
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <aside class="campus-form-side">
+        <div class="campus-panel">
+            <h5>Mã tự sinh</h5>
+            <p class="campus-panel-sub">Mã cơ sở và slug được backend sinh tự động để giữ nhất quán và tránh trùng lặp.</p>
+            <div class="campus-summary-grid">
+                <div class="campus-summary-item">
+                    <div class="label">Mã cơ sở</div>
+                    <div class="value">@(Model.IsEditing ? Model.Form.MaCoSo : "Sẽ được sinh khi lưu")</div>
+                </div>
+                <div class="campus-summary-item">
+                    <div class="label">Slug</div>
+                    <div class="value">@(Model.IsEditing ? Model.Form.Slug : "Sẽ được sinh khi lưu")</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="campus-panel">
+            <h5>Lưu ý vận hành</h5>
+            <p class="campus-panel-sub">Module này quản lý cơ sở độc lập. Phòng học sẽ được tạo ngay trong chi tiết cơ sở sau khi lưu.</p>
+            <div class="campus-info-list">
+                <div class="campus-info-item">
+                    <div class="label">Địa bàn</div>
+                    <div class="value">Phường/xã sẽ ưu tiên tải từ API địa bàn, nếu lỗi sẽ fallback về dữ liệu nội bộ.</div>
+                </div>
+                <div class="campus-info-item">
+                    <div class="label">Xóa cơ sở</div>
+                    <div class="value">Bị chặn nếu vẫn còn phòng học, lớp học, nhân sự hoặc hóa đơn liên quan.</div>
+                </div>
+                <div class="campus-info-item">
+                    <div class="label">Sau khi lưu</div>
+                    <div class="value">Bạn có thể quản lý phòng học, nhân sự và lớp học ngay trong trang chi tiết cơ sở.</div>
+                </div>
+            </div>
+        </div>
+    </aside>
+</form>
+
+@section Scripts {
+    @await Html.PartialAsync("_ValidationScriptsPartial")
+    <script>
+        const provinceSelect = document.getElementById('campusProvinceSelect');
+        const wardInput = document.getElementById('Form_TenPhuongXa');
+        const wardSuggestions = document.getElementById('phuongXaSuggestions');
+        const wardHint = document.getElementById('campusWardHint');
+        const initialWardValue = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(phuongXaValue));
+
+        async function loadWardSuggestions({ preserveCurrent = false } = {}) {
+            const tinhThanhId = provinceSelect?.value;
+            if (!tinhThanhId) {
+                wardSuggestions.innerHTML = '';
+                if (wardHint) wardHint.textContent = 'Chọn tỉnh/thành để tải gợi ý phường/xã.';
+                return;
+            }
+
+            try {
+                const url = new URL('/Admin/Campuses/PhuongXaSuggestions', window.location.origin);
+                url.searchParams.set('tinhThanhId', tinhThanhId);
+
+                const currentWard = preserveCurrent ? (wardInput?.value?.trim() || initialWardValue) : '';
+                if (currentWard) url.searchParams.set('baoGomPhuongXa', currentWard);
+
+                if (wardHint) wardHint.textContent = 'Đang tải gợi ý phường/xã...';
+
+                const response = await fetch(url.toString());
+                if (!response.ok) throw new Error();
+
+                const data = await response.json();
+                wardSuggestions.innerHTML = data.map(item => `<option value="${item.name}"></option>`).join('');
+                if (wardHint) {
+                    wardHint.textContent = data.length > 0
+                        ? `Đã tải ${data.length} gợi ý phường/xã cho tỉnh/thành đã chọn.`
+                        : 'Không có gợi ý từ hệ thống cho tỉnh/thành này. Bạn vẫn có thể nhập tay.';
+                }
+
+                if (!wardInput.value && initialWardValue) {
+                    const matched = data.find(item => item.name === initialWardValue);
+                    if (matched) wardInput.value = matched.name;
+                }
+            } catch {
+                wardSuggestions.innerHTML = '';
+                if (wardHint) wardHint.textContent = 'Không tải được gợi ý phường/xã. Bạn có thể nhập tay và mình vẫn lưu bình thường.';
+            }
+        }
+
+        provinceSelect?.addEventListener('change', async () => {
+            if (wardInput) wardInput.value = '';
+            await loadWardSuggestions();
+        });
+
+        loadWardSuggestions({ preserveCurrent: true });
+    </script>
+}

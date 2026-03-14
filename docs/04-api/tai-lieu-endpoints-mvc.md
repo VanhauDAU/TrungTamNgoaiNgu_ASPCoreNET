@@ -79,6 +79,37 @@ API:    /api/{resource}/{action}
 - `Ngày kết thúc` không nhập tay ở Create/Edit lớp học; backend là nguồn chân lý để tự tính từ `Ngày bắt đầu + Lịch học + Số buổi`.
 - Nếu lớp có gắn `HocPhiId`, frontend và backend đều yêu cầu đủ `Ngày bắt đầu` và `Lịch học` để tính lịch kết thúc.
 - Dropdown địa bàn chỉ hiển thị `Tỉnh/Thành` và `Phường/Xã` có cơ sở đang hoạt động để giảm nhiễu dữ liệu.
+- Link quản lý `Cơ sở` và `Phòng học` trong form lớp học đã chuyển sang module admin `Campuses`.
+
+### 4.4 Admin - `CampusesController`
+
+| Method | URL | Mo ta |
+| ------ | --- | ----- |
+| GET | `/Admin/Campuses/Index` | Danh sach co so + filter theo tu khoa, tinh/thanh, trang thai |
+| GET | `/Admin/Campuses/Create` | Form them co so |
+| POST | `/Admin/Campuses/Create` | Luu co so moi |
+| GET | `/Admin/Campuses/Edit/{id}` | Form sua co so |
+| POST | `/Admin/Campuses/Edit` | Luu thay doi co so |
+| GET | `/Admin/Campuses/Detail/{id}?tab=overview|rooms|staff|classes` | Trang chi tiet co so theo tab |
+| POST | `/Admin/Campuses/SaveRoom` | Them/sua phong hoc trong ngu canh co so |
+| POST | `/Admin/Campuses/DeleteRoom` | Xoa phong hoc cua co so |
+| POST | `/Admin/Campuses/Delete/{id}` | Xoa co so neu khong con rang buoc |
+
+### 4.5 Admin - `ClassSetupController` sau refactor
+
+| Method | URL | Mo ta |
+| ------ | --- | ----- |
+| GET | `/Admin/ClassSetup/Index` | Dashboard du lieu nen mo lop |
+| GET/POST | `/Admin/ClassSetup/CaHoc` | Quan ly ca hoc |
+| GET/POST | `/Admin/ClassSetup/HocPhi` | Quan ly goi hoc phi |
+| GET | `/Admin/ClassSetup/CoSo` | Route cu, redirect sang `Campuses` |
+| GET | `/Admin/ClassSetup/PhongHoc` | Route cu, redirect sang tab `rooms` cua `Campuses` |
+
+### 4.6 Ghi chu dieu huong sau khi tach module
+
+- `Co so dao tao` khong con la mot muc con trong `Thiết lập lớp học`.
+- `Phong hoc` duoc quan ly ben trong detail cua tung co so, khong con la man CRUD doc lap.
+- Giữ route cu o `ClassSetup` theo che do redirect de tranh vo link noi bo trong admin.
 
 ---
 
