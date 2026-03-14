@@ -3,147 +3,239 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>@ViewData["Title"] — Five Genius Admin</title>
+    <title>@ViewData["Title"] - Five Genius Admin</title>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" />
-    <link rel="stylesheet" href="~/css/admin.css?v=3" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/admin.css?v=4" asp-append-version="true" />
     @await RenderSectionAsync("Styles", required: false)
 </head>
-<body>
-
+<body class="admin-shell">
 @{
-    var ctrl   = ViewContext.RouteData.Values["controller"]?.ToString() ?? "";
-    bool inDaoTao   = ctrl is "Courses" or "CourseCategories" or "Classes" or "ClassSetup" or "Campuses";
-    bool inNhanSu   = ctrl is "HocVien" or "GiaoVien";
-    bool inTaiChinh = ctrl is "HoaDon" or "Luong";
-    bool inHeThong  = ctrl is "CoSo" or "ThongBao" or "AuditLogs";
+    var ctrl = ViewContext.RouteData.Values["controller"]?.ToString() ?? "";
+    var action = ViewContext.RouteData.Values["action"]?.ToString() ?? "";
+    var pageTitle = (ViewData["Title"]?.ToString() ?? "Dashboard").Trim();
+    bool inDaoTao = ctrl is "Courses" or "CourseCategories" or "Classes" or "ClassSetup" or "Campuses";
+    bool inNhanSu = ctrl is "HocVien" or "GiaoVien" or "NhanVien";
+    bool inTaiChinh = ctrl is "HoaDon" or "Luong" or "PhieuThu";
+    bool inHeThong = ctrl is "CoSo" or "ThongBao" or "AuditLogs";
 }
 
-<!-- ═══════════ SIDEBAR ═══════════ -->
-<aside id="sidebar">
+<div class="admin-backdrop" id="adminBackdrop"></div>
 
-    <!-- Brand -->
+<aside id="sidebar" aria-label="Điều hướng quản trị">
     <a class="sb-brand" href="/Admin/Dashboard">
-        <div class="sb-logo">🎓</div>
-        <div class="sb-brand-text">
-            <div class="t1">Five Genius</div>
-            <div class="t2">Academy Management</div>
+        <div class="sb-brand-mark">FG</div>
+        <div class="sb-brand-copy">
+            <div class="sb-brand-title">Five Genius Admin</div>
+            <div class="sb-brand-sub">Academy Operations Suite</div>
         </div>
     </a>
 
-    <!-- Nav -->
-    <nav class="sb-nav">
+    <div class="sb-workspace">
+        <div class="sb-workspace-label">Workspace</div>
+        <div class="sb-workspace-title">Hệ thống quản trị trung tâm</div>
+        <div class="sb-workspace-meta">
+            <span class="sb-chip">
+                <i class="bi bi-lightning-charge-fill"></i>
+                Online
+            </span>
+            <span class="sb-chip muted">2026</span>
+        </div>
+    </div>
 
-        <!-- Dashboard -->
-        <a class="sb-direct @(ctrl == "Dashboard" ? "active" : "")"
-           asp-controller="Dashboard" asp-action="Index" asp-route-area="">
-            <span class="ico"><i class="bi bi-grid-1x2-fill"></i></span>
-            <span class="lbl">Tổng quan</span>
-        </a>
+    <nav class="sb-nav">
+        <div class="sb-nav-section">
+            <div class="sb-section-title">Điều hướng chính</div>
+
+            <a class="sb-direct @(ctrl == "Dashboard" ? "active" : "")"
+               asp-controller="Dashboard" asp-action="Index" asp-route-area=""
+               title="Tổng quan">
+                <span class="ico sb-tone-dashboard"><i class="bi bi-grid-1x2-fill"></i></span>
+                <span class="sb-link-copy">
+                    <span class="lbl">Tổng quan</span>
+                    <span class="meta">Báo cáo và chỉ số điều hành</span>
+                </span>
+            </a>
+        </div>
 
         <div class="sb-div"></div>
 
-        <!-- ── Nhóm: Đào tạo ── -->
-        <div class="sb-group">
-            <button class="sb-group-btn @(inDaoTao ? "has-active" : "")" data-target="g-daotao">
-                <span class="ico" style="background:rgba(99,102,241,.12);color:#a5b4fc"><i class="bi bi-journal-richtext"></i></span>
-                <span class="lbl">Đào tạo</span>
-                <i class="bi bi-chevron-right arrow"></i>
-            </button>
-            <div class="sb-items @(inDaoTao ? "open" : "")" id="g-daotao">
-                <a class="sb-item @(ctrl == "CourseCategories" ? "active" : "")"
-                   asp-controller="CourseCategories" asp-action="Index" asp-route-area="">Danh mục khóa học</a>
-                <a class="sb-item @(ctrl == "Courses" ? "active" : "")"
-                   asp-controller="Courses" asp-action="Index" asp-route-area="">Khóa học</a>
-                <a class="sb-item @(ctrl == "Classes" ? "active" : "")"
-                   asp-controller="Classes" asp-action="Index" asp-route-area="">Lớp học</a>
-                <a class="sb-item @(ctrl == "Campuses" ? "active" : "")"
-                   asp-controller="Campuses" asp-action="Index" asp-route-area="">Cơ sở đào tạo</a>
-                <a class="sb-item @(ctrl == "ClassSetup" ? "active" : "")"
-                   asp-controller="ClassSetup" asp-action="Index" asp-route-area="">Thiết lập lớp học</a>
+        <div class="sb-nav-section">
+            <div class="sb-section-title">Phân hệ nghiệp vụ</div>
+
+            <div class="sb-group">
+                <button class="sb-group-btn @(inDaoTao ? "has-active" : "")" data-target="g-daotao" type="button">
+                    <span class="ico sb-tone-train"><i class="bi bi-journal-richtext"></i></span>
+                    <span class="sb-link-copy">
+                        <span class="lbl">Đào tạo</span>
+                        <span class="meta">Khóa học, lớp học, cơ sở</span>
+                    </span>
+                    <i class="bi bi-chevron-right arrow"></i>
+                </button>
+                <div class="sb-items @(inDaoTao ? "open" : "")" id="g-daotao">
+                    <a class="sb-item @(ctrl == "CourseCategories" ? "active" : "")"
+                       asp-controller="CourseCategories" asp-action="Index" asp-route-area=""
+                       title="Danh mục khóa học">
+                        <span class="sb-item-label">Danh mục khóa học</span>
+                        <span class="sb-item-hint">Nhóm chương trình</span>
+                    </a>
+                    <a class="sb-item @(ctrl == "Courses" ? "active" : "")"
+                       asp-controller="Courses" asp-action="Index" asp-route-area=""
+                       title="Khóa học">
+                        <span class="sb-item-label">Khóa học</span>
+                        <span class="sb-item-hint">Sản phẩm đào tạo</span>
+                    </a>
+                    <a class="sb-item @(ctrl == "Classes" ? "active" : "")"
+                       asp-controller="Classes" asp-action="Index" asp-route-area=""
+                       title="Lớp học">
+                        <span class="sb-item-label">Lớp học</span>
+                        <span class="sb-item-hint">Điều phối vận hành</span>
+                    </a>
+                    <a class="sb-item @(ctrl == "Campuses" ? "active" : "")"
+                       asp-controller="Campuses" asp-action="Index" asp-route-area=""
+                       title="Cơ sở đào tạo">
+                        <span class="sb-item-label">Cơ sở đào tạo</span>
+                        <span class="sb-item-hint">Chi nhánh và phòng học</span>
+                    </a>
+                    <a class="sb-item @(ctrl == "ClassSetup" ? "active" : "")"
+                       asp-controller="ClassSetup" asp-action="Index" asp-route-area=""
+                       title="Thiết lập lớp học">
+                        <span class="sb-item-label">Thiết lập lớp học</span>
+                        <span class="sb-item-hint">Ca học và học phí</span>
+                    </a>
+                </div>
+            </div>
+
+            <div class="sb-group">
+                <button class="sb-group-btn @(inNhanSu ? "has-active" : "")" data-target="g-nhansu" type="button">
+                    <span class="ico sb-tone-people"><i class="bi bi-people-fill"></i></span>
+                    <span class="sb-link-copy">
+                        <span class="lbl">Nhân sự</span>
+                        <span class="meta">Học viên, giáo viên, nhân viên</span>
+                    </span>
+                    <i class="bi bi-chevron-right arrow"></i>
+                </button>
+                <div class="sb-items @(inNhanSu ? "open" : "")" id="g-nhansu">
+                    <a class="sb-item @(ctrl == "HocVien" ? "active" : "")"
+                       asp-controller="HocVien" asp-action="Index" asp-route-area=""
+                       title="Học viên">
+                        <span class="sb-item-label">Học viên</span>
+                        <span class="sb-item-hint">Hồ sơ người học</span>
+                    </a>
+                    <a class="sb-item @(ctrl == "GiaoVien" ? "active" : "")"
+                       asp-controller="GiaoVien" asp-action="Index" asp-route-area=""
+                       title="Giáo viên">
+                        <span class="sb-item-label">Giáo viên</span>
+                        <span class="sb-item-hint">Giảng dạy và phân công</span>
+                    </a>
+                    <a class="sb-item @(ctrl == "NhanVien" ? "active" : "")"
+                       asp-controller="NhanVien" asp-action="Index" asp-route-area=""
+                       title="Nhân viên">
+                        <span class="sb-item-label">Nhân viên</span>
+                        <span class="sb-item-hint">Vận hành nội bộ</span>
+                    </a>
+                </div>
+            </div>
+
+            <div class="sb-group">
+                <button class="sb-group-btn @(inTaiChinh ? "has-active" : "")" data-target="g-taichinh" type="button">
+                    <span class="ico sb-tone-money"><i class="bi bi-cash-stack"></i></span>
+                    <span class="sb-link-copy">
+                        <span class="lbl">Tài chính</span>
+                        <span class="meta">Thu phí, lương, giao dịch</span>
+                    </span>
+                    <i class="bi bi-chevron-right arrow"></i>
+                </button>
+                <div class="sb-items @(inTaiChinh ? "open" : "")" id="g-taichinh">
+                    <a class="sb-item @(ctrl == "HoaDon" ? "active" : "")"
+                       asp-controller="HoaDon" asp-action="Index" asp-route-area=""
+                       title="Hóa đơn">
+                        <span class="sb-item-label">Hóa đơn</span>
+                        <span class="sb-item-hint">Công nợ và thanh toán</span>
+                    </a>
+                    <a class="sb-item @(ctrl == "Luong" ? "active" : "")"
+                       asp-controller="Luong" asp-action="Index" asp-route-area=""
+                       title="Bảng lương">
+                        <span class="sb-item-label">Bảng lương</span>
+                        <span class="sb-item-hint">Chi trả nhân sự</span>
+                    </a>
+                    <a class="sb-item @(ctrl == "PhieuThu" ? "active" : "")"
+                       asp-controller="PhieuThu" asp-action="Index" asp-route-area=""
+                       title="Phiếu thu">
+                        <span class="sb-item-label">Phiếu thu</span>
+                        <span class="sb-item-hint">Theo dõi thu tiền</span>
+                    </a>
+                </div>
+            </div>
+
+            <div class="sb-group">
+                <button class="sb-group-btn @(inHeThong ? "has-active" : "")" data-target="g-hethong" type="button">
+                    <span class="ico sb-tone-system"><i class="bi bi-gear-fill"></i></span>
+                    <span class="sb-link-copy">
+                        <span class="lbl">Hệ thống</span>
+                        <span class="meta">Thông báo, nhật ký, tiện ích</span>
+                    </span>
+                    <i class="bi bi-chevron-right arrow"></i>
+                </button>
+                <div class="sb-items @(inHeThong ? "open" : "")" id="g-hethong">
+                    <a class="sb-item @(ctrl == "ThongBao" ? "active" : "")"
+                       asp-controller="ThongBao" asp-action="Index" asp-route-area=""
+                       title="Thông báo">
+                        <span class="sb-item-label">Thông báo</span>
+                        <span class="sb-item-hint">Broadcast và nhắc việc</span>
+                    </a>
+                    <a class="sb-item @(ctrl == "AuditLogs" ? "active" : "")"
+                       asp-controller="AuditLogs" asp-action="Index" asp-route-area=""
+                       title="Nhật ký hệ thống">
+                        <span class="sb-item-label">Nhật ký hệ thống</span>
+                        <span class="sb-item-hint">Audit và truy vết</span>
+                    </a>
+                    <a class="sb-item" href="/" target="_blank" rel="noreferrer" title="Xem trang web">
+                        <span class="sb-item-label">Xem trang web</span>
+                        <span class="sb-item-hint">Mở site public</span>
+                    </a>
+                </div>
             </div>
         </div>
-
-        <!-- ── Nhóm: Nhân sự ── -->
-        <div class="sb-group">
-            <button class="sb-group-btn @(inNhanSu ? "has-active" : "")" data-target="g-nhansu">
-                <span class="ico" style="background:rgba(16,185,129,.12);color:#6ee7b7"><i class="bi bi-people-fill"></i></span>
-                <span class="lbl">Nhân sự</span>
-                <i class="bi bi-chevron-right arrow"></i>
-            </button>
-            <div class="sb-items @(inNhanSu ? "open" : "")" id="g-nhansu">
-                <a class="sb-item @(ctrl == "HocVien" ? "active" : "")"
-                   asp-controller="HocVien" asp-action="Index" asp-route-area="">Học viên</a>
-                <a class="sb-item @(ctrl == "GiaoVien" ? "active" : "")"
-                   asp-controller="GiaoVien" asp-action="Index" asp-route-area="">Giáo viên</a>
-                <a class="sb-item @(ctrl == "NhanVien" ? "active" : "")"
-                   asp-controller="NhanVien" asp-action="Index" asp-route-area="">Nhân viên</a>
-            </div>
-        </div>
-
-        <!-- ── Nhóm: Tài chính ── -->
-        <div class="sb-group">
-            <button class="sb-group-btn @(inTaiChinh ? "has-active" : "")" data-target="g-taichinh">
-                <span class="ico" style="background:rgba(245,158,11,.12);color:#fcd34d"><i class="bi bi-cash-stack"></i></span>
-                <span class="lbl">Tài chính</span>
-                <i class="bi bi-chevron-right arrow"></i>
-            </button>
-            <div class="sb-items @(inTaiChinh ? "open" : "")" id="g-taichinh">
-                <a class="sb-item @(ctrl == "HoaDon" ? "active" : "")"
-                   asp-controller="HoaDon" asp-action="Index" asp-route-area="">Hóa đơn</a>
-                <a class="sb-item @(ctrl == "Luong" ? "active" : "")"
-                   asp-controller="Luong" asp-action="Index" asp-route-area="">Bảng lương</a>
-                <a class="sb-item @(ctrl == "PhieuThu" ? "active" : "")"
-                   asp-controller="PhieuThu" asp-action="Index" asp-route-area="">Phiếu thu</a>
-            </div>
-        </div>
-
-        <!-- ── Nhóm: Hệ thống ── -->
-        <div class="sb-group">
-            <button class="sb-group-btn @(inHeThong ? "has-active" : "")" data-target="g-hethong">
-                <span class="ico" style="background:rgba(107,114,128,.15);color:#9ca3af"><i class="bi bi-gear-fill"></i></span>
-                <span class="lbl">Hệ thống</span>
-                <i class="bi bi-chevron-right arrow"></i>
-            </button>
-            <div class="sb-items @(inHeThong ? "open" : "")" id="g-hethong">
-                <a class="sb-item @(ctrl == "ThongBao" ? "active" : "")"
-                   asp-controller="ThongBao" asp-action="Index" asp-route-area="">Thông báo</a>
-                <a class="sb-item @(ctrl == "AuditLogs" ? "active" : "")"
-                   asp-controller="AuditLogs" asp-action="Index" asp-route-area="">Nhật ký hệ thống</a>
-                <a class="sb-item" href="/" target="_blank">Xem trang web ↗</a>
-            </div>
-        </div>
-
     </nav>
 
-    <!-- User footer -->
     <div class="sb-footer">
         <div class="av sm">LH</div>
         <div class="sb-foot-info">
             <div class="n">Lê Văn Hậu</div>
-            <div class="r">Quản trị viên</div>
+            <div class="r">Quản trị viên hệ thống</div>
         </div>
+        <button class="sb-collapse-btn" id="sbCollapseBtn" type="button" title="Thu gọn sidebar">
+            <i class="bi bi-layout-sidebar-inset"></i>
+        </button>
     </div>
-
 </aside>
 
-<!-- ═══════════ MAIN ═══════════ -->
 <div class="main-wrap" id="mainWrap">
-
-    <!-- Topbar -->
     <header class="topbar">
-        <button class="icon-btn top-toggle" id="sbToggle" title="Thu/mở sidebar">
-            <i class="bi bi-list" style="font-size:1.2rem"></i>
-        </button>
+        <div class="top-left">
+            <button class="icon-btn top-toggle" id="sbToggle" type="button" title="Thu/mở sidebar">
+                <i class="bi bi-list" style="font-size:1.2rem"></i>
+            </button>
 
-        <nav class="top-bc">
-            <i class="bi bi-house" style="font-size:.8rem"></i>
-            <span class="sep">›</span>
-            <span>Admin</span>
-            <span class="sep">›</span>
-            <span class="cur">@(ViewData["Title"] ?? "Dashboard")</span>
-        </nav>
+            <div class="top-route">
+                <nav class="top-bc" aria-label="Breadcrumb">
+                    <i class="bi bi-house-door"></i>
+                    <span class="sep">/</span>
+                    <span>Admin</span>
+                    <span class="sep">/</span>
+                    <span>@ctrl</span>
+                    @if (!string.Equals(action, "Index", StringComparison.OrdinalIgnoreCase))
+                    {
+                        <span class="sep">/</span>
+                        <span>@action</span>
+                    }
+                </nav>
+                <div class="top-page-title">@pageTitle</div>
+            </div>
+        </div>
 
         <div class="top-right">
             @if (TempData["ThanhCong"] != null)
@@ -154,52 +246,100 @@
             {
                 <div class="toast err"><i class="bi bi-exclamation-circle-fill"></i> @TempData["LoiXay"]</div>
             }
-            <button class="icon-btn" title="Thông báo" style="position:relative">
+            <button class="icon-btn" type="button" title="Thông báo" style="position:relative">
                 <i class="bi bi-bell"></i>
                 <span class="badge-dot"></span>
             </button>
-            <button class="icon-btn" title="Cài đặt">
-                <i class="bi bi-gear"></i>
+            <button class="icon-btn" type="button" title="Cài đặt">
+                <i class="bi bi-sliders2"></i>
             </button>
-            <div class="av" title="Tài khoản của tôi">LH</div>
+            <div class="top-profile" title="Tài khoản của tôi">
+                <div class="av">LH</div>
+                <div class="top-profile-copy">
+                    <div class="name">Lê Văn Hậu</div>
+                    <div class="role">System Admin</div>
+                </div>
+            </div>
         </div>
     </header>
 
-    <!-- Content -->
     <main class="page-main">
         @RenderBody()
     </main>
 
     <footer class="page-foot">
-        Five Genius Academy &copy; 2026 &mdash; Xây dựng với ASP.NET Core 10 &amp; EF Core
+        Five Genius Academy &copy; 2026 - Xây dựng với ASP.NET Core 10 &amp; EF Core
     </footer>
 </div>
 
 <script>
-/* ── Sidebar toggle ─────────────────────────── */
-const sb  = document.getElementById('sidebar');
-const mw  = document.getElementById('mainWrap');
-document.getElementById('sbToggle').addEventListener('click', () => {
-    sb.classList.toggle('mini');
-    mw.classList.toggle('mini');
+const sidebar = document.getElementById('sidebar');
+const mainWrap = document.getElementById('mainWrap');
+const sidebarToggle = document.getElementById('sbToggle');
+const sidebarCollapseBtn = document.getElementById('sbCollapseBtn');
+const adminBackdrop = document.getElementById('adminBackdrop');
+const mobileBreakpoint = window.matchMedia('(max-width: 1024px)');
+const sidebarStateKey = 'fg-admin-sidebar-mini';
+
+function setMiniState(isMini) {
+    sidebar.classList.toggle('mini', isMini);
+    mainWrap.classList.toggle('mini', isMini);
+    localStorage.setItem(sidebarStateKey, isMini ? '1' : '0');
+}
+
+function closeMobileSidebar() {
+    sidebar.classList.remove('mobile-open');
+    adminBackdrop.classList.remove('show');
+    document.body.classList.remove('sb-mobile-open');
+}
+
+function toggleSidebar() {
+    if (mobileBreakpoint.matches) {
+        const willOpen = !sidebar.classList.contains('mobile-open');
+        sidebar.classList.toggle('mobile-open', willOpen);
+        adminBackdrop.classList.toggle('show', willOpen);
+        document.body.classList.toggle('sb-mobile-open', willOpen);
+        return;
+    }
+
+    setMiniState(!sidebar.classList.contains('mini'));
+}
+
+if (localStorage.getItem(sidebarStateKey) === '1' && !mobileBreakpoint.matches) {
+    setMiniState(true);
+}
+
+sidebarToggle?.addEventListener('click', toggleSidebar);
+sidebarCollapseBtn?.addEventListener('click', () => {
+    if (!mobileBreakpoint.matches) {
+        setMiniState(!sidebar.classList.contains('mini'));
+    }
+});
+adminBackdrop?.addEventListener('click', closeMobileSidebar);
+
+mobileBreakpoint.addEventListener('change', (event) => {
+    closeMobileSidebar();
+    if (event.matches) {
+        sidebar.classList.remove('mini');
+        mainWrap.classList.remove('mini');
+    } else if (localStorage.getItem(sidebarStateKey) === '1') {
+        setMiniState(true);
+    }
 });
 
-/* ── Accordion groups ───────────────────────── */
-document.querySelectorAll('.sb-group-btn').forEach(btn => {
-    // Sync arrow state on page load for open groups
+document.querySelectorAll('.sb-group-btn').forEach((btn) => {
     const panel = document.getElementById(btn.dataset.target);
     if (panel && panel.classList.contains('open')) {
         btn.classList.add('open');
     }
 
     btn.addEventListener('click', () => {
+        if (!panel) return;
         const isOpen = panel.classList.contains('open');
 
-        // Close all panels
-        document.querySelectorAll('.sb-items').forEach(p => p.classList.remove('open'));
-        document.querySelectorAll('.sb-group-btn').forEach(b => b.classList.remove('open'));
+        document.querySelectorAll('.sb-items').forEach((item) => item.classList.remove('open'));
+        document.querySelectorAll('.sb-group-btn').forEach((item) => item.classList.remove('open'));
 
-        // Toggle clicked panel
         if (!isOpen) {
             panel.classList.add('open');
             btn.classList.add('open');
