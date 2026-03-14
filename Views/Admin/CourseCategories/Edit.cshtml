@@ -27,6 +27,7 @@
     @Html.AntiForgeryToken()
     <input type="hidden" asp-for="Form.DanhMucId" />
     <input type="hidden" asp-for="Form.Slug" id="slugInput" />
+    <input type="hidden" asp-for="Form.MaDanhMuc" id="maDanhMucHidden" />
 
     <div class="kh-form-grid">
         <div class="kh-col-left">
@@ -43,9 +44,11 @@
                         </div>
 
                         <div class="form-group">
-                            <label asp-for="Form.MaDanhMuc">Mã danh mục</label>
-                            <input asp-for="Form.MaDanhMuc" class="form-control" />
-                            <span asp-validation-for="Form.MaDanhMuc" class="text-danger"></span>
+                            <label>Mã danh mục</label>
+                            <input class="form-control" id="maDanhMucPreviewInput"
+                                   value="@(!string.IsNullOrWhiteSpace(Model.Form.MaDanhMuc) ? Model.Form.MaDanhMuc : "Sẽ tự sinh khi lưu")"
+                                   readonly />
+                            <div class="kh-help-text">Mã danh mục được hệ thống giữ ổn định. Nếu dữ liệu cũ chưa có mã, mã sẽ tự được bổ sung khi lưu.</div>
                         </div>
                     </div>
 
@@ -109,8 +112,9 @@
 
         <div class="kh-col-right">
             <div class="card">
-                <div class="card-header"><i class="bi bi-link-45deg"></i> Slug hiện tại</div>
+                <div class="card-header"><i class="bi bi-link-45deg"></i> Slug và mã hiện tại</div>
                 <div class="card-body kh-stack-10">
+                    <code id="maDanhMucPreview" class="dm-slug-preview">@(!string.IsNullOrWhiteSpace(Model.Form.MaDanhMuc) ? Model.Form.MaDanhMuc : "DM-001")</code>
                     <code id="slugPreview" class="dm-slug-preview">@Model.SlugPreview</code>
                     <div class="kh-help-text">Slug sẽ được tạo lại tự động nếu tên danh mục thay đổi.</div>
                 </div>
@@ -143,6 +147,9 @@
         const tenDanhMucInput = document.getElementById('tenDanhMucInput');
         const slugInput = document.getElementById('slugInput');
         const slugPreview = document.getElementById('slugPreview');
+        const maDanhMucHidden = document.getElementById('maDanhMucHidden');
+        const maDanhMucPreview = document.getElementById('maDanhMucPreview');
+        const maDanhMucPreviewInput = document.getElementById('maDanhMucPreviewInput');
 
         function slugify(value) {
             return (value || '')
@@ -160,6 +167,29 @@
             const slug = slugify(tenDanhMucInput?.value || '');
             if (slugInput) slugInput.value = slug;
             if (slugPreview) slugPreview.textContent = slug;
+            if (!maDanhMucPreview || !maDanhMucPreviewInput) return;
+            if (maDanhMucPreviewInput.value && maDanhMucPreviewInput.value !== 'Sẽ tự sinh khi lưu') {
+                maDanhMucPreview.textContent = maDanhMucPreviewInput.value;
+                if (maDanhMucHidden) maDanhMucHidden.value = maDanhMucPreviewInput.value;
+                return;
+            }
+
+            const parts = (tenDanhMucInput?.value || '')
+                .trim()
+                .toLowerCase()
+                .normalize('NFD')
+                .replace(/[\u0300-\u036f]/g, '')
+                .replace(/đ/g, 'd')
+                .replace(/[^a-z0-9\\s]+/g, ' ')
+                .split(/\s+/)
+                .filter(Boolean);
+            const token = parts.length > 1
+                ? parts.map(x => x[0]).join('').toUpperCase().slice(0, 4)
+                : (parts[0] || 'DM').toUpperCase().slice(0, 4);
+            const code = `${token || 'DM'}-001`;
+            maDanhMucPreview.textContent = code;
+            maDanhMucPreviewInput.value = code;
+            if (maDanhMucHidden) maDanhMucHidden.value = code;
         }
 
         tenDanhMucInput?.addEventListener('input', syncSlugPreview);

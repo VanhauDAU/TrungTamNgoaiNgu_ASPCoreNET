@@ -117,7 +117,7 @@
                                 <option value="">-- Chọn tỉnh/thành --</option>
                                 @foreach (var item in Model.TinhThanhs)
                                 {
-                                    <option value="@item.TinhThanhId" data-code="@item.MaAPI">@item.TenTinhThanh</option>
+                                    <option value="@item.TinhThanhId">@item.TenTinhThanh</option>
                                 }
                             </select>
                         </div>
@@ -172,7 +172,7 @@
             <div class="body">
                 <ul class="setup-help-list">
                     <li><i class="bi bi-check2-circle"></i><span>Chỉ cơ sở ở trạng thái `Hoạt động` mới xuất hiện trong form tạo và chỉnh sửa lớp.</span></li>
-                    <li><i class="bi bi-check2-circle"></i><span>Dùng đúng tên phường/xã từ API để bộ lọc cơ sở ở form tạo lớp hoạt động chính xác.</span></li>
+                    <li><i class="bi bi-check2-circle"></i><span>Danh sách phường/xã chỉ hiển thị các địa bàn đang có cơ sở để form lớp học gọn và chính xác hơn.</span></li>
                     <li><i class="bi bi-check2-circle"></i><span>Không xóa được cơ sở nếu đã có phòng học, lớp học, nhân sự hoặc hóa đơn liên quan.</span></li>
                 </ul>
             </div>
@@ -186,15 +186,14 @@
         const tinhThanhSetupSelect = document.getElementById('tinhThanhSetupSelect');
         const phuongXaSuggestions = document.getElementById('phuongXaSuggestions');
         async function loadPhuongXaSuggestions() {
-            const selected = tinhThanhSetupSelect?.selectedOptions?.[0];
-            const maApi = selected?.dataset?.code;
-            if (!maApi) {
+            const tinhThanhId = tinhThanhSetupSelect?.value;
+            if (!tinhThanhId) {
                 phuongXaSuggestions.innerHTML = '';
                 return;
             }
 
             try {
-                const res = await fetch(`/Admin/Classes/PhuongXaByTinh?maApi=${maApi}`);
+                const res = await fetch(`/Admin/Classes/PhuongXaByTinh?tinhThanhId=${tinhThanhId}`);
                 if (!res.ok) throw new Error();
                 const data = await res.json();
                 phuongXaSuggestions.innerHTML = data.map(item => `<option value="${item.name}"></option>`).join('');

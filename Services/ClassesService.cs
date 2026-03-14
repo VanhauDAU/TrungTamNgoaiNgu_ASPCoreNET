@@ -379,13 +379,20 @@ public class ClassesService(AppDbContext db) : IClassesService
 
     public async Task<List<HocPhi>> LayHocPhiDropdownAsync(int? khoaHocId = null, long? baoGomHocPhiId = null)
     {
+        if ((!khoaHocId.HasValue || khoaHocId <= 0) && !baoGomHocPhiId.HasValue)
+            return [];
+
         var query = db.HocPhis
             .AsNoTracking()
             .Where(h =>
                 (h.TrangThai != 0 && h.KhoaHoc != null && h.KhoaHoc.DeletedAt == null && h.KhoaHoc.TrangThai != 0)
                 || (baoGomHocPhiId.HasValue && h.HocPhiId == baoGomHocPhiId.Value));
 
-        if (khoaHocId.HasValue) query = query.Where(h => h.KhoaHocId == khoaHocId);
+        if (khoaHocId.HasValue && khoaHocId > 0)
+            query = query.Where(h => h.KhoaHocId == khoaHocId);
+        else if (baoGomHocPhiId.HasValue)
+            query = query.Where(h => h.HocPhiId == baoGomHocPhiId.Value);
+
         return await query
             .OrderBy(h => h.SoBuoi)
             .ThenByDescending(h => h.CreatedAt)
@@ -418,11 +425,55 @@ public class ClassesService(AppDbContext db) : IClassesService
     // DROPDOWN ĐỊA CHỈ 3 TẦNG
     // =========================================================================
 
-    public async Task<List<TinhThanh>> LayTinhThanhDropdownAsync()
-        => await db.TinhThanhs
+    public async Task<List<TinhThanh>> LayTinhThanhDropdownAsync(int? baoGomTinhThanhId = null)
+    {
+        var tinhIds = db.CoSoDaoTaos
             .AsNoTracking()
+            .Where(c => c.TrangThai == 1 || (baoGomTinhThanhId.HasValue && c.TinhThanhId == baoGomTinhThanhId.Value))
+            .Where(c => c.TinhThanhId.HasValue)
+            .Select(c => c.TinhThanhId!.Value)
+            .Distinct();
+
+        return await db.TinhThanhs
+            .AsNoTracking()
+            .Where(t => tinhIds.Contains(t.TinhThanhId) || (baoGomTinhThanhId.HasValue && t.TinhThanhId == baoGomTinhThanhId.Value))
             .OrderBy(t => t.TenTinhThanh)
             .ToListAsync();
+    }
+
+    public async Task<List<string>> LayPhuongXaByTinhAsync(int? tinhThanhId, string? baoGomPhuongXa = null)
+    {
+        if (!tinhThanhId.HasValue || tinhThanhId <= 0)
+            return string.IsNullOrWhiteSpace(baoGomPhuongXa) ? [] : [baoGomPhuongXa.Trim()];
+
+        var phuongXas = await db.CoSoDaoTaos
+            .AsNoTracking()
+            .Where(c => c.TinhThanhId == tinhThanhId.Value && c.TrangThai == 1)
+            .Select(c => c.TenPhuongXa)
+            .Where(px => px != null && px != "")
+            .Distinct()
+            .OrderBy(px => px)
+            .ToListAsync();
+
+        var ketQua = phuongXas
+            .Where(px => !string.IsNullOrWhiteSpace(px))
+            .Select(px => px!.Trim())
+            .Distinct(StringComparer.OrdinalIgnoreCase)
+            .OrderBy(px => px)
+            .ToList();
+
+        if (!string.IsNullOrWhiteSpace(baoGomPhuongXa)
+            && !ketQua.Contains(baoGomPhuongXa.Trim(), StringComparer.OrdinalIgnoreCase))
+        {
+            ketQua.Add(baoGomPhuongXa.Trim());
+            ketQua = ketQua
+                .Distinct(StringComparer.OrdinalIgnoreCase)
+                .OrderBy(px => px)
+                .ToList();
+        }
+
+        return ketQua;
+    }
 
     public async Task<List<CoSoDaoTao>> LayCoSoByTinhAsync(int? tinhThanhId, string? phuongXa = null, int? baoGomCoSoId = null)
     {
@@ -436,8 +487,7 @@ public class ClassesService(AppDbContext db) : IClassesService
         if (!string.IsNullOrWhiteSpace(phuongXa))
         {
             var phuongXaFilter = phuongXa.Trim();
-            query = query.Where(c => c.TenPhuongXa != null &&
-                                     EF.Functions.Like(c.TenPhuongXa, $"%{phuongXaFilter}%"));
+            query = query.Where(c => c.TenPhuongXa != null && c.TenPhuongXa.Trim() == phuongXaFilter);
         }
 
         return await query.OrderBy(c => c.TenCoSo).ToListAsync();
@@ -576,15 +626,6 @@ public class ClassesService(AppDbContext db) : IClassesService
             {
                 ThanhCong = false,
                 ThongBao = "Ca học không tồn tại hoặc đang tạm ngưng."
-            };
-        }
-
-        if (lopHoc.NgayBatDau.HasValue && lopHoc.NgayKetThuc.HasValue && lopHoc.NgayKetThuc < lopHoc.NgayBatDau)
-        {
-            return new ServiceResult
-            {
-                ThanhCong = false,
-                ThongBao = "Ngày kết thúc phải bằng hoặc sau ngày bắt đầu."
             };
         }
 
@@ -741,6 +782,57 @@ public class ClassesService(AppDbContext db) : IClassesService
             }
         }
 
+        if (lopHoc.HocPhiId.HasValue)
+        {
+            if (!lopHoc.NgayBatDau.HasValue)
+            {
+                return new ServiceResult
+                {
+                    ThanhCong = false,
+                    ThongBao = "Vui lòng chọn ngày bắt đầu để hệ thống tự tính ngày kết thúc theo gói học phí."
+                };
+            }
+
+            if (string.IsNullOrWhiteSpace(lopHoc.LichHoc))
+            {
+                return new ServiceResult
+                {
+                    ThanhCong = false,
+                    ThongBao = "Vui lòng chọn ít nhất một ngày học trong tuần để hệ thống tự tính ngày kết thúc."
+                };
+            }
+        }
+
+        if (lopHoc.SoBuoiDuKien.HasValue
+            && lopHoc.SoBuoiDuKien.Value > 0
+            && lopHoc.NgayBatDau.HasValue
+            && !string.IsNullOrWhiteSpace(lopHoc.LichHoc))
+        {
+            var ngayKetThuc = TinhNgayKetThucTheoSoBuoi(
+                lopHoc.NgayBatDau.Value,
+                lopHoc.LichHoc,
+                lopHoc.SoBuoiDuKien.Value);
+
+            if (!ngayKetThuc.HasValue)
+            {
+                return new ServiceResult
+                {
+                    ThanhCong = false,
+                    ThongBao = "Lịch học hiện tại không hợp lệ để tính ngày kết thúc. Vui lòng kiểm tra lại ngày bắt đầu và các thứ học."
+                };
+            }
+
+            lopHoc.NgayKetThuc = ngayKetThuc.Value;
+        }
+        else if (lopHoc.NgayBatDau.HasValue && lopHoc.NgayKetThuc.HasValue && lopHoc.NgayKetThuc < lopHoc.NgayBatDau)
+        {
+            return new ServiceResult
+            {
+                ThanhCong = false,
+                ThongBao = "Ngày kết thúc phải bằng hoặc sau ngày bắt đầu."
+            };
+        }
+
         if (!string.IsNullOrWhiteSpace(lopHoc.LichHoc) && lopHoc.NgayBatDau.HasValue && lopHoc.NgayKetThuc.HasValue)
         {
             var soBuoiTheoLich = TinhSoBuoiTheoLich(lopHoc.NgayBatDau.Value, lopHoc.NgayKetThuc.Value, lopHoc.LichHoc);
@@ -756,6 +848,14 @@ public class ClassesService(AppDbContext db) : IClassesService
             if (!lopHoc.SoBuoiDuKien.HasValue || lopHoc.SoBuoiDuKien.Value <= 0)
             {
                 lopHoc.SoBuoiDuKien = soBuoiTheoLich;
+            }
+            else if (lopHoc.SoBuoiDuKien.Value != soBuoiTheoLich)
+            {
+                return new ServiceResult
+                {
+                    ThanhCong = false,
+                    ThongBao = $"Số buổi dự kiến hiện tại ({lopHoc.SoBuoiDuKien.Value}) không khớp với lịch học đã cấu hình ({soBuoiTheoLich} buổi)."
+                };
             }
         }
 
@@ -858,6 +958,41 @@ public class ClassesService(AppDbContext db) : IClassesService
         }
 
         return count;
+    }
+
+    private static DateOnly? TinhNgayKetThucTheoSoBuoi(DateOnly ngayBatDau, string lichHoc, int soBuoiDuKien)
+    {
+        if (soBuoiDuKien <= 0 || string.IsNullOrWhiteSpace(lichHoc)) return null;
+
+        var map = new Dictionary<string, DayOfWeek>
+        {
+            ["2"] = DayOfWeek.Monday,
+            ["3"] = DayOfWeek.Tuesday,
+            ["4"] = DayOfWeek.Wednesday,
+            ["5"] = DayOfWeek.Thursday,
+            ["6"] = DayOfWeek.Friday,
+            ["7"] = DayOfWeek.Saturday,
+            ["CN"] = DayOfWeek.Sunday
+        };
+
+        var ngayHoc = lichHoc
+            .Split(',', StringSplitOptions.RemoveEmptyEntries)
+            .Select(x => x.Trim().ToUpperInvariant())
+            .Where(map.ContainsKey)
+            .Select(x => map[x])
+            .ToHashSet();
+
+        if (ngayHoc.Count == 0) return null;
+
+        var daTinh = 0;
+        for (var current = ngayBatDau; daTinh < soBuoiDuKien; current = current.AddDays(1))
+        {
+            if (!ngayHoc.Contains(current.DayOfWeek)) continue;
+            daTinh++;
+            if (daTinh == soBuoiDuKien) return current;
+        }
+
+        return null;
     }
 
     private static string PhongHocTrangThaiText(int trangThai)

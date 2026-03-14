@@ -197,7 +197,8 @@ public interface IClassesService
     Task<List<BuoiHoc>>      LayBuoiHocAsync(int lopHocId);
 
     // ── Dropdown địa chỉ 3 tầng ──────────────────────────────────────────
-    Task<List<TinhThanh>>  LayTinhThanhDropdownAsync();
+    Task<List<TinhThanh>>  LayTinhThanhDropdownAsync(int? baoGomTinhThanhId = null);
+    Task<List<string>>     LayPhuongXaByTinhAsync(int? tinhThanhId, string? baoGomPhuongXa = null);
     Task<List<CoSoDaoTao>> LayCoSoByTinhAsync(int? tinhThanhId, string? phuongXa = null, int? baoGomCoSoId = null);
 
     // ── Mã lớp tự sinh ───────────────────────────────────────────────────

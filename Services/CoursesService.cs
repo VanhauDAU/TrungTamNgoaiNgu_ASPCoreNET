@@ -183,6 +183,8 @@ public class CoursesService(AppDbContext db) : ICoursesService
             thayDoi.Add($"Tên: \"{existing.TenKhoaHoc}\" -> \"{khoaHoc.TenKhoaHoc}\"");
         if (existing.TrangThai != khoaHoc.TrangThai)
             thayDoi.Add($"Trạng thái: {TrangThaiText(existing.TrangThai)} -> {TrangThaiText(khoaHoc.TrangThai)}");
+        if (!string.Equals(existing.MaKhoaHoc, khoaHoc.MaKhoaHoc, StringComparison.Ordinal))
+            thayDoi.Add($"Mã: {existing.MaKhoaHoc ?? "—"} -> {khoaHoc.MaKhoaHoc ?? "—"}");
         if (!string.Equals(existing.Slug, khoaHoc.Slug, StringComparison.Ordinal))
             thayDoi.Add($"Slug: {existing.Slug} -> {khoaHoc.Slug}");
         if (existing.DanhMucId != khoaHoc.DanhMucId)
@@ -200,6 +202,7 @@ public class CoursesService(AppDbContext db) : ICoursesService
 
         // Cập nhật từng field thay vì Update toàn bộ entity
         existing.TenKhoaHoc     = khoaHoc.TenKhoaHoc;
+        existing.MaKhoaHoc      = khoaHoc.MaKhoaHoc;
         existing.Slug           = khoaHoc.Slug;
         existing.DanhMucId      = khoaHoc.DanhMucId;
         existing.MoTa           = khoaHoc.MoTa;
@@ -718,6 +721,7 @@ public class CoursesService(AppDbContext db) : ICoursesService
     private async Task<ServiceResult> KiemTraVaChuanHoaKhoaHocAsync(KhoaHoc khoaHoc, int? boQuaKhoaHocId = null)
     {
         khoaHoc.TenKhoaHoc = ChuanHoaText(khoaHoc.TenKhoaHoc) ?? string.Empty;
+        khoaHoc.MaKhoaHoc = ChuanHoaMaThucThe(khoaHoc.MaKhoaHoc);
         khoaHoc.MoTa = ChuanHoaText(khoaHoc.MoTa);
         khoaHoc.DoiTuong = ChuanHoaText(khoaHoc.DoiTuong);
         khoaHoc.KetQuaDatDuoc = ChuanHoaText(khoaHoc.KetQuaDatDuoc);
@@ -749,6 +753,23 @@ public class CoursesService(AppDbContext db) : ICoursesService
             {
                 ThanhCong = false,
                 ThongBao = "Không thể kích hoạt khóa học khi danh mục đang tạm ngưng. Hãy mở lại danh mục trước."
+            };
+        }
+
+        if (!boQuaKhoaHocId.HasValue || string.IsNullOrWhiteSpace(khoaHoc.MaKhoaHoc))
+        {
+            khoaHoc.MaKhoaHoc = await TaoMaKhoaHocAsync(khoaHoc, boQuaKhoaHocId, danhMuc);
+        }
+
+        if (await db.KhoaHocs.AnyAsync(k =>
+                k.MaKhoaHoc == khoaHoc.MaKhoaHoc
+                && (!boQuaKhoaHocId.HasValue || k.KhoaHocId != boQuaKhoaHocId.Value)
+                && k.DeletedAt == null))
+        {
+            return new ServiceResult
+            {
+                ThanhCong = false,
+                ThongBao = "Mã khóa học tự sinh đang bị trùng. Vui lòng lưu lại để hệ thống tạo mã khác."
             };
         }
 
@@ -794,7 +815,7 @@ public class CoursesService(AppDbContext db) : ICoursesService
     private async Task<ServiceResult> KiemTraVaChuanHoaDanhMucAsync(DanhMucKhoaHoc danhMuc, int? boQuaDanhMucId = null)
     {
         danhMuc.TenDanhMuc = ChuanHoaText(danhMuc.TenDanhMuc) ?? string.Empty;
-        danhMuc.MaDanhMuc = ChuanHoaMaDanhMuc(danhMuc.MaDanhMuc);
+        danhMuc.MaDanhMuc = ChuanHoaMaThucThe(danhMuc.MaDanhMuc);
         danhMuc.MoTa = ChuanHoaText(danhMuc.MoTa);
         danhMuc.TrangThai = danhMuc.TrangThai == 0 ? (byte)0 : (byte)1;
         danhMuc.ParentId = danhMuc.ParentId is null or <= 0 ? null : danhMuc.ParentId;
@@ -802,22 +823,6 @@ public class CoursesService(AppDbContext db) : ICoursesService
         if (string.IsNullOrWhiteSpace(danhMuc.TenDanhMuc))
         {
             return new ServiceResult { ThanhCong = false, ThongBao = "Tên danh mục không được để trống." };
-        }
-
-        if (!string.IsNullOrWhiteSpace(danhMuc.MaDanhMuc))
-        {
-            var trungMa = await db.DanhMucKhoaHocs.AnyAsync(dm =>
-                dm.MaDanhMuc == danhMuc.MaDanhMuc
-                && (!boQuaDanhMucId.HasValue || dm.DanhMucId != boQuaDanhMucId.Value)
-                && dm.DeletedAt == null);
-            if (trungMa)
-            {
-                return new ServiceResult
-                {
-                    ThanhCong = false,
-                    ThongBao = "Mã danh mục đã tồn tại. Hãy dùng mã khác để dễ tra cứu."
-                };
-            }
         }
 
         if (boQuaDanhMucId.HasValue && danhMuc.ParentId == boQuaDanhMucId.Value)
@@ -860,6 +865,23 @@ public class CoursesService(AppDbContext db) : ICoursesService
                     ThongBao = "Không thể bật danh mục con khi danh mục cha đang tạm ngưng."
                 };
             }
+        }
+
+        if (!boQuaDanhMucId.HasValue || string.IsNullOrWhiteSpace(danhMuc.MaDanhMuc))
+        {
+            danhMuc.MaDanhMuc = await TaoMaDanhMucAsync(danhMuc, boQuaDanhMucId);
+        }
+
+        if (await db.DanhMucKhoaHocs.AnyAsync(dm =>
+                dm.MaDanhMuc == danhMuc.MaDanhMuc
+                && (!boQuaDanhMucId.HasValue || dm.DanhMucId != boQuaDanhMucId.Value)
+                && dm.DeletedAt == null))
+        {
+            return new ServiceResult
+            {
+                ThanhCong = false,
+                ThongBao = "Mã danh mục tự sinh đang bị trùng. Vui lòng lưu lại để hệ thống tạo mã khác."
+            };
         }
 
         danhMuc.Slug = await TaoSlugDanhMucAsync(danhMuc.TenDanhMuc, boQuaDanhMucId);
@@ -924,10 +946,96 @@ public class CoursesService(AppDbContext db) : ICoursesService
         return string.IsNullOrWhiteSpace(value) ? null : value;
     }
 
-    private static string? ChuanHoaMaDanhMuc(string? input)
+    private async Task<string> TaoMaDanhMucAsync(DanhMucKhoaHoc danhMuc, int? boQuaDanhMucId = null)
     {
-        var value = input?.Trim().ToUpperInvariant();
+        var prefix = TaoMaToken(danhMuc.TenDanhMuc, "DM", 4);
+        return await TaoMaTheoTienToAsync(
+            db.DanhMucKhoaHocs
+                .AsNoTracking()
+                .Where(dm => dm.DeletedAt == null && (!boQuaDanhMucId.HasValue || dm.DanhMucId != boQuaDanhMucId.Value))
+                .Select(dm => dm.MaDanhMuc),
+            prefix);
+    }
+
+    private async Task<string> TaoMaKhoaHocAsync(KhoaHoc khoaHoc, int? boQuaKhoaHocId = null, DanhMucKhoaHoc? danhMuc = null)
+    {
+        danhMuc ??= await db.DanhMucKhoaHocs
+            .AsNoTracking()
+            .FirstAsync(dm => dm.DanhMucId == khoaHoc.DanhMucId!.Value);
+
+        var prefixDanhMuc = TaoMaToken(danhMuc.MaDanhMuc ?? danhMuc.TenDanhMuc, "DM", 3);
+        var prefixKhoaHoc = TaoMaToken(khoaHoc.TenKhoaHoc, "KH", 3);
+        var prefix = $"{prefixDanhMuc}{prefixKhoaHoc}";
+
+        return await TaoMaTheoTienToAsync(
+            db.KhoaHocs
+                .AsNoTracking()
+                .Where(k => k.DeletedAt == null && (!boQuaKhoaHocId.HasValue || k.KhoaHocId != boQuaKhoaHocId.Value))
+                .Select(k => k.MaKhoaHoc),
+            prefix);
+    }
+
+    private static async Task<string> TaoMaTheoTienToAsync(IQueryable<string?> query, string prefix)
+    {
+        prefix = string.IsNullOrWhiteSpace(prefix) ? "AUTO" : prefix;
+        var maDaCo = await query
+            .Where(ma => ma != null && ma.StartsWith(prefix + "-"))
+            .ToListAsync();
+
+        var stt = 1;
+        string maMoi;
+        do
+        {
+            maMoi = $"{prefix}-{stt:D3}";
+            stt++;
+        }
+        while (maDaCo.Contains(maMoi, StringComparer.OrdinalIgnoreCase));
+
+        return maMoi;
+    }
+
+    private static string? ChuanHoaMaThucThe(string? input)
+    {
+        var value = input?
+            .Trim()
+            .ToUpperInvariant()
+            .Normalize(NormalizationForm.FormD);
+
+        if (string.IsNullOrWhiteSpace(value)) return null;
+
+        var sb = new StringBuilder(value.Length);
+        foreach (var c in value)
+        {
+            var cat = CharUnicodeInfo.GetUnicodeCategory(c);
+            if (cat == UnicodeCategory.NonSpacingMark) continue;
+
+            if (c == 'Đ') sb.Append('D');
+            else if (char.IsLetterOrDigit(c)) sb.Append(c);
+            else sb.Append('-');
+        }
+
+        value = Regex.Replace(sb.ToString(), "-{2,}", "-").Trim('-');
         return string.IsNullOrWhiteSpace(value) ? null : value;
+    }
+
+    private static string TaoMaToken(string? input, string fallback, int maxLength)
+    {
+        if (maxLength < 2) maxLength = 2;
+
+        var normalized = ChuanHoaSlug(input)
+            .ToUpperInvariant()
+            .Split('-', StringSplitOptions.RemoveEmptyEntries);
+
+        if (normalized.Length == 0) return fallback[..Math.Min(fallback.Length, maxLength)];
+
+        var letters = string.Concat(normalized.Where(part => part.Length > 0).Select(part => part[0]));
+        if (letters.Length >= 2)
+            return letters[..Math.Min(letters.Length, maxLength)];
+
+        var compact = string.Concat(normalized).ToUpperInvariant();
+        if (compact.Length == 0) compact = fallback;
+
+        return compact[..Math.Min(compact.Length, maxLength)];
     }
 
     private static string TrangThaiText(byte trangThai) => trangThai switch

@@ -27,6 +27,7 @@
     @Html.AntiForgeryToken()
     <input type="hidden" asp-for="KhoaHocId" />
     <input type="hidden" asp-for="Slug" id="slugInput" />
+    <input type="hidden" asp-for="MaKhoaHoc" id="maKhoaHocInput" />
     <input type="hidden" asp-for="AnhKhoaHoc" id="anhHienTai" />
     <div id="draftNotice" class="kh-draft-note kh-hidden">
         <span>Đã khôi phục bản nháp tự động cho form này.</span>
@@ -111,6 +112,10 @@
             <div class="card">
                 <div class="card-header"><i class="bi bi-clipboard-data"></i> Tóm tắt cấu hình</div>
                 <div class="card-body kh-stack-10">
+                    <div class="kh-summary-item">
+                        <span>Mã khóa học</span>
+                        <code id="maKhoaHocPreview" class="dm-slug-preview">@(!string.IsNullOrWhiteSpace(Model.MaKhoaHoc) ? Model.MaKhoaHoc : "DMKHO-001")</code>
+                    </div>
                     <div class="kh-summary-item">
                         <span>Slug hiện tại</span>
                         <code id="slugPreview" class="dm-slug-preview">@Model.Slug</code>
@@ -213,6 +218,8 @@
         const originalImageUrl = '@(Model.AnhKhoaHoc ?? "")';
         const hasOriginalImage = @(string.IsNullOrEmpty(Model.AnhKhoaHoc) ? "false" : "true");
         const tenKhoaHocInput = document.getElementById('tenKhoaHocInput');
+        const maKhoaHocInput = document.getElementById('maKhoaHocInput');
+        const maKhoaHocPreview = document.getElementById('maKhoaHocPreview');
         const slugInput = document.getElementById('slugInput');
         const slugPreview = document.getElementById('slugPreview');
         const danhMucSelect = form.querySelector('select[name="DanhMucId"]');
@@ -237,12 +244,43 @@
             const slug = slugify(tenKhoaHocInput?.value || '');
             if (slugInput) slugInput.value = slug;
             if (slugPreview) slugPreview.textContent = slug;
+
+            if (maKhoaHocInput && maKhoaHocPreview && !maKhoaHocInput.value) {
+                const categoryLabel = danhMucSelect?.selectedOptions?.[0]?.text?.trim() || '';
+                const code = buildCodePreview(categoryLabel, tenKhoaHocInput?.value || '');
+                maKhoaHocInput.value = code;
+                maKhoaHocPreview.textContent = code;
+            } else if (maKhoaHocInput && maKhoaHocPreview) {
+                maKhoaHocPreview.textContent = maKhoaHocInput.value;
+            }
+
             const selectedText = danhMucSelect?.selectedOptions?.[0]?.text?.trim() || '';
             if (selectedCategoryPreview) {
                 selectedCategoryPreview.textContent = selectedText && !selectedText.startsWith('--')
                     ? selectedText
                     : 'Chưa chọn';
             }
+        }
+
+        function tokenFromText(value, fallback) {
+            const parts = (value || '')
+                .trim()
+                .toLowerCase()
+                .normalize('NFD')
+                .replace(/[\u0300-\u036f]/g, '')
+                .replace(/đ/g, 'd')
+                .replace(/[^a-z0-9\s]+/g, ' ')
+                .split(/\s+/)
+                .filter(Boolean);
+
+            if (parts.length > 1) return parts.map(x => x[0]).join('').toUpperCase().slice(0, 3) || fallback;
+            return (parts[0] || fallback).toUpperCase().slice(0, 3) || fallback;
+        }
+
+        function buildCodePreview(categoryLabel, courseLabel) {
+            const categoryToken = tokenFromText(categoryLabel, 'DM');
+            const courseToken = tokenFromText(courseLabel, 'KH');
+            return `${categoryToken}${courseToken}-001`;
         }
 
         function collectDraft() {

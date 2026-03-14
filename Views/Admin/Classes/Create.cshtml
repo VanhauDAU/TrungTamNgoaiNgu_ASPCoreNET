@@ -4,7 +4,6 @@
     ViewData["Title"] = "Thêm lớp học";
     Layout = "~/Views/Shared/_AdminLayout.cshtml";
     var coCaHoc = ((List<TrungTamNgoaiNgu.Models.CaHoc>)ViewBag.CaHocs).Any();
-    var coHocPhi = ((List<TrungTamNgoaiNgu.Models.HocPhi>)ViewBag.HocPhis).Any();
     var coCoSo = ((List<TrungTamNgoaiNgu.Models.CoSoDaoTao>)ViewBag.CoSos).Any();
     var coPhong = ((List<TrungTamNgoaiNgu.Models.PhongHoc>)ViewBag.PhongHocs).Any();
 }
@@ -84,15 +83,15 @@
         <form method="post" asp-action="Create" id="createForm">
             @Html.AntiForgeryToken()
             <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
-            @if (!coCaHoc || !coHocPhi || !coCoSo || !coPhong)
+            @if (!coCaHoc || !coCoSo || !coPhong)
             {
                 <div class="alert alert-warning" style="margin-bottom:1rem;">
                     <strong>Dữ liệu nền chưa đủ để mở lớp.</strong>
                     <div style="margin-top:.35rem;">
                         @if (!coCaHoc) { <span>Thiếu ca học. </span> }
-                        @if (!coHocPhi) { <span>Thiếu gói học phí. </span> }
                         @if (!coCoSo) { <span>Thiếu cơ sở đào tạo. </span> }
                         @if (!coPhong) { <span>Thiếu phòng học. </span> }
+                        <span>Gói học phí sẽ được tải sau khi bạn chọn khóa học.</span>
                         <a asp-controller="ClassSetup" asp-action="Index">Đi tới màn hình thiết lập lớp học</a>.
                     </div>
                 </div>
@@ -166,14 +165,14 @@
                         <option value="">-- Chọn tỉnh/thành phố --</option>
                         @foreach (var tt in (List<TrungTamNgoaiNgu.Models.TinhThanh>)ViewBag.TinhThanhs)
                         {
-                            <option value="@tt.TinhThanhId" data-code="@tt.MaAPI">@tt.TenTinhThanh</option>
+                            <option value="@tt.TinhThanhId">@tt.TenTinhThanh</option>
                         }
                     </select>
                     <span class="addr-loading" id="loadingPhuong"></span>
                 </div>
             </div>
 
-            <!-- Tầng 2: Phường/Xã từ API -->
+            <!-- Tầng 2: Phường/Xã có cơ sở -->
             <div class="form-group" style="margin-bottom:1rem;" id="phuongXaGroup">
                 <label class="form-label">Bước 2 — Chọn Phường/Xã <small class="text-muted">(lọc cơ sở)</small></label>
                 <div style="position:relative">
@@ -271,13 +270,14 @@
                     <input asp-for="NgayBatDau" id="ngayBDInput" type="date" class="form-control" />
                 </div>
                 <div class="form-group">
-                    <label class="form-label">Ngày kết thúc</label>
-                    <input asp-for="NgayKetThuc" id="ngayKTInput" type="date" class="form-control" />
+                    <label class="form-label">Ngày kết thúc <small class="text-muted">(tự tính)</small></label>
+                    <input asp-for="NgayKetThuc" id="ngayKTInput" type="date" class="form-control" readonly />
+                    <div class="meta-hint" id="ngayKetThucInfo">Ngày kết thúc sẽ tự tính sau khi có ngày bắt đầu, lịch học và số buổi.</div>
                 </div>
                 <div class="form-group">
-                    <label class="form-label">Số buổi dự kiến <small class="text-muted">(tự tính)</small></label>
+                    <label class="form-label">Số buổi dự kiến <small class="text-muted">(đồng bộ từ gói học phí nếu có)</small></label>
                     <input asp-for="SoBuoiDuKien" id="soBuoiInput" type="number" class="form-control" min="1"
-                           placeholder="Tự tính hoặc nhập tay" />
+                           placeholder="Nhập tay nếu chưa gắn gói học phí" />
                     <div class="sbd-info" id="sbdInfo"></div>
                 </div>
             </div>
@@ -371,13 +371,14 @@
     const previewPhong     = document.getElementById('previewPhong');
     const previewSiSo      = document.getElementById('previewSiSo');
     const resetCreateForm  = document.getElementById('resetCreateForm');
+    const ngayKetThucInfo  = document.getElementById('ngayKetThucInfo');
 
     const DOW_MAP = { '2':1, '3':2, '4':3, '5':4, '6':5, '7':6, 'CN':0 };
 
     function toggleDow(el) {
         el.classList.toggle('active');
         updateLichHoc();
-        tinhSoBuoi();
+        tinhNgayKetThuc();
     }
 
     function updateLichHoc() {
@@ -385,32 +386,61 @@
         lichHocInput.value = selected.join(',');
     }
 
-    function tinhSoBuoi() {
-        const bd = ngayBDInput.value;
-        const kt = ngayKTInput.value;
-        const sel = [...document.querySelectorAll('.dow-btn.active')].map(e => e.dataset.val);
-        if (!bd || !kt || sel.length === 0) {
-            sbdInfo.textContent = '';
-            return;
-        }
+    function toInputDate(date) {
+        const year = date.getFullYear();
+        const month = String(date.getMonth() + 1).padStart(2, '0');
+        const day = String(date.getDate()).padStart(2, '0');
+        return `${year}-${month}-${day}`;
+    }
 
-        const start = new Date(bd);
-        const end = new Date(kt);
-        if (end < start) {
-            sbdInfo.textContent = 'Ngày kết thúc phải sau ngày bắt đầu.';
+    function getSelectedDowValues() {
+        return [...document.querySelectorAll('.dow-btn.active')].map(e => e.dataset.val);
+    }
+
+    function getSoBuoiTarget() {
+        const selected = hocPhiSel.selectedOptions[0];
+        const soBuoiGoi = Number(selected?.dataset?.soBuoi || 0);
+        const soBuoiNhap = Number(soBuoiInput.value || 0);
+        return soBuoiGoi > 0 ? soBuoiGoi : soBuoiNhap;
+    }
+
+    function tinhNgayKetThuc() {
+        const bd = ngayBDInput.value;
+        const sel = getSelectedDowValues();
+        const soBuoi = getSoBuoiTarget();
+
+        if (!bd || sel.length === 0 || soBuoi <= 0) {
+            ngayKTInput.value = '';
+            sbdInfo.textContent = '';
+            ngayKetThucInfo.textContent = 'Ngày kết thúc sẽ tự tính sau khi có ngày bắt đầu, lịch học và số buổi.';
             return;
         }
 
         const days = new Set(sel.map(v => DOW_MAP[v]));
+        const current = new Date(`${bd}T00:00:00`);
         let count = 0;
-        const cur = new Date(start);
-        while (cur <= end) {
-            if (days.has(cur.getDay())) count++;
-            cur.setDate(cur.getDate() + 1);
+        let lastDate = null;
+
+        while (count < soBuoi) {
+            if (days.has(current.getDay())) {
+                count++;
+                lastDate = new Date(current);
+            }
+            current.setDate(current.getDate() + 1);
         }
 
-        soBuoiInput.value = count;
-        sbdInfo.textContent = `Tự tính: ${count} buổi.`;
+        if (!lastDate) {
+            ngayKTInput.value = '';
+            sbdInfo.textContent = '';
+            ngayKetThucInfo.textContent = 'Không tính được ngày kết thúc với lịch học hiện tại.';
+            return;
+        }
+
+        ngayKTInput.value = toInputDate(lastDate);
+        sbdInfo.textContent = hocPhiSel.value
+            ? `Đồng bộ ${soBuoi} buổi từ gói học phí và tự tính lịch kết thúc.`
+            : `Tự tính lịch kết thúc theo ${soBuoi} buổi đã nhập.`;
+        ngayKetThucInfo.textContent = `Kết thúc dự kiến vào ${lastDate.toLocaleDateString('vi-VN')}.`;
     }
 
     function capNhatPreviewForm() {
@@ -441,6 +471,7 @@
     async function loadHocPhi(khoaHocId) {
         if (!khoaHocId) {
             hocPhiSel.innerHTML = '<option value="">-- Chọn khóa học trước --</option>';
+            hocPhiSel.value = '';
             updateHocPhiInfo();
             return;
         }
@@ -460,30 +491,35 @@
         const tongTien = selected?.dataset?.tongTien || '';
 
         if (!selected || !selected.value || !soBuoi) {
+            hocPhiSel.dataset.locked = 'false';
             hocPhiInfo.textContent = '';
+            soBuoiInput.readOnly = false;
+            tinhNgayKetThuc();
             return;
         }
 
+        hocPhiSel.dataset.locked = 'true';
+        soBuoiInput.readOnly = true;
         soBuoiInput.value = soBuoi;
         hocPhiInfo.textContent = tongTien
             ? `Đồng bộ ${soBuoi} buổi từ gói học phí. Tổng học phí tham chiếu: ${tongTien} đ.`
             : `Đồng bộ ${soBuoi} buổi từ gói học phí đã chọn.`;
+        tinhNgayKetThuc();
         capNhatPreviewForm();
     }
 
-    async function loadPhuongXa(maApi) {
+    async function loadPhuongXa(tinhThanhId) {
         phuongXaSel.innerHTML = '<option value="">-- Đang tải phường/xã... --</option>';
         phuongXaSel.disabled = true;
 
         try {
-            const res = await fetch(`/Admin/Classes/PhuongXaByTinh?maApi=${maApi}`);
+            const res = await fetch(`/Admin/Classes/PhuongXaByTinh?tinhThanhId=${tinhThanhId}`);
             if (!res.ok) throw new Error();
 
             const data = await res.json();
             phuongXaSel.innerHTML = '<option value="">-- Tất cả địa bàn --</option>';
             data.forEach(w => {
-                const suffix = w.district ? ` (${w.district})` : '';
-                phuongXaSel.innerHTML += `<option value="${w.name}">${w.name}${suffix}</option>`;
+                phuongXaSel.innerHTML += `<option value="${w.name}">${w.name}</option>`;
             });
 
             if (data.length === 0) {
@@ -591,22 +627,27 @@
             : `Giáo viên khác cơ sở: ${coSoName} (vẫn được phân công).`;
     }
 
-    ngayBDInput.addEventListener('change', tinhSoBuoi);
-    ngayKTInput.addEventListener('change', tinhSoBuoi);
+    ngayBDInput.addEventListener('change', tinhNgayKetThuc);
     phongHocSel.addEventListener('change', updatePhongCapacityInfo);
     giaoVienSelect.addEventListener('change', refreshGiaoVienLabels);
     hocPhiSel.addEventListener('change', updateHocPhiInfo);
     soHocInput.addEventListener('input', capNhatPreviewForm);
+    soBuoiInput.addEventListener('input', () => {
+        if (!hocPhiSel.value) {
+            tinhNgayKetThuc();
+        }
+    });
 
     khoaHocSelect.addEventListener('change', async () => {
         const khoaHocId = khoaHocSelect.value;
+        hocPhiSel.value = '';
+        soBuoiInput.readOnly = false;
         await Promise.all([loadMaLop(khoaHocId), loadHocPhi(khoaHocId)]);
         capNhatPreviewForm();
     });
 
     tinhThanhSel.addEventListener('change', async () => {
         const tinhId = tinhThanhSel.value;
-        const maApi = tinhThanhSel.selectedOptions[0]?.dataset.code;
 
         phuongXaSel.innerHTML = '<option value="">-- Chọn tỉnh/thành trước --</option>';
         phuongXaSel.disabled = true;
@@ -617,11 +658,11 @@
         coSoDiaChi.textContent = '';
         phongCapacityInfo.textContent = '';
 
-        if (!tinhId || !maApi) return;
+        if (!tinhId) return;
 
         loadingPhuong.style.display = 'block';
         try {
-            await loadPhuongXa(maApi);
+            await loadPhuongXa(tinhId);
         } finally {
             loadingPhuong.style.display = 'none';
         }
@@ -663,6 +704,13 @@
             event.preventDefault();
             hocPhiInfo.textContent = `Số buổi dự kiến phải khớp gói học phí đã chọn (${soBuoiGoiHocPhi} buổi).`;
             soBuoiInput.focus();
+            return;
+        }
+
+        if (selectedHocPhi?.value && !ngayKTInput.value) {
+            event.preventDefault();
+            ngayKetThucInfo.textContent = 'Không thể lưu vì chưa đủ dữ liệu để tự tính ngày kết thúc.';
+            ngayBDInput.focus();
         }
     });
 
@@ -670,7 +718,7 @@
         window.setTimeout(() => {
             maLopBadge.style.display = 'none';
             capNhatPreviewForm();
-            tinhSoBuoi();
+            tinhNgayKetThuc();
             updateHocPhiInfo();
             refreshGiaoVienLabels();
             phongCapacityInfo.textContent = '';
@@ -680,12 +728,10 @@
     if (khoaHocSelect.value && !maLopInput.value) {
         loadMaLop(khoaHocSelect.value);
     }
-    if (khoaHocSelect.value && hocPhiSel.options.length <= 1) {
-        loadHocPhi(khoaHocSelect.value);
-    }
     refreshGiaoVienLabels();
     updateLichHoc();
     updateHocPhiInfo();
+    tinhNgayKetThuc();
     capNhatPreviewForm();
     </script>
 }
