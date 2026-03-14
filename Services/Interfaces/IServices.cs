@@ -178,7 +178,7 @@ public interface IClassesService
 
     // ── Dropdown địa chỉ 3 tầng ──────────────────────────────────────────
     Task<List<TinhThanh>>  LayTinhThanhDropdownAsync();
-    Task<List<CoSoDaoTao>> LayCoSoByTinhAsync(int? tinhThanhId, string? phuongXa = null);
+    Task<List<CoSoDaoTao>> LayCoSoByTinhAsync(int? tinhThanhId, string? phuongXa = null, int? baoGomCoSoId = null);
 
     // ── Mã lớp tự sinh ───────────────────────────────────────────────────
     /// <summary>Format: K{maKH}-YYYYMM-NNN (VD: KIELTS-202603-001)</summary>
@@ -199,9 +199,21 @@ public class ClassSetupThongKe
     public int CoSoChuaCoPhong { get; set; }
 }
 
+public class ClassSetupUsageSnapshot
+{
+    public Dictionary<int, int> LopTheoCaHoc { get; set; } = [];
+    public Dictionary<int, int> BuoiTheoCaHoc { get; set; } = [];
+    public Dictionary<long, int> LopTheoHocPhi { get; set; } = [];
+    public Dictionary<int, int> PhongTheoCoSo { get; set; } = [];
+    public Dictionary<int, int> LopTheoCoSo { get; set; } = [];
+    public Dictionary<int, int> GiaoVienTheoCoSo { get; set; } = [];
+    public Dictionary<int, int> LopTheoPhongHoc { get; set; } = [];
+}
+
 public interface IClassSetupService
 {
     Task<ClassSetupThongKe> LayThongKeAsync();
+    Task<ClassSetupUsageSnapshot> LaySoLieuSuDungAsync();
 
     Task<List<CaHoc>> LayDanhSachCaHocAsync();
     Task<CaHoc?> LayCaHocTheoIdAsync(int id);

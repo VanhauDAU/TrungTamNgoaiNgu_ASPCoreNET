@@ -105,6 +105,7 @@ public class ClassesService(AppDbContext db) : IClassesService
             .Include(l => l.CaHoc)
             .Include(l => l.PhongHoc)
             .Include(l => l.CoSo)
+                .ThenInclude(c => c!.TinhThanh)
             .FirstOrDefaultAsync(l => l.LopHocId == id && l.DeletedAt == null);
     }
 
@@ -423,11 +424,11 @@ public class ClassesService(AppDbContext db) : IClassesService
             .OrderBy(t => t.TenTinhThanh)
             .ToListAsync();
 
-    public async Task<List<CoSoDaoTao>> LayCoSoByTinhAsync(int? tinhThanhId, string? phuongXa = null)
+    public async Task<List<CoSoDaoTao>> LayCoSoByTinhAsync(int? tinhThanhId, string? phuongXa = null, int? baoGomCoSoId = null)
     {
         var query = db.CoSoDaoTaos
             .AsNoTracking()
-            .Where(c => c.TrangThai == 1);
+            .Where(c => c.TrangThai == 1 || (baoGomCoSoId.HasValue && c.CoSoId == baoGomCoSoId.Value));
 
         if (tinhThanhId.HasValue && tinhThanhId > 0)
             query = query.Where(c => c.TinhThanhId == tinhThanhId);

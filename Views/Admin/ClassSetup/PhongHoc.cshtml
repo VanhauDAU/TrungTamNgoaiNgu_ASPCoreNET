@@ -46,6 +46,7 @@
                                 <th>Cơ sở</th>
                                 <th>Sức chứa</th>
                                 <th>Ghi chú</th>
+                                <th>Đang dùng</th>
                                 <th>Trạng thái</th>
                                 <th>Thao tác</th>
                             </tr>
@@ -56,6 +57,7 @@
                                 var trangThai = Enum.IsDefined(typeof(PhongHocTrangThai), item.TrangThai)
                                     ? (PhongHocTrangThai)item.TrangThai
                                     : PhongHocTrangThai.HoatDong;
+                                var soLopDangDung = Model.SuDung.LopTheoPhongHoc.GetValueOrDefault(item.PhongHocId);
                                 <tr>
                                     <td>
                                         <strong>@item.TenPhong</strong>
@@ -70,6 +72,10 @@
                                                 ? "Không có ghi chú bảo trì"
                                                 : item.GhiChuBaoTri)
                                         </div>
+                                    </td>
+                                    <td>
+                                        <div>@soLopDangDung lớp đang gắn</div>
+                                        <div class="meta">Sức chứa @item.SucChua học viên</div>
                                     </td>
                                     <td>
                                         <span class="@trangThai.GetBadgeClass()">@trangThai.GetLabel()</span>

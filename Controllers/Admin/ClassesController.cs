@@ -211,9 +211,9 @@ public class ClassesController(IClassesService classesService, IHttpClientFactor
     }
     /// <summary>GET /Admin/Classes/CoSoByTinh?tinhThanhId=1 — AJAX: cơ sở theo tỉnh</summary>
     [HttpGet]
-    public async Task<IActionResult> CoSoByTinh(int? tinhThanhId, string? phuongXa)
+    public async Task<IActionResult> CoSoByTinh(int? tinhThanhId, string? phuongXa, int? baoGomCoSoId)
     {
-        var coSos = await classesService.LayCoSoByTinhAsync(tinhThanhId, phuongXa);
+        var coSos = await classesService.LayCoSoByTinhAsync(tinhThanhId, phuongXa, baoGomCoSoId);
         return Json(coSos.Select(c => new
         {
             id = c.CoSoId,

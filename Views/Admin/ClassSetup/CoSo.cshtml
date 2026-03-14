@@ -44,6 +44,7 @@
                                 <th>Cơ sở</th>
                                 <th>Khu vực</th>
                                 <th>Liên hệ</th>
+                                <th>Vận hành</th>
                                 <th>Trạng thái</th>
                                 <th>Thao tác</th>
                             </tr>
@@ -51,6 +52,9 @@
                         <tbody>
                             @foreach (var item in Model.Items)
                             {
+                                var soPhong = Model.SuDung.PhongTheoCoSo.GetValueOrDefault(item.CoSoId);
+                                var soLop = Model.SuDung.LopTheoCoSo.GetValueOrDefault(item.CoSoId);
+                                var soGiaoVien = Model.SuDung.GiaoVienTheoCoSo.GetValueOrDefault(item.CoSoId);
                                 <tr>
                                     <td>
                                         <strong>@item.TenCoSo</strong>
@@ -63,6 +67,10 @@
                                     <td>
                                         <div>@(string.IsNullOrWhiteSpace(item.SoDienThoai) ? "—" : item.SoDienThoai)</div>
                                         <div class="meta">@(string.IsNullOrWhiteSpace(item.DiaChi) ? "Chưa có địa chỉ" : item.DiaChi)</div>
+                                    </td>
+                                    <td>
+                                        <div>@soPhong phòng · @soLop lớp</div>
+                                        <div class="meta">@soGiaoVien giáo viên đang gắn cơ sở này</div>
                                     </td>
                                     <td>
                                         <span class="setup-badge @(item.TrangThai == 0 ? "inactive" : "active")">@(item.TrangThai == 0 ? "Tạm ngưng" : "Hoạt động")</span>
